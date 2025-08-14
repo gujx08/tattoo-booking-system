@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
+import { CreditCard, Calendar, User, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
 import SquarePaymentForm from './SquarePaymentForm';
 
@@ -31,7 +31,6 @@ const PaymentPage: React.FC = () => {
       return state.selectedArtist;
     }
     
-    // 根据artistId获取纹身师信息
     const artistData: {[key: string]: {name: string, deposit: number}} = {
       'jing': { name: 'Jing (Jingxi Gu)', deposit: 300 },
       'rachel': { name: 'Rachel Hong', deposit: 100 },
@@ -54,19 +53,20 @@ const PaymentPage: React.FC = () => {
   // 处理Square支付成功
   const handleSquarePaymentSuccess = async (result: any) => {
     try {
-      console.log('✅ Square 支付成功:', result);
+      console.log('✅ Square支付成功:', result);
       
-      // 保存支付成功信息到状态
+      // 保存支付成功信息
       dispatch({ 
         type: 'SET_PAYMENT_SUCCESS', 
         payload: {
-          paymentId: result.paymentId || result.token,
+          paymentId: result.paymentId,
           amount: getDepositAmount(),
           timestamp: new Date().toISOString(),
           artist: state.formData.artistId,
           customerName: state.formData.name,
           customerEmail: state.formData.email,
-          paymentMethod: 'square'
+          paymentMethod: 'square',
+          last4: result.last4
         }
       });
       
@@ -75,31 +75,29 @@ const PaymentPage: React.FC = () => {
       
     } catch (error) {
       console.error('❌ 支付后处理错误:', error);
-      alert('Payment succeeded but there was an error processing your booking. Please contact us.');
+      alert('支付成功，但处理过程中出现错误。请联系我们。');
     }
   };
 
   // 处理Square支付错误
   const handleSquarePaymentError = (error: any) => {
-    console.error('❌ Square 支付失败:', error);
-    // 错误已经在SquarePaymentForm组件中显示了
+    console.error('❌ Square支付失败:', error);
+    // 错误已经在SquarePaymentForm组件中显示
   };
 
-  // Demo模式支付（保留用于测试）
+  // Demo模式支付（仅用于测试）
   const handleDemoPayment = async () => {
     try {
-      console.log('🎮 Demo 模式支付');
+      console.log('🎮 Demo模式支付');
       
-      // 确保有必要的客户信息
       if (!state.formData.name || !state.formData.email) {
         alert('请确保已填写姓名和邮箱信息');
         return;
       }
 
       // 模拟支付延迟
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // 保存支付成功信息到状态
       dispatch({ 
         type: 'SET_PAYMENT_SUCCESS', 
         payload: {
@@ -113,20 +111,19 @@ const PaymentPage: React.FC = () => {
         }
       });
       
-      // 跳转到成功页面
       dispatch({ type: 'SET_STEP', payload: 999 });
       
     } catch (error) {
-      console.error('❌ Demo 支付错误:', error);
-      alert('Demo payment failed');
+      console.error('❌ Demo支付错误:', error);
+      alert('Demo支付失败');
     }
   };
 
   const handleBack = () => {
     if (state.formData.needsConsultation) {
-      dispatch({ type: 'SET_STEP', payload: 8 }); // Back to consultation scheduling
+      dispatch({ type: 'SET_STEP', payload: 8 });
     } else {
-      dispatch({ type: 'SET_STEP', payload: 7 }); // Back to consultation choice
+      dispatch({ type: 'SET_STEP', payload: 7 });
     }
   };
 
@@ -213,7 +210,7 @@ const PaymentPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Deposit Policy - Collapsible */}
+          {/* Deposit Policy */}
           <div className="mt-6">
             <button
               onClick={() => setShowDepositPolicy(!showDepositPolicy)}
@@ -226,15 +223,15 @@ const PaymentPage: React.FC = () => {
             
             {showDepositPolicy && (
               <div className="mt-3 text-sm text-gray-600 space-y-2 bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium text-gray-700 mb-2">Why do we collect deposit before the artists see your request?</h4>
-                <p>• It takes the artists some time to review & understand your tattoo idea. We collect the deposit to protect our artists' time, and also to make sure that you're a serious client.</p>
+                <h4 className="font-medium text-gray-700 mb-2">Why do we collect deposit?</h4>
+                <p>• It takes time for artists to review your tattoo idea. The deposit protects our artists' time and ensures you're a serious client.</p>
                 
                 <h4 className="font-medium text-gray-700 mb-2 mt-4">Refund policy</h4>
                 <p>• Deposit can be fully deducted once the tattoo is completed.</p>
-                <p>• Deposit is fully refundable before the consultation starts, or before the design starts (for clients who doesn't need consultation).</p>
-                <p>• Once the consultation is completed, or the design has started, the deposit is not refundable.</p>
-                <p>• Non-refundable if client's not showing up on the tattoo day, or being late for more than 2 hours.</p>
-                <p>• Non-refundable if the final tattoo schedule is postponed for more than 2 times.</p>
+                <p>• Deposit is fully refundable before consultation starts or design work begins.</p>
+                <p>• Once consultation is completed or design has started, deposit is non-refundable.</p>
+                <p>• Non-refundable if you're a no-show or more than 2 hours late.</p>
+                <p>• Non-refundable if final schedule is postponed more than 2 times.</p>
               </div>
             )}
           </div>
@@ -260,7 +257,7 @@ const PaymentPage: React.FC = () => {
                 <div className="text-center">
                   <CreditCard className="w-5 h-5 mx-auto mb-1" />
                   <p className="text-sm font-medium">Credit Card</p>
-                  <p className="text-xs text-gray-600">Real payment form</p>
+                  <p className="text-xs text-gray-600">Secure payment</p>
                 </div>
               </button>
               
@@ -268,14 +265,14 @@ const PaymentPage: React.FC = () => {
                 onClick={() => setPaymentMethod('demo')}
                 className={`flex-1 p-3 rounded-lg border-2 transition-colors ${
                   paymentMethod === 'demo'
-                    ? 'border-green-500 bg-green-50 text-green-900'
+                    ? 'border-orange-500 bg-orange-50 text-orange-900'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="text-center">
-                  <div className="w-5 h-5 mx-auto mb-1 bg-green-500 rounded text-white text-xs flex items-center justify-center">✓</div>
-                  <p className="text-sm font-medium">Demo Mode</p>
-                  <p className="text-xs text-gray-600">Skip payment</p>
+                  <div className="w-5 h-5 mx-auto mb-1 bg-orange-500 rounded text-white text-xs flex items-center justify-center">T</div>
+                  <p className="text-sm font-medium">Test Mode</p>
+                  <p className="text-xs text-gray-600">For testing only</p>
                 </div>
               </button>
             </div>
@@ -294,10 +291,10 @@ const PaymentPage: React.FC = () => {
             />
           ) : (
             <div className="space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800 font-medium">Demo Mode Selected</p>
-                <p className="text-xs text-green-700 mt-1">
-                  Click below to simulate a successful payment and test the complete booking flow.
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                <p className="text-sm text-orange-800 font-medium">测试模式已选择</p>
+                <p className="text-xs text-orange-700 mt-1">
+                  点击下方按钮模拟成功支付并测试完整预约流程。
                 </p>
               </div>
               
@@ -307,24 +304,14 @@ const PaymentPage: React.FC = () => {
                 className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-lg transition-colors ${
                   !state.formData.name || !state.formData.email
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-orange-600 text-white hover:bg-orange-700'
                 }`}
               >
-                <div className="w-5 h-5 bg-white rounded text-green-600 text-xs flex items-center justify-center">✓</div>
-                <span className="font-medium">Demo Payment - ${depositAmount}</span>
+                <div className="w-5 h-5 bg-white rounded text-orange-600 text-xs flex items-center justify-center">T</div>
+                <span className="font-medium">测试支付 - ${depositAmount}</span>
               </button>
             </div>
           )}
-
-          {/* 支付信息提示 */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
-              🔒 Your payment will be secure and encrypted
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              All major credit cards accepted
-            </p>
-          </div>
         </div>
       </div>
 
