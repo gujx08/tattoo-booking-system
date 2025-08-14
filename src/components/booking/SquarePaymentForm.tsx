@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { CreditCard, AlertCircle } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { CreditCard, AlertCircle, Loader2 } from 'lucide-react';
 
 interface SquarePaymentFormProps {
   applicationId: string;
@@ -20,178 +20,153 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
   onPaymentError,
   disabled = false
 }) => {
-  const [status, setStatus] = useState<'waiting' | 'loading' | 'ready' | 'error'>('waiting');
+  const [status, setStatus] = useState<'initializing' | 'loading' | 'ready' | 'error'>('initializing');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
   
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const cardInstanceRef = useRef<any>(null);
   const paymentsInstanceRef = useRef<any>(null);
-  const isMountedRef = useRef(true);
+  const isInitializedRef = useRef(false);
 
-  // 清理函数
-  const cleanup = useCallback(() => {
+  useEffect(() => {
+    // 防止重复初始化
+    if (isInitializedRef.current) return;
+    isInitializedRef.current = true;
+
+    const timer = setTimeout(() => {
+      initializeSquarePayments();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      cleanup();
+    };
+  }, []);
+
+  const cleanup = () => {
     if (cardInstanceRef.current) {
       try {
         cardInstanceRef.current.destroy();
       } catch (e) {
-        console.log('Card cleanup error (safe to ignore):', e);
+        // 忽略清理错误
       }
       cardInstanceRef.current = null;
     }
-  }, []);
+  };
 
-  // 组件卸载时清理
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-      cleanup();
-    };
-  }, [cleanup]);
-
-  // 等待DOM准备好，然后开始初始化
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isMountedRef.current && cardContainerRef.current) {
-        console.log('🚀 DOM准备就绪，开始Square初始化');
-        initializeSquarePayment();
-      } else {
-        console.error('❌ DOM未准备好');
-        setErrorMessage('Payment form container not ready');
-        setStatus('error');
-      }
-    }, 1000); // 增加延迟确保DOM完全渲染
-
-    return () => clearTimeout(timer);
-  }, [retryCount]);
-
-  const initializeSquarePayment = async () => {
-    if (!isMountedRef.current) return;
-    
-    console.log(`🔄 Square初始化开始 (尝试 ${retryCount + 1})`);
+  const initializeSquarePayments = async () => {
+    console.log('🚀 开始Square支付初始化...');
     setStatus('loading');
     setErrorMessage('');
 
     try {
-      // 1. 再次检查容器
+      // 验证容器是否存在
       if (!cardContainerRef.current) {
-        throw new Error('Card container ref not available');
+        throw new Error('支付容器未准备好');
       }
 
-      console.log('✅ 容器检查通过');
-
-      // 2. 加载Square SDK
-      const square = await loadSquareSDK();
-      if (!isMountedRef.current) return;
-      
+      // 等待并加载Square SDK
+      const Square = await loadSquareSDK();
       console.log('✅ Square SDK加载成功');
 
-      // 3. 创建Payments实例
-      const payments = square.payments(applicationId, locationId);
+      // 初始化支付对象
+      const payments = Square.payments(applicationId, locationId);
       paymentsInstanceRef.current = payments;
-      
-      console.log('✅ Payments实例创建成功');
+      console.log('✅ Square Payments初始化成功');
 
-      // 4. 创建Card组件
+      // 创建卡片支付组件
       const card = await payments.card({
         style: {
           '.input-container': {
+            borderColor: '#d1d5db',
             borderRadius: '8px',
             borderWidth: '1px',
-            borderColor: '#d1d5db',
-            padding: '16px',
-            backgroundColor: '#ffffff',
             fontSize: '16px',
+            padding: '16px',
+            backgroundColor: '#ffffff'
           },
           '.input-container.is-focus': {
-            borderColor: '#3b82f6',
-            boxShadow: '0 0 0 1px #3b82f6',
+            borderColor: '#3b82f6'
           },
           '.input-container.is-error': {
-            borderColor: '#ef4444',
+            borderColor: '#ef4444'
           },
           '.message-text': {
             color: '#ef4444',
-            fontSize: '14px',
-            marginTop: '8px',
-          },
-          'input': {
-            fontSize: '16px',
-            fontFamily: 'system-ui, sans-serif',
-            color: '#111827',
-          },
+            fontSize: '14px'
+          }
         }
       });
 
-      if (!isMountedRef.current) return;
-      console.log('✅ Card组件创建成功');
+      console.log('✅ Square Card组件创建成功');
 
-      // 5. 附加到DOM
+      // 将卡片附加到DOM
       await card.attach(cardContainerRef.current);
-      
-      if (!isMountedRef.current) return;
-      
       cardInstanceRef.current = card;
-      console.log('✅ Card组件附加成功');
-      
+
+      console.log('✅ Square Card附加成功');
       setStatus('ready');
-      console.log('🎉 Square初始化完全成功');
 
     } catch (error: any) {
-      if (!isMountedRef.current) return;
-      
       console.error('❌ Square初始化失败:', error);
-      setErrorMessage(error.message || 'Payment form initialization failed');
+      setErrorMessage(error.message || '支付系统初始化失败');
       setStatus('error');
     }
   };
 
   const loadSquareSDK = (): Promise<any> => {
     return new Promise((resolve, reject) => {
-      // 如果已存在，直接返回
+      // 检查是否已经加载
       if ((window as any).Square) {
+        console.log('Square SDK已存在');
         resolve((window as any).Square);
         return;
       }
 
-      console.log('📦 开始加载Square SDK...');
+      console.log('开始加载Square SDK...');
+
+      // 移除可能存在的旧脚本
+      const existingScript = document.querySelector('script[src*="square.js"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
 
       const script = document.createElement('script');
       script.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
+      script.type = 'text/javascript';
       script.async = true;
-      
+
       script.onload = () => {
-        console.log('📦 Square SDK脚本加载完成');
-        
+        console.log('Square SDK脚本加载完成');
         // 等待Square对象可用
-        const checkSquare = () => {
+        const waitForSquare = () => {
           if ((window as any).Square) {
+            console.log('Square对象可用');
             resolve((window as any).Square);
           } else {
-            setTimeout(checkSquare, 100);
+            setTimeout(waitForSquare, 50);
           }
         };
-        
-        checkSquare();
+        waitForSquare();
       };
-      
-      script.onerror = () => {
-        console.error('❌ Square SDK脚本加载失败');
-        reject(new Error('Failed to load Square SDK'));
+
+      script.onerror = (error) => {
+        console.error('Square SDK加载失败:', error);
+        reject(new Error('无法加载Square支付系统'));
       };
-      
+
       document.head.appendChild(script);
-      
-      // 超时保护
+
+      // 设置超时
       setTimeout(() => {
-        reject(new Error('Square SDK loading timeout'));
+        reject(new Error('Square SDK加载超时'));
       }, 15000);
     });
   };
 
   const handlePayment = async () => {
-    if (!cardInstanceRef.current || isProcessing) {
+    if (!cardInstanceRef.current || isProcessing || !paymentsInstanceRef.current) {
       return;
     }
 
@@ -199,63 +174,84 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     setErrorMessage('');
 
     try {
-      console.log('💳 开始支付处理...');
+      console.log('💳 开始处理支付...');
 
-      const result = await cardInstanceRef.current.tokenize();
-      
-      if (result.status === 'OK') {
-        console.log('✅ 卡信息验证成功');
-        
-        // 模拟支付处理
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        const paymentResult = {
-          success: true,
-          paymentId: `square_payment_${Date.now()}`,
-          token: result.token,
-          amount: amount
-        };
+      // 获取支付令牌
+      const tokenResult = await cardInstanceRef.current.tokenize();
 
-        console.log('✅ 支付处理完成');
-        onPaymentSuccess(paymentResult);
-        
+      if (tokenResult.status === 'OK') {
+        console.log('✅ 支付令牌获取成功');
+
+        // 这里应该调用你的后端API来处理实际支付
+        // 目前我们模拟成功的支付处理
+        const paymentResult = await simulatePaymentProcessing(tokenResult.token, amount);
+
+        if (paymentResult.success) {
+          console.log('✅ 支付处理成功');
+          onPaymentSuccess({
+            paymentId: paymentResult.paymentId,
+            token: tokenResult.token,
+            amount: amount,
+            last4: tokenResult.details?.card?.last4 || 'xxxx'
+          });
+        } else {
+          throw new Error(paymentResult.error || '支付处理失败');
+        }
+
       } else {
-        const error = result.errors?.[0]?.message || 'Please check your card information';
-        throw new Error(error);
+        const errors = tokenResult.errors || [];
+        const errorMessage = errors.length > 0 ? errors[0].message : '请检查您的卡片信息';
+        throw new Error(errorMessage);
       }
 
     } catch (error: any) {
-      console.error('❌ 支付失败:', error);
-      setErrorMessage(error.message);
+      console.error('❌ 支付处理失败:', error);
+      setErrorMessage(error.message || '支付失败，请重试');
       onPaymentError(error);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleRetry = () => {
-    console.log('🔄 用户触发重试');
-    cleanup();
-    setRetryCount(prev => prev + 1);
+  // 模拟支付处理（在真实环境中，这应该是对你后端的API调用）
+  const simulatePaymentProcessing = async (token: string, amount: number): Promise<{success: boolean, paymentId?: string, error?: string}> => {
+    console.log('🔄 模拟支付处理...', { token: token.substring(0, 20) + '...', amount });
+    
+    // 模拟网络延迟
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    // 模拟成功响应
+    return {
+      success: true,
+      paymentId: `sq_payment_${Date.now()}`
+    };
   };
 
-  // 等待状态
-  if (status === 'waiting') {
+  const handleRetry = () => {
+    cleanup();
+    isInitializedRef.current = false;
+    setStatus('initializing');
+    const timer = setTimeout(() => {
+      initializeSquarePayments();
+    }, 1000);
+  };
+
+  // 渲染不同状态
+  if (status === 'initializing') {
     return (
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
             Card Information
           </label>
-          <div className="min-h-[70px] border border-gray-300 rounded-lg bg-white flex items-center justify-center">
-            <div className="text-gray-500 text-sm">Preparing payment form...</div>
+          <div className="min-h-[80px] border border-gray-300 rounded-lg bg-white flex items-center justify-center">
+            <div className="text-gray-500 text-sm">准备支付表单...</div>
           </div>
         </div>
       </div>
     );
   }
 
-  // 加载状态
   if (status === 'loading') {
     return (
       <div className="space-y-4">
@@ -263,68 +259,43 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
           <label className="block text-sm font-medium text-gray-700">
             Card Information
           </label>
-          <div className="min-h-[70px] border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
+          <div className="min-h-[80px] border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
             <div className="flex items-center space-x-3 text-gray-600">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-              <span className="text-sm">Loading secure payment form...</span>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm">正在加载安全支付表单...</span>
             </div>
           </div>
         </div>
         <div className="text-center">
-          <p className="text-xs text-gray-500">Please wait while we initialize the payment system</p>
+          <p className="text-xs text-gray-500">请稍候，正在连接支付系统</p>
         </div>
       </div>
     );
   }
 
-  // 错误状态
   if (status === 'error') {
     return (
       <div className="space-y-4">
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-start space-x-3">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
             <div className="flex-1">
-              <h4 className="text-sm font-medium text-red-800 mb-1">
-                Payment Form Error
-              </h4>
+              <h4 className="text-sm font-medium text-red-800 mb-1">支付表单加载失败</h4>
               <p className="text-sm text-red-700 mb-3">{errorMessage}</p>
-              
-              {retryCount < 2 ? (
-                <button 
-                  onClick={handleRetry}
-                  className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  Try Again ({retryCount + 1}/3)
-                </button>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-sm text-red-800 font-medium">
-                    Unable to load payment form after multiple attempts.
-                  </p>
-                  <button 
-                    onClick={handleRetry}
-                    className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors mr-2"
-                  >
-                    Try Once More
-                  </button>
-                </div>
-              )}
+              <button 
+                onClick={handleRetry}
+                className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+              >
+                重新尝试
+              </button>
             </div>
           </div>
-        </div>
-        
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <strong>Alternative:</strong> You can switch to Demo Mode below to complete your booking. 
-            We'll contact you separately to process payment.
-          </p>
         </div>
       </div>
     );
   }
 
-  // 就绪状态 - 显示支付表单
+  // 支付表单就绪
   return (
     <div className="space-y-4">
       {/* Square Card Container */}
@@ -334,8 +305,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
         </label>
         <div 
           ref={cardContainerRef}
-          className="min-h-[70px] border border-gray-300 rounded-lg bg-white"
-          style={{ minHeight: '70px' }}
+          className="min-h-[80px] border border-gray-300 rounded-lg bg-white"
         />
       </div>
 
@@ -351,10 +321,10 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
       {/* 测试卡信息 */}
       <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-xs text-blue-800 font-medium mb-2">🧪 Test Mode - Use these test cards:</p>
+        <p className="text-xs text-blue-800 font-medium mb-2">🧪 测试模式 - 使用以下测试卡:</p>
         <div className="grid grid-cols-2 gap-2 text-xs text-blue-700">
           <div><strong>Visa:</strong> 4111 1111 1111 1111</div>
-          <div><strong>Expiry:</strong> 12/25</div>
+          <div><strong>到期:</strong> 12/25</div>
           <div><strong>Mastercard:</strong> 5555 5555 5555 4444</div>
           <div><strong>CVV:</strong> 123</div>
         </div>
@@ -372,21 +342,21 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
       >
         {isProcessing ? (
           <>
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            <span>Processing Payment...</span>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>处理支付中...</span>
           </>
         ) : (
           <>
             <CreditCard className="w-5 h-5" />
-            <span>Pay ${amount}</span>
+            <span>支付 ${amount}</span>
           </>
         )}
       </button>
 
-      {/* 安全提示 */}
+      {/* 安全信息 */}
       <div className="text-center">
         <p className="text-xs text-gray-500">
-          🔒 Your payment information is secure and encrypted by Square
+          🔒 您的支付信息由Square安全加密保护
         </p>
       </div>
     </div>
