@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
+import SquarePaymentForm from './SquarePaymentForm';
 
 // Square配置
 const SQUARE_CONFIG = {
@@ -23,7 +24,7 @@ const ARTIST_DEPOSITS = {
 const PaymentPage: React.FC = () => {
   const { state, dispatch } = useApp();
   const [showDepositPolicy, setShowDepositPolicy] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'square' | 'demo'>('square');
 
   const getSelectedArtist = () => {
     if (state.selectedArtist) {
@@ -50,74 +51,75 @@ const PaymentPage: React.FC = () => {
     return ARTIST_DEPOSITS[artistId as keyof typeof ARTIST_DEPOSITS] || 100;
   };
 
-  // 修复后的支付处理函数
-  const handleSquarePayment = async () => {
+  // 处理Square支付成功
+  const handleSquarePaymentSuccess = async (result: any) => {
     try {
-      console.log('🚀 支付流程开始');
-      setIsProcessing(true);
-      
-      // 确保有必要的客户信息
-      if (!state.formData.name || !state.formData.email) {
-        console.error('❌ 缺少客户信息');
-        alert('请确保已填写姓名和邮箱信息');
-        setIsProcessing(false);
-        return;
-      }
-
-      // 详细的调试信息
-      console.log('📋 支付数据:', {
-        artist: state.formData.artistId,
-        amount: getDepositAmount(),
-        customer: {
-          name: state.formData.name,
-          email: state.formData.email,
-          phone: state.formData.phone
-        },
-        fullFormData: state.formData
-      });
-
-      // 模拟支付处理
-      console.log('💰 模拟支付处理中...');
-      
-      // 模拟支付延迟
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('✅ 支付处理完成，准备跳转');
+      console.log('✅ Square 支付成功:', result);
       
       // 保存支付成功信息到状态
       dispatch({ 
         type: 'SET_PAYMENT_SUCCESS', 
         payload: {
-          paymentId: 'test_' + Date.now(),
+          paymentId: result.paymentId || result.token,
           amount: getDepositAmount(),
           timestamp: new Date().toISOString(),
           artist: state.formData.artistId,
           customerName: state.formData.name,
-          customerEmail: state.formData.email
+          customerEmail: state.formData.email,
+          paymentMethod: 'square'
         }
       });
       
-      // 跳转到成功页面 (step 999)
+      // 跳转到成功页面
       dispatch({ type: 'SET_STEP', payload: 999 });
       
-      setIsProcessing(false);
-      
     } catch (error) {
-      console.error('❌ 支付错误详情:', error);
-      alert(`支付处理失败: ${error instanceof Error ? error.message : '未知错误'}`);
-      setIsProcessing(false);
+      console.error('❌ 支付后处理错误:', error);
+      alert('Payment succeeded but there was an error processing your booking. Please contact us.');
     }
   };
 
-  // 真实的Square支付集成（备用）
-  const handleRealSquarePayment = () => {
-    // 这里可以实现真正的Square Web Payments SDK集成
-    // 需要加载Square的JavaScript SDK并创建支付表单
-    alert('真实Square支付集成即将完成！目前使用测试模式。');
+  // 处理Square支付错误
+  const handleSquarePaymentError = (error: any) => {
+    console.error('❌ Square 支付失败:', error);
+    // 错误已经在SquarePaymentForm组件中显示了
   };
 
-  const handlePayPalPayment = () => {
-    alert('PayPal支付功能即将上线');
+  // Demo模式支付（保留用于测试）
+  const handleDemoPayment = async () => {
+    try {
+      console.log('🎮 Demo 模式支付');
+      
+      // 确保有必要的客户信息
+      if (!state.formData.name || !state.formData.email) {
+        alert('请确保已填写姓名和邮箱信息');
+        return;
+      }
+
+      // 模拟支付延迟
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 保存支付成功信息到状态
+      dispatch({ 
+        type: 'SET_PAYMENT_SUCCESS', 
+        payload: {
+          paymentId: 'demo_' + Date.now(),
+          amount: getDepositAmount(),
+          timestamp: new Date().toISOString(),
+          artist: state.formData.artistId,
+          customerName: state.formData.name,
+          customerEmail: state.formData.email,
+          paymentMethod: 'demo'
+        }
+      });
+      
+      // 跳转到成功页面
+      dispatch({ type: 'SET_STEP', payload: 999 });
+      
+    } catch (error) {
+      console.error('❌ Demo 支付错误:', error);
+      alert('Demo payment failed');
+    }
   };
 
   const handleBack = () => {
@@ -129,6 +131,7 @@ const PaymentPage: React.FC = () => {
   };
 
   const artist = getSelectedArtist();
+  const depositAmount = getDepositAmount();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -206,7 +209,7 @@ const PaymentPage: React.FC = () => {
           <div className="border-t mt-6 pt-6">
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold text-gray-900">Deposit Required</span>
-              <span className="text-2xl font-bold text-gray-900">${getDepositAmount()}</span>
+              <span className="text-2xl font-bold text-gray-900">${depositAmount}</span>
             </div>
           </div>
 
@@ -243,44 +246,75 @@ const PaymentPage: React.FC = () => {
             Secure Payment
           </h2>
 
-          {/* 支付提示 */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-start space-x-3">
-              <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-blue-900">Test Mode Active</p>
-                <p className="text-xs text-blue-700 mt-1">
-                  Currently in development mode. Payment will be processed securely once live.
-                </p>
-              </div>
+          {/* Payment Method Selection */}
+          <div className="mb-6 space-y-3">
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setPaymentMethod('square')}
+                className={`flex-1 p-3 rounded-lg border-2 transition-colors ${
+                  paymentMethod === 'square'
+                    ? 'border-blue-500 bg-blue-50 text-blue-900'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-center">
+                  <CreditCard className="w-5 h-5 mx-auto mb-1" />
+                  <p className="text-sm font-medium">Credit Card</p>
+                  <p className="text-xs text-gray-600">Real payment form</p>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => setPaymentMethod('demo')}
+                className={`flex-1 p-3 rounded-lg border-2 transition-colors ${
+                  paymentMethod === 'demo'
+                    ? 'border-green-500 bg-green-50 text-green-900'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-5 h-5 mx-auto mb-1 bg-green-500 rounded text-white text-xs flex items-center justify-center">✓</div>
+                  <p className="text-sm font-medium">Demo Mode</p>
+                  <p className="text-xs text-gray-600">Skip payment</p>
+                </div>
+              </button>
             </div>
           </div>
 
-          {/* Payment Methods */}
-          <div className="space-y-3">
-            <button
-              onClick={handleSquarePayment}
-              disabled={isProcessing || !state.formData.name || !state.formData.email}
-              className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-lg transition-colors ${
-                isProcessing || !state.formData.name || !state.formData.email
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-black text-white hover:bg-gray-800'
-              }`}
-            >
-              <CreditCard className="w-5 h-5" />
-              <span className="font-medium">
-                {isProcessing ? 'Processing...' : `Confirm $${getDepositAmount()} Deposit`}
-              </span>
-            </button>
-
-            <button
-              onClick={handlePayPalPayment}
-              className="w-full flex items-center justify-center space-x-3 bg-yellow-500 text-white py-4 px-6 rounded-lg hover:bg-yellow-600 transition-colors"
-            >
-              <CreditCard className="w-5 h-5" />
-              <span className="font-medium">Pay with PayPal (Coming Soon)</span>
-            </button>
-          </div>
+          {/* Payment Form */}
+          {paymentMethod === 'square' ? (
+            <SquarePaymentForm
+              applicationId={SQUARE_CONFIG.applicationId}
+              locationId={SQUARE_CONFIG.locationId}
+              environment={SQUARE_CONFIG.environment}
+              amount={depositAmount}
+              onPaymentSuccess={handleSquarePaymentSuccess}
+              onPaymentError={handleSquarePaymentError}
+              disabled={!state.formData.name || !state.formData.email}
+            />
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800 font-medium">Demo Mode Selected</p>
+                <p className="text-xs text-green-700 mt-1">
+                  Click below to simulate a successful payment and test the complete booking flow.
+                </p>
+              </div>
+              
+              <button
+                onClick={handleDemoPayment}
+                disabled={!state.formData.name || !state.formData.email}
+                className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-lg transition-colors ${
+                  !state.formData.name || !state.formData.email
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
+              >
+                <div className="w-5 h-5 bg-white rounded text-green-600 text-xs flex items-center justify-center">✓</div>
+                <span className="font-medium">Demo Payment - ${depositAmount}</span>
+              </button>
+            </div>
+          )}
 
           {/* 支付信息提示 */}
           <div className="mt-6 text-center">
@@ -289,13 +323,6 @@ const PaymentPage: React.FC = () => {
             </p>
             <p className="text-xs text-gray-400 mt-1">
               All major credit cards accepted
-            </p>
-          </div>
-
-          {/* 测试模式提示 */}
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-xs text-green-700 text-center">
-              ✅ Demo Mode: Click to test the complete booking flow
             </p>
           </div>
         </div>
