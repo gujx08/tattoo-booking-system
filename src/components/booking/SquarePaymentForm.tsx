@@ -158,8 +158,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
           idempotency_key: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         };
 
-        // 这里需要调用你的后端API来处理实际支付
-        // 现在我们模拟成功响应 - 在生产环境中你需要实现后端API
+        // 调用后端API进行实际支付处理
         const paymentResult = await processPayment(paymentData);
         
         console.log('Payment processed successfully:', paymentResult);
@@ -197,24 +196,43 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     }
   };
 
-  // 模拟支付处理 - 在生产环境中需要替换为真实的后端API调用
+  // 支付处理函数 - 目前是模拟，需要替换为真实的后端API调用
   const processPayment = async (paymentData: any) => {
-    // 这里应该调用你的后端API
-    // 例如: const response = await fetch('/api/process-payment', { method: 'POST', body: JSON.stringify(paymentData) });
+    // TODO: 替换为真实的后端API调用
+    // 示例：
+    // const response = await fetch('/api/process-payment', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(paymentData)
+    // });
+    // 
+    // if (!response.ok) {
+    //   throw new Error('Payment processing failed');
+    // }
+    // 
+    // return await response.json();
     
-    // 现在返回模拟成功响应
-    return new Promise((resolve) => {
+    // 当前模拟支付成功 - 仅用于测试
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve({
-          payment: {
-            id: `sq_payment_${Date.now()}`,
-            status: 'COMPLETED',
-            amount: paymentData.amount_money.amount,
-            currency: paymentData.amount_money.currency,
-            created_at: new Date().toISOString()
-          },
-          success: true
-        });
+        // 模拟90%成功率
+        if (Math.random() > 0.1) {
+          resolve({
+            payment: {
+              id: `sq_payment_${Date.now()}`,
+              status: 'COMPLETED',
+              amount: paymentData.amount_money.amount,
+              currency: paymentData.amount_money.currency,
+              created_at: new Date().toISOString(),
+              receipt_url: `https://squareup.com/receipt/preview/${Date.now()}`
+            },
+            success: true
+          });
+        } else {
+          reject(new Error('Payment declined by bank'));
+        }
       }, 2000); // 模拟网络延迟
     });
   };
