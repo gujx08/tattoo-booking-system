@@ -1,6 +1,16 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { AppState, AppAction, BookingFormData, ValidationErrors } from '../types';
 
+// 添加 PaymentInfo 接口
+interface PaymentInfo {
+  paymentId: string;
+  amount: number;
+  timestamp: string;
+  artist?: string;
+  customerName?: string;
+  customerEmail?: string;
+}
+
 const initialFormData: Partial<BookingFormData> = {
   artistId: '',
   needsHelpChoosing: false,
@@ -30,7 +40,8 @@ const initialState: AppState = {
   formData: initialFormData,
   validationErrors: {},
   isSubmitting: false,
-  selectedArtist: undefined
+  selectedArtist: undefined,
+  paymentInfo: undefined // 添加支付信息状态
 };
 
 const appReducer = (state: AppState, action: AppAction): AppState => {
@@ -53,6 +64,19 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
     case 'SET_SELECTED_ARTIST':
       return { ...state, selectedArtist: action.payload };
     
+    case 'SET_PAYMENT_SUCCESS':
+      return {
+        ...state,
+        paymentInfo: action.payload
+      };
+      
+    case 'RESET_BOOKING':
+      return {
+        ...initialState,
+        // 保持一些全局设置，只重置预约相关数据
+        currentStep: 0
+      };
+    
     case 'RESET_FORM':
       return { 
         ...initialState, 
@@ -60,7 +84,8 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
         formData: { ...initialFormData },
         validationErrors: {},
         isSubmitting: false,
-        selectedArtist: undefined
+        selectedArtist: undefined,
+        paymentInfo: undefined
       };
     
     default:
@@ -75,7 +100,6 @@ const AppContext = createContext<{
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
-
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}
@@ -90,3 +114,6 @@ export const useApp = () => {
   }
   return context;
 };
+
+// 导出 PaymentInfo 类型供其他组件使用
+export type { PaymentInfo };
