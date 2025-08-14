@@ -3,7 +3,8 @@ import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/common/Header';
 import HomePage from './components/HomePage';
 import BookingWizard from './components/BookingWizard';
-import SuccessPage from './components/common/SuccessPage'; // 使用你现有的SuccessPage
+// 修复：使用正确的SuccessPage路径
+import SuccessPage from './components/booking/SuccessPage';
 
 const AppContent: React.FC = () => {
   const { state } = useApp();
