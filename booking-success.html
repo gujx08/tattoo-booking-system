@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Patch Tattoo Therapy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8 text-center">
+        <!-- Success Icon -->
+        <div class="w-16 h-16 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <!-- Success Message -->
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">
+            Payment Successful!
+        </h1>
+        
+        <p class="text-gray-600 mb-6">
+            Thank you for your deposit. Your tattoo appointment has been secured.
+        </p>
+
+        <!-- Next Steps -->
+        <div class="bg-blue-50 rounded-lg p-4 mb-6 text-left">
+            <h3 class="font-semibold text-blue-900 mb-2">What's Next?</h3>
+            <ul class="text-sm text-blue-800 space-y-1">
+                <li>• You'll receive a confirmation email shortly</li>
+                <li>• Our artist will review your request</li>
+                <li>• We'll contact you within 24-48 hours</li>
+                <li>• Check your email for detailed next steps</li>
+            </ul>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="border-t pt-6">
+            <p class="text-sm text-gray-600 mb-3">
+                Questions? Contact us:
+            </p>
+            <div class="space-y-1 text-sm">
+                <p class="text-gray-700">📧 info@patchtattootherapy.com</p>
+                <p class="text-gray-700">📞 (818) 857-7937</p>
+                <p class="text-gray-700">📍 18547 1/2 Ventura Blvd, Tarzana, CA 91356</p>
+            </div>
+        </div>
+
+        <!-- Return Button -->
+        <div class="mt-8">
+            <a 
+                href="/" 
+                class="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+                Return to Homepage
+            </a>
+        </div>
+
+        <!-- Social Media -->
+        <div class="mt-6">
+            <p class="text-xs text-gray-500 mb-2">Follow us:</p>
+            <a 
+                href="https://instagram.com/patch_tattoo_therapy" 
+                target="_blank"
+                class="text-blue-600 hover:text-blue-800 text-sm"
+            >
+                @patch_tattoo_therapy
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 可选：自动跳转功能
+        // 10秒后自动跳转到首页（可根据需要启用）
+        /*
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 10000);
+        */
+        
+        // 记录成功支付事件（用于分析）
+        console.log('Payment successful - User reached success page');
+        
+        // 如果有Google Analytics，可以记录转化事件
+        /*
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'purchase', {
+                'event_category': 'ecommerce',
+                'event_label': 'tattoo_deposit'
+            });
+        }
+        */
+    </script>
+</body>
+</html>
