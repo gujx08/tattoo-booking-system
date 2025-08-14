@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CreditCard, Calendar, User, MessageSquare } from 'lucide-react';
+import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
+import { generateSquarePaymentUrl, ARTIST_DEPOSITS } from '../../squareConfig';
 
 const PaymentPage: React.FC = () => {
   const { state, dispatch } = useApp();
   const [showDepositPolicy, setShowDepositPolicy] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const getSelectedArtist = () => {
     if (state.selectedArtist) {
@@ -14,7 +16,7 @@ const PaymentPage: React.FC = () => {
     
     // 根据artistId获取纹身师信息
     const artistData: {[key: string]: {name: string, deposit: number}} = {
-      'jing': { name: 'Jing', deposit: 300 },
+      'jing': { name: 'Jing (Jingxi Gu)', deposit: 300 },
       'rachel': { name: 'Rachel Hong', deposit: 100 },
       'jas': { name: 'Jasmine Hsueh (Jas)', deposit: 100 },
       'lauren': { name: 'Lauren Hacaga', deposit: 100 },
@@ -28,13 +30,45 @@ const PaymentPage: React.FC = () => {
   };
 
   const getDepositAmount = () => {
-    const artist = getSelectedArtist();
-    return artist.deposit || 100;
+    const artistId = state.formData.artistId || '';
+    return ARTIST_DEPOSITS[artistId as keyof typeof ARTIST_DEPOSITS] || 100;
   };
 
-  const handlePayment = (method: 'stripe' | 'paypal') => {
-    // Go to payment processing page first
-    dispatch({ type: 'SET_STEP', payload: 11 });
+  const handleSquarePayment = () => {
+    try {
+      setIsProcessing(true);
+      
+      // 确保有必要的客户信息
+      if (!state.formData.name || !state.formData.email) {
+        alert('请确保已填写姓名和邮箱信息');
+        setIsProcessing(false);
+        return;
+      }
+
+      // 生成Square支付链接
+      const paymentUrl = generateSquarePaymentUrl(
+        state.formData.artistId || '',
+        getDepositAmount(),
+        {
+          name: state.formData.name,
+          email: state.formData.email,
+          phone: state.formData.phone || ''
+        }
+      );
+
+      // 跳转到Square支付页面
+      window.location.href = paymentUrl;
+      
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('支付链接生成失败，请重试');
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePayPalPayment = () => {
+    // PayPal集成（可选功能）
+    alert('PayPal支付功能即将上线');
   };
 
   const handleBack = () => {
@@ -71,6 +105,14 @@ const PaymentPage: React.FC = () => {
               <div>
                 <p className="font-medium text-gray-900">{artist.name}</p>
                 <p className="text-sm text-gray-600">Your selected artist</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <User className="w-5 h-5 text-gray-400" />
+              <div>
+                <p className="font-medium text-gray-900">{state.formData.name}</p>
+                <p className="text-sm text-gray-600">{state.formData.email}</p>
               </div>
             </div>
 
@@ -118,16 +160,9 @@ const PaymentPage: React.FC = () => {
               <span className="text-2xl font-bold text-gray-900">${getDepositAmount()}</span>
             </div>
           </div>
-        </div>
-
-        {/* Payment Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Complete Payment
-          </h2>
 
           {/* Deposit Policy - Collapsible */}
-          <div className="mb-6">
+          <div className="mt-6">
             <button
               onClick={() => setShowDepositPolicy(!showDepositPolicy)}
               className="flex items-center justify-between w-full text-left"
@@ -151,29 +186,72 @@ const PaymentPage: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Square Payment Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Secure Payment
+          </h2>
+
+          {/* 支付提示 */}
+          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-start space-x-3">
+              <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-blue-900">Secure Payment by Square</p>
+                <p className="text-xs text-blue-700 mt-1">
+                  You'll be redirected to Square's secure payment page to complete your transaction.
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Payment Methods */}
           <div className="space-y-3">
             <button
-              onClick={() => handlePayment('stripe')}
-              className="w-full flex items-center justify-center space-x-3 bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleSquarePayment}
+              disabled={isProcessing || !state.formData.name || !state.formData.email}
+              className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-lg transition-colors ${
+                isProcessing || !state.formData.name || !state.formData.email
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-black text-white hover:bg-gray-800'
+              }`}
             >
               <CreditCard className="w-5 h-5" />
-              <span className="font-medium">Pay with Card (Stripe)</span>
+              <span className="font-medium">
+                {isProcessing ? 'Redirecting...' : `Pay $${getDepositAmount()} with Square`}
+              </span>
+              <ExternalLink className="w-4 h-4" />
             </button>
 
             <button
-              onClick={() => handlePayment('paypal')}
+              onClick={handlePayPalPayment}
               className="w-full flex items-center justify-center space-x-3 bg-yellow-500 text-white py-4 px-6 rounded-lg hover:bg-yellow-600 transition-colors"
             >
               <CreditCard className="w-5 h-5" />
-              <span className="font-medium">Pay with PayPal</span>
+              <span className="font-medium">Pay with PayPal (Coming Soon)</span>
             </button>
           </div>
 
-          <p className="text-xs text-gray-500 mt-4 text-center">
-            Your payment information is secure and encrypted
-          </p>
+          {/* 支付信息提示 */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-gray-500">
+              🔒 Your payment is secure and encrypted by Square
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              We accept all major credit cards
+            </p>
+          </div>
+
+          {/* 测试模式提示 */}
+          {window.location.hostname !== 'booking.patchtattootherapy.com' && (
+            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-xs text-orange-700 text-center">
+                🧪 Test Mode: Use any valid card number for testing
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
