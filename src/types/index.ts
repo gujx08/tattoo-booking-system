@@ -64,20 +64,35 @@ export interface ValidationErrors {
   [key: string]: string;
 }
 
+// 新增：PaymentInfo 接口
+export interface PaymentInfo {
+  paymentId: string;
+  amount: number;
+  timestamp: string;
+  artist?: string;
+  customerName?: string;
+  customerEmail?: string;
+}
+
+// 更新：AppState 接口，添加 paymentInfo
 export interface AppState {
   currentStep: number;
   formData: Partial<BookingFormData>;
   validationErrors: ValidationErrors;
   isSubmitting: boolean;
   selectedArtist?: Artist;
+  paymentInfo?: PaymentInfo; // 新增支付信息
 }
 
+// 更新：AppAction 类型，添加新的 actions
 export type AppAction = 
   | { type: 'SET_STEP'; payload: number }
   | { type: 'UPDATE_FORM_DATA'; payload: Partial<BookingFormData> }
   | { type: 'SET_VALIDATION_ERRORS'; payload: ValidationErrors }
   | { type: 'SET_SUBMITTING'; payload: boolean }
   | { type: 'SET_SELECTED_ARTIST'; payload: Artist }
+  | { type: 'SET_PAYMENT_SUCCESS'; payload: PaymentInfo } // 新增支付成功 action
+  | { type: 'RESET_BOOKING' } // 新增重置预约 action
   | { type: 'RESET_FORM' };
 
 // 导出额外的实用类型
