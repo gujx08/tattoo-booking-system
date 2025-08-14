@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 // Square Web Payments SDK 类型声明
 declare global {
@@ -16,9 +16,9 @@ interface SquarePaymentFormProps {
 
 // 生产环境配置
 const SQUARE_CONFIG = {
-  applicationId: 'sq0idp-61JupY7sD36gBpBm8SYy2Q', // 你的生产环境Application ID
-  locationId: 'LHWGABJMFKASZ', // 你的Location ID
-  environment: 'production' // 生产环境
+  applicationId: 'sq0idp-61JupY7sD36gBpBm8SYy2Q',
+  locationId: 'LHWGABJMFKASZ',
+  environment: 'production'
 };
 
 const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
@@ -31,13 +31,23 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
   const [card, setCard] = useState<any>(null);
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
+  const initializationAttempted = useRef(false);
+
+  // 重置函数
+  const resetPaymentForm = useCallback(() => {
+    setCard(null);
+    setPayments(null);
+    setIsInitializing(false);
+    setInitError(null);
+    initializationAttempted.current = false;
+  }, []);
 
   // 加载Square SDK
   useEffect(() => {
     const loadSquareSDK = async () => {
       try {
-        // 检查SDK是否已加载
         if (window.Square) {
           console.log('Square SDK already loaded');
           setIsSDKLoaded(true);
@@ -46,57 +56,91 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
         console.log('Loading Square SDK...');
         
-        // 动态加载Square SDK - 生产环境URL
+        // 移除可能存在的旧脚本
+        const existingScript = document.querySelector('script[src*="square"]');
+        if (existingScript) {
+          existingScript.remove();
+        }
+
         const script = document.createElement('script');
         script.src = 'https://web.squarecdn.com/v1/square.js';
+        script.async = true;
         
         script.onload = () => {
           console.log('Square SDK loaded successfully');
           setIsSDKLoaded(true);
         };
         
-        script.onerror = () => {
-          console.error('Failed to load Square SDK');
-          onPaymentError('Failed to load payment system. Please refresh the page and try again.');
+        script.onerror = (error) => {
+          console.error('Failed to load Square SDK:', error);
+          setInitError('Failed to load payment system. Please refresh the page and try again.');
         };
 
         document.head.appendChild(script);
       } catch (error) {
         console.error('Error loading Square SDK:', error);
-        onPaymentError('Failed to initialize payment system');
+        setInitError('Failed to initialize payment system');
       }
     };
 
     loadSquareSDK();
-  }, [onPaymentError]);
+
+    // 清理函数
+    return () => {
+      resetPaymentForm();
+    };
+  }, [resetPaymentForm]);
 
   // 初始化Square支付
   useEffect(() => {
-    if (!isSDKLoaded || !window.Square || isInitializing) return;
+    if (!isSDKLoaded || !window.Square || isInitializing || initializationAttempted.current) {
+      return;
+    }
 
     const initializeSquarePayments = async () => {
+      initializationAttempted.current = true;
       setIsInitializing(true);
+      setInitError(null);
       
       try {
-        console.log('Initializing Square Payments with production config...');
+        console.log('Initializing Square Payments with config:', {
+          applicationId: SQUARE_CONFIG.applicationId,
+          locationId: SQUARE_CONFIG.locationId,
+          environment: SQUARE_CONFIG.environment
+        });
+        
+        // 检查container是否存在
+        if (!cardContainerRef.current) {
+          throw new Error('Card container not found');
+        }
+
+        // 清空container
+        cardContainerRef.current.innerHTML = '';
         
         const paymentsInstance = window.Square.payments(
           SQUARE_CONFIG.applicationId,
           SQUARE_CONFIG.locationId
         );
 
+        if (!paymentsInstance) {
+          throw new Error('Failed to create payments instance');
+        }
+
+        console.log('Creating card instance...');
         const cardInstance = await paymentsInstance.card({
           style: {
             '.input-container': {
               borderColor: '#d1d5db',
               borderRadius: '8px',
-              padding: '12px',
+              padding: '12px 16px',
               fontSize: '16px',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              backgroundColor: '#ffffff'
             },
             '.input-container.is-focus': {
               borderColor: '#3b82f6',
-              borderWidth: '2px'
+              borderWidth: '2px',
+              outline: 'none'
             },
             '.input-container.is-error': {
               borderColor: '#ef4444',
@@ -105,32 +149,40 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
             '.message-text': {
               color: '#ef4444',
               fontSize: '14px',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
+              marginTop: '8px'
             },
             '.message-icon': {
-              color: '#ef4444',
+              color: '#ef4444'
             }
           }
         });
 
-        if (cardContainerRef.current) {
-          await cardInstance.attach('#card-container');
-          console.log('Card widget attached successfully');
+        if (!cardInstance) {
+          throw new Error('Failed to create card instance');
         }
+
+        console.log('Attaching card to container...');
+        await cardInstance.attach('#card-container');
+        console.log('Card attached successfully');
 
         setPayments(paymentsInstance);
         setCard(cardInstance);
 
       } catch (error) {
         console.error('Square initialization error:', error);
-        onPaymentError('Failed to initialize payment form. Please refresh the page and try again.');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        setInitError(`Failed to initialize payment form: ${errorMessage}. Please refresh the page and try again.`);
+        initializationAttempted.current = false; // 允许重试
       } finally {
         setIsInitializing(false);
       }
     };
 
-    initializeSquarePayments();
-  }, [isSDKLoaded, onPaymentError, isInitializing]);
+    // 添加小延迟确保DOM完全加载
+    const timer = setTimeout(initializeSquarePayments, 100);
+    
+    return () => clearTimeout(timer);
+  }, [isSDKLoaded]);
 
   const handlePayment = async () => {
     if (!card || !payments) {
@@ -141,26 +193,22 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     try {
       console.log('Processing payment...');
       
-      // 获取支付token
       const result = await card.tokenize();
       
       if (result.status === 'OK') {
         console.log('Payment token generated successfully');
         
-        // 发送到后端进行实际支付处理
         const paymentData = {
           source_id: result.token,
           amount_money: {
-            amount: amount * 100, // Square uses cents
+            amount: amount * 100,
             currency: 'USD'
           },
           location_id: SQUARE_CONFIG.locationId,
           idempotency_key: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         };
 
-        // 调用后端API进行实际支付处理
         const paymentResult = await processPayment(paymentData);
-        
         console.log('Payment processed successfully:', paymentResult);
         onPaymentSuccess(paymentResult);
         
@@ -196,28 +244,10 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     }
   };
 
-  // 支付处理函数 - 目前是模拟，需要替换为真实的后端API调用
   const processPayment = async (paymentData: any) => {
-    // TODO: 替换为真实的后端API调用
-    // 示例：
-    // const response = await fetch('/api/process-payment', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(paymentData)
-    // });
-    // 
-    // if (!response.ok) {
-    //   throw new Error('Payment processing failed');
-    // }
-    // 
-    // return await response.json();
-    
-    // 当前模拟支付成功 - 仅用于测试
+    // 模拟支付处理
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        // 模拟90%成功率
         if (Math.random() > 0.1) {
           resolve({
             payment: {
@@ -233,24 +263,56 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
         } else {
           reject(new Error('Payment declined by bank'));
         }
-      }, 2000); // 模拟网络延迟
+      }, 2000);
     });
   };
 
+  const handleRetry = () => {
+    resetPaymentForm();
+    setIsSDKLoaded(false);
+    // 触发重新加载
+    window.location.reload();
+  };
+
+  if (initError) {
+    return (
+      <div className="border-2 border-red-200 rounded-lg p-6 bg-red-50">
+        <div className="text-center">
+          <div className="text-red-600 mb-4">
+            <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.963-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-red-800 mb-2">Payment System Error</h3>
+          <p className="text-sm text-red-700 mb-4">{initError}</p>
+          <button
+            onClick={handleRetry}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!isSDKLoaded || isInitializing) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">
-          {!isSDKLoaded ? 'Loading payment system...' : 'Initializing secure payment...'}
-        </p>
+      <div className="border-2 border-blue-200 rounded-lg p-8 bg-blue-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-blue-800 font-medium">
+            {!isSDKLoaded ? 'Loading payment system...' : 'Initializing secure payment...'}
+          </p>
+          <p className="text-blue-600 text-sm mt-2">This may take a few seconds</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* 信用卡支付表单 */}
+      {/* 支付表单 */}
       <div className="border-2 border-blue-500 rounded-lg p-6 bg-blue-50">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -277,7 +339,8 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
           <div 
             id="card-container"
             ref={cardContainerRef}
-            className="min-h-[120px] bg-white rounded-lg"
+            className="min-h-[120px] bg-white rounded-lg border border-gray-300"
+            style={{ minHeight: '120px' }}
           />
         </div>
 
@@ -288,7 +351,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
           className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-200 ${
             isProcessing || !card
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
+              : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'
           }`}
         >
           {isProcessing ? (
@@ -297,12 +360,12 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
               Processing Payment...
             </div>
           ) : (
-            `Pay $${amount} Deposit`
+            `Pay ${amount} Deposit`
           )}
         </button>
       </div>
 
-      {/* 安全信息和接受的卡类型 */}
+      {/* 安全信息 */}
       <div className="space-y-4">
         <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
