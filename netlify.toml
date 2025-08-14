@@ -1,0 +1,32 @@
+[build]
+  # 构建命令
+  command = "npm run build"
+  # 发布目录
+  publish = "dist"
+
+# 文件类型配置
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "*.jsx"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "*.ts"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "*.tsx"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+# SPA路由重定向
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
