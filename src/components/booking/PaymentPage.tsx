@@ -251,15 +251,13 @@ const PaymentPage: React.FC = () => {
             </div>
           )}
 
-          {/* Payment Form */}
-          <div className="bg-gray-50 p-6 rounded-xl">
-            <SquarePaymentForm
-              amount={artistInfo.deposit}
-              onPaymentSuccess={handlePaymentSuccess}
-              onPaymentError={handlePaymentError}
-              isProcessing={isProcessing}
-            />
-          </div>
+          {/* Payment Form - 直接包含，没有额外的背景 */}
+          <SquarePaymentForm
+            amount={artistInfo.deposit}
+            onPaymentSuccess={handlePaymentSuccess}
+            onPaymentError={handlePaymentError}
+            isProcessing={isProcessing}
+          />
 
           {/* Contact Info */}
           <div className="mt-8 p-6 bg-gray-50 rounded-lg">
