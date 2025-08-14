@@ -2,7 +2,77 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
-import { generateSquarePaymentUrl, ARTIST_DEPOSITS } from '../../squareConfig';
+
+// 直接在组件内定义配置，避免导入路径问题
+const SQUARE_CONFIG = {
+  applicationId: 'sandbox-sq0idb-uH8yFqW9VJ7Xfg5Dlmzbug',
+  locationId: 'LHWGABJMFKASZ',
+  environment: 'sandbox' as const,
+  baseUrl: 'https://squareupsandbox.com/checkout',
+};
+
+const ARTIST_DEPOSITS = {
+  'jing': 300,
+  'rachel': 100,
+  'jas': 100,
+  'lauren': 100,
+  'annika': 100,
+  'maili': 50,
+  'keani': 50,
+} as const;
+
+// 生成Square支付链接函数
+const generateSquarePaymentUrl = (
+  artistId: string,
+  amount: number,
+  customerInfo: {
+    name: string;
+    email: string;
+    phone: string;
+  }
+) => {
+  const deposit = ARTIST_DEPOSITS[artistId as keyof typeof ARTIST_DEPOSITS] || amount;
+  
+  // 获取艺术家名称
+  const getArtistName = (id: string): string => {
+    const artistNames: {[key: string]: string} = {
+      'jing': 'Jing (Jingxi Gu)',
+      'rachel': 'Rachel Hong',
+      'jas': 'Jasmine Hsueh (Jas)',
+      'lauren': 'Lauren Hacaga',
+      'annika': 'Annika Riggins',
+      'maili': 'Maili Cohen',
+      'keani': 'Keani Chavez'
+    };
+    return artistNames[id] || 'Selected Artist';
+  };
+  
+  // Square支付参数
+  const params = new URLSearchParams({
+    // 基本支付信息
+    'line_items[0][name]': `Tattoo Deposit - ${getArtistName(artistId)}`,
+    'line_items[0][variation_name]': 'Tattoo Consultation Deposit',
+    'line_items[0][quantity]': '1',
+    'line_items[0][base_price_money][amount]': (deposit * 100).toString(), // Square使用分为单位
+    'line_items[0][base_price_money][currency]': 'USD',
+    
+    // 客户信息
+    'prefill[email]': customerInfo.email,
+    'prefill[given_name]': customerInfo.name.split(' ')[0] || customerInfo.name,
+    'prefill[family_name]': customerInfo.name.split(' ').slice(1).join(' ') || '',
+    
+    // 跳转URL
+    'redirect_url': `${window.location.origin}/booking-success`,
+    
+    // 商家信息
+    'location_id': SQUARE_CONFIG.locationId,
+    
+    // 其他设置
+    'note': `Tattoo appointment deposit for ${customerInfo.name}. Phone: ${customerInfo.phone}`,
+  });
+  
+  return `${SQUARE_CONFIG.baseUrl}?${params.toString()}`;
+};
 
 const PaymentPage: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -245,13 +315,11 @@ const PaymentPage: React.FC = () => {
           </div>
 
           {/* 测试模式提示 */}
-          {window.location.hostname !== 'booking.patchtattootherapy.com' && (
-            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <p className="text-xs text-orange-700 text-center">
-                🧪 Test Mode: Use any valid card number for testing
-              </p>
-            </div>
-          )}
+          <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+            <p className="text-xs text-orange-700 text-center">
+              🧪 Test Mode: Use any valid card number for testing
+            </p>
+          </div>
         </div>
       </div>
 
