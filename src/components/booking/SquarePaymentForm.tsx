@@ -1,363 +1,307 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CreditCard, AlertCircle, Loader2 } from 'lucide-react';
 
-interface SquarePaymentFormProps {
-  applicationId: string;
-  locationId: string;
-  environment: 'sandbox' | 'production';
-  amount: number;
-  onPaymentSuccess: (result: any) => void;
-  onPaymentError: (error: any) => void;
-  disabled?: boolean;
+// Square Web Payments SDK 类型声明
+declare global {
+  interface Window {
+    Square: any;
+  }
 }
 
+interface SquarePaymentFormProps {
+  amount: number;
+  onPaymentSuccess: (result: any) => void;
+  onPaymentError: (error: string) => void;
+  isProcessing: boolean;
+}
+
+// 生产环境配置
+const SQUARE_CONFIG = {
+  applicationId: 'sq0idp-61JupY7sD36gBpBm8SYy2Q', // 你的生产环境Application ID
+  locationId: 'LHWGABJMFKASZ', // 你的Location ID
+  environment: 'production' // 生产环境
+};
+
 const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
-  applicationId,
-  locationId,
-  environment,
   amount,
   onPaymentSuccess,
   onPaymentError,
-  disabled = false
+  isProcessing
 }) => {
-  const [status, setStatus] = useState<'initializing' | 'loading' | 'ready' | 'error'>('initializing');
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  
+  const [payments, setPayments] = useState<any>(null);
+  const [card, setCard] = useState<any>(null);
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const cardContainerRef = useRef<HTMLDivElement>(null);
-  const cardInstanceRef = useRef<any>(null);
-  const paymentsInstanceRef = useRef<any>(null);
-  const isInitializedRef = useRef(false);
 
+  // 加载Square SDK
   useEffect(() => {
-    // 防止重复初始化
-    if (isInitializedRef.current) return;
-    isInitializedRef.current = true;
-
-    const timer = setTimeout(() => {
-      initializeSquarePayments();
-    }, 500);
-
-    return () => {
-      clearTimeout(timer);
-      cleanup();
-    };
-  }, []);
-
-  const cleanup = () => {
-    if (cardInstanceRef.current) {
+    const loadSquareSDK = async () => {
       try {
-        cardInstanceRef.current.destroy();
-      } catch (e) {
-        // 忽略清理错误
-      }
-      cardInstanceRef.current = null;
-    }
-  };
-
-  const initializeSquarePayments = async () => {
-    console.log('🚀 开始Square支付初始化...');
-    setStatus('loading');
-    setErrorMessage('');
-
-    try {
-      // 验证容器是否存在
-      if (!cardContainerRef.current) {
-        throw new Error('支付容器未准备好');
-      }
-
-      // 等待并加载Square SDK
-      const Square = await loadSquareSDK();
-      console.log('✅ Square SDK加载成功');
-
-      // 初始化支付对象
-      const payments = Square.payments(applicationId, locationId);
-      paymentsInstanceRef.current = payments;
-      console.log('✅ Square Payments初始化成功');
-
-      // 创建卡片支付组件
-      const card = await payments.card({
-        style: {
-          '.input-container': {
-            borderColor: '#d1d5db',
-            borderRadius: '8px',
-            borderWidth: '1px',
-            fontSize: '16px',
-            padding: '16px',
-            backgroundColor: '#ffffff'
-          },
-          '.input-container.is-focus': {
-            borderColor: '#3b82f6'
-          },
-          '.input-container.is-error': {
-            borderColor: '#ef4444'
-          },
-          '.message-text': {
-            color: '#ef4444',
-            fontSize: '14px'
-          }
+        // 检查SDK是否已加载
+        if (window.Square) {
+          console.log('Square SDK already loaded');
+          setIsSDKLoaded(true);
+          return;
         }
-      });
 
-      console.log('✅ Square Card组件创建成功');
-
-      // 将卡片附加到DOM
-      await card.attach(cardContainerRef.current);
-      cardInstanceRef.current = card;
-
-      console.log('✅ Square Card附加成功');
-      setStatus('ready');
-
-    } catch (error: any) {
-      console.error('❌ Square初始化失败:', error);
-      setErrorMessage(error.message || '支付系统初始化失败');
-      setStatus('error');
-    }
-  };
-
-  const loadSquareSDK = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      // 检查是否已经加载
-      if ((window as any).Square) {
-        console.log('Square SDK已存在');
-        resolve((window as any).Square);
-        return;
-      }
-
-      console.log('开始加载Square SDK...');
-
-      // 移除可能存在的旧脚本
-      const existingScript = document.querySelector('script[src*="square.js"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
-      script.type = 'text/javascript';
-      script.async = true;
-
-      script.onload = () => {
-        console.log('Square SDK脚本加载完成');
-        // 等待Square对象可用
-        const waitForSquare = () => {
-          if ((window as any).Square) {
-            console.log('Square对象可用');
-            resolve((window as any).Square);
-          } else {
-            setTimeout(waitForSquare, 50);
-          }
+        console.log('Loading Square SDK...');
+        
+        // 动态加载Square SDK - 生产环境URL
+        const script = document.createElement('script');
+        script.src = 'https://web.squarecdn.com/v1/square.js';
+        
+        script.onload = () => {
+          console.log('Square SDK loaded successfully');
+          setIsSDKLoaded(true);
         };
-        waitForSquare();
-      };
+        
+        script.onerror = () => {
+          console.error('Failed to load Square SDK');
+          onPaymentError('Failed to load payment system. Please refresh the page and try again.');
+        };
 
-      script.onerror = (error) => {
-        console.error('Square SDK加载失败:', error);
-        reject(new Error('无法加载Square支付系统'));
-      };
+        document.head.appendChild(script);
+      } catch (error) {
+        console.error('Error loading Square SDK:', error);
+        onPaymentError('Failed to initialize payment system');
+      }
+    };
 
-      document.head.appendChild(script);
+    loadSquareSDK();
+  }, [onPaymentError]);
 
-      // 设置超时
-      setTimeout(() => {
-        reject(new Error('Square SDK加载超时'));
-      }, 15000);
-    });
-  };
+  // 初始化Square支付
+  useEffect(() => {
+    if (!isSDKLoaded || !window.Square || isInitializing) return;
+
+    const initializeSquarePayments = async () => {
+      setIsInitializing(true);
+      
+      try {
+        console.log('Initializing Square Payments with production config...');
+        
+        const paymentsInstance = window.Square.payments(
+          SQUARE_CONFIG.applicationId,
+          SQUARE_CONFIG.locationId
+        );
+
+        const cardInstance = await paymentsInstance.card({
+          style: {
+            '.input-container': {
+              borderColor: '#d1d5db',
+              borderRadius: '8px',
+              padding: '12px',
+              fontSize: '16px',
+              fontFamily: 'system-ui, -apple-system, sans-serif'
+            },
+            '.input-container.is-focus': {
+              borderColor: '#3b82f6',
+              borderWidth: '2px'
+            },
+            '.input-container.is-error': {
+              borderColor: '#ef4444',
+              borderWidth: '2px'
+            },
+            '.message-text': {
+              color: '#ef4444',
+              fontSize: '14px',
+              fontFamily: 'system-ui, -apple-system, sans-serif'
+            },
+            '.message-icon': {
+              color: '#ef4444',
+            }
+          }
+        });
+
+        if (cardContainerRef.current) {
+          await cardInstance.attach('#card-container');
+          console.log('Card widget attached successfully');
+        }
+
+        setPayments(paymentsInstance);
+        setCard(cardInstance);
+
+      } catch (error) {
+        console.error('Square initialization error:', error);
+        onPaymentError('Failed to initialize payment form. Please refresh the page and try again.');
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    initializeSquarePayments();
+  }, [isSDKLoaded, onPaymentError, isInitializing]);
 
   const handlePayment = async () => {
-    if (!cardInstanceRef.current || isProcessing || !paymentsInstanceRef.current) {
+    if (!card || !payments) {
+      onPaymentError('Payment system not ready. Please wait a moment and try again.');
       return;
     }
 
-    setIsProcessing(true);
-    setErrorMessage('');
-
     try {
-      console.log('💳 开始处理支付...');
+      console.log('Processing payment...');
+      
+      // 获取支付token
+      const result = await card.tokenize();
+      
+      if (result.status === 'OK') {
+        console.log('Payment token generated successfully');
+        
+        // 发送到后端进行实际支付处理
+        const paymentData = {
+          source_id: result.token,
+          amount_money: {
+            amount: amount * 100, // Square uses cents
+            currency: 'USD'
+          },
+          location_id: SQUARE_CONFIG.locationId,
+          idempotency_key: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        };
 
-      // 获取支付令牌
-      const tokenResult = await cardInstanceRef.current.tokenize();
-
-      if (tokenResult.status === 'OK') {
-        console.log('✅ 支付令牌获取成功');
-
-        // 这里应该调用你的后端API来处理实际支付
-        // 目前我们模拟成功的支付处理
-        const paymentResult = await simulatePaymentProcessing(tokenResult.token, amount);
-
-        if (paymentResult.success) {
-          console.log('✅ 支付处理成功');
-          onPaymentSuccess({
-            paymentId: paymentResult.paymentId,
-            token: tokenResult.token,
-            amount: amount,
-            last4: tokenResult.details?.card?.last4 || 'xxxx'
-          });
-        } else {
-          throw new Error(paymentResult.error || '支付处理失败');
-        }
-
+        // 这里需要调用你的后端API来处理实际支付
+        // 现在我们模拟成功响应 - 在生产环境中你需要实现后端API
+        const paymentResult = await processPayment(paymentData);
+        
+        console.log('Payment processed successfully:', paymentResult);
+        onPaymentSuccess(paymentResult);
+        
       } else {
-        const errors = tokenResult.errors || [];
-        const errorMessage = errors.length > 0 ? errors[0].message : '请检查您的卡片信息';
-        throw new Error(errorMessage);
+        console.error('Tokenization failed:', result.errors);
+        let errorMessage = 'Payment failed. Please check your card information and try again.';
+        
+        if (result.errors && result.errors.length > 0) {
+          const error = result.errors[0];
+          switch (error.code) {
+            case 'INVALID_CARD_DATA':
+              errorMessage = 'Please check your card number and try again.';
+              break;
+            case 'CARD_EXPIRED':
+              errorMessage = 'Your card has expired. Please use a different card.';
+              break;
+            case 'CVV_FAILURE':
+              errorMessage = 'Please check your CVV code and try again.';
+              break;
+            case 'ADDRESS_VERIFICATION_FAILURE':
+              errorMessage = 'Please verify your billing address.';
+              break;
+            default:
+              errorMessage = error.detail || errorMessage;
+          }
+        }
+        
+        onPaymentError(errorMessage);
       }
-
-    } catch (error: any) {
-      console.error('❌ 支付处理失败:', error);
-      setErrorMessage(error.message || '支付失败，请重试');
-      onPaymentError(error);
-    } finally {
-      setIsProcessing(false);
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      onPaymentError('Payment failed. Please try again or contact support.');
     }
   };
 
-  // 模拟支付处理（在真实环境中，这应该是对你后端的API调用）
-  const simulatePaymentProcessing = async (token: string, amount: number): Promise<{success: boolean, paymentId?: string, error?: string}> => {
-    console.log('🔄 模拟支付处理...', { token: token.substring(0, 20) + '...', amount });
+  // 模拟支付处理 - 在生产环境中需要替换为真实的后端API调用
+  const processPayment = async (paymentData: any) => {
+    // 这里应该调用你的后端API
+    // 例如: const response = await fetch('/api/process-payment', { method: 'POST', body: JSON.stringify(paymentData) });
     
-    // 模拟网络延迟
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    
-    // 模拟成功响应
-    return {
-      success: true,
-      paymentId: `sq_payment_${Date.now()}`
-    };
+    // 现在返回模拟成功响应
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          payment: {
+            id: `sq_payment_${Date.now()}`,
+            status: 'COMPLETED',
+            amount: paymentData.amount_money.amount,
+            currency: paymentData.amount_money.currency,
+            created_at: new Date().toISOString()
+          },
+          success: true
+        });
+      }, 2000); // 模拟网络延迟
+    });
   };
 
-  const handleRetry = () => {
-    cleanup();
-    isInitializedRef.current = false;
-    setStatus('initializing');
-    const timer = setTimeout(() => {
-      initializeSquarePayments();
-    }, 1000);
-  };
-
-  // 渲染不同状态
-  if (status === 'initializing') {
+  if (!isSDKLoaded || isInitializing) {
     return (
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Card Information
-          </label>
-          <div className="min-h-[80px] border border-gray-300 rounded-lg bg-white flex items-center justify-center">
-            <div className="text-gray-500 text-sm">准备支付表单...</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Card Information
-          </label>
-          <div className="min-h-[80px] border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
-            <div className="flex items-center space-x-3 text-gray-600">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm">正在加载安全支付表单...</span>
-            </div>
-          </div>
-        </div>
-        <div className="text-center">
-          <p className="text-xs text-gray-500">请稍候，正在连接支付系统</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="space-y-4">
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="text-sm font-medium text-red-800 mb-1">支付表单加载失败</h4>
-              <p className="text-sm text-red-700 mb-3">{errorMessage}</p>
-              <button 
-                onClick={handleRetry}
-                className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
-              >
-                重新尝试
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 支付表单就绪
-  return (
-    <div className="space-y-4">
-      {/* Square Card Container */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Card Information
-        </label>
-        <div 
-          ref={cardContainerRef}
-          className="min-h-[80px] border border-gray-300 rounded-lg bg-white"
-        />
-      </div>
-
-      {/* 错误显示 */}
-      {errorMessage && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-red-600" />
-            <p className="text-sm text-red-800">{errorMessage}</p>
-          </div>
-        </div>
-      )}
-
-      {/* 测试卡信息 */}
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-xs text-blue-800 font-medium mb-2">🧪 测试模式 - 使用以下测试卡:</p>
-        <div className="grid grid-cols-2 gap-2 text-xs text-blue-700">
-          <div><strong>Visa:</strong> 4111 1111 1111 1111</div>
-          <div><strong>到期:</strong> 12/25</div>
-          <div><strong>Mastercard:</strong> 5555 5555 5555 4444</div>
-          <div><strong>CVV:</strong> 123</div>
-        </div>
-      </div>
-
-      {/* 支付按钮 */}
-      <button
-        onClick={handlePayment}
-        disabled={disabled || isProcessing}
-        className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-lg font-medium transition-colors ${
-          disabled || isProcessing
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-black text-white hover:bg-gray-800'
-        }`}
-      >
-        {isProcessing ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>处理支付中...</span>
-          </>
-        ) : (
-          <>
-            <CreditCard className="w-5 h-5" />
-            <span>支付 ${amount}</span>
-          </>
-        )}
-      </button>
-
-      {/* 安全信息 */}
-      <div className="text-center">
-        <p className="text-xs text-gray-500">
-          🔒 您的支付信息由Square安全加密保护
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">
+          {!isSDKLoaded ? 'Loading payment system...' : 'Initializing secure payment...'}
         </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 信用卡支付表单 */}
+      <div className="border-2 border-blue-500 rounded-lg p-6 bg-blue-50">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <div>
+              <div className="font-semibold text-lg">Credit Card</div>
+              <div className="text-sm text-gray-600">Secure payment with Square</div>
+            </div>
+          </div>
+          <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full"></div>
+          </div>
+        </div>
+
+        {/* Square 卡片表单容器 */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Card Information
+          </label>
+          <div 
+            id="card-container"
+            ref={cardContainerRef}
+            className="min-h-[120px] bg-white rounded-lg"
+          />
+        </div>
+
+        {/* 支付按钮 */}
+        <button
+          onClick={handlePayment}
+          disabled={isProcessing || !card}
+          className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-200 ${
+            isProcessing || !card
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
+          }`}
+        >
+          {isProcessing ? (
+            <div className="flex items-center justify-center gap-3">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              Processing Payment...
+            </div>
+          ) : (
+            `Pay $${amount} Deposit`
+          )}
+        </button>
+      </div>
+
+      {/* 安全信息和接受的卡类型 */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span>Your payment information is secure and encrypted</span>
+        </div>
+        
+        <div className="flex items-center justify-center gap-4 opacity-60">
+          <span className="text-sm text-gray-500">We accept:</span>
+          <div className="flex gap-2">
+            <div className="text-xs bg-gray-100 px-2 py-1 rounded">VISA</div>
+            <div className="text-xs bg-gray-100 px-2 py-1 rounded">Mastercard</div>
+            <div className="text-xs bg-gray-100 px-2 py-1 rounded">Amex</div>
+            <div className="text-xs bg-gray-100 px-2 py-1 rounded">Discover</div>
+          </div>
+        </div>
       </div>
     </div>
   );
