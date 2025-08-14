@@ -50,38 +50,61 @@ const PaymentPage: React.FC = () => {
     return ARTIST_DEPOSITS[artistId as keyof typeof ARTIST_DEPOSITS] || 100;
   };
 
-  // 临时支付处理 - 直接跳转到成功页面进行测试
-  const handleSquarePayment = () => {
+  // 修复后的支付处理函数
+  const handleSquarePayment = async () => {
     try {
+      console.log('🚀 支付流程开始');
       setIsProcessing(true);
       
       // 确保有必要的客户信息
       if (!state.formData.name || !state.formData.email) {
+        console.error('❌ 缺少客户信息');
         alert('请确保已填写姓名和邮箱信息');
         setIsProcessing(false);
         return;
       }
 
-      // 模拟支付处理
-      console.log('Processing payment for:', {
+      // 详细的调试信息
+      console.log('📋 支付数据:', {
         artist: state.formData.artistId,
         amount: getDepositAmount(),
         customer: {
           name: state.formData.name,
           email: state.formData.email,
           phone: state.formData.phone
-        }
+        },
+        fullFormData: state.formData
       });
 
+      // 模拟支付处理
+      console.log('💰 模拟支付处理中...');
+      
       // 模拟支付延迟
-      setTimeout(() => {
-        // 暂时直接跳转到成功页面测试流程
-        window.location.href = '/booking-success';
-      }, 2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      console.log('✅ 支付处理完成，准备跳转');
+      
+      // 保存支付成功信息到状态
+      dispatch({ 
+        type: 'SET_PAYMENT_SUCCESS', 
+        payload: {
+          paymentId: 'test_' + Date.now(),
+          amount: getDepositAmount(),
+          timestamp: new Date().toISOString(),
+          artist: state.formData.artistId,
+          customerName: state.formData.name,
+          customerEmail: state.formData.email
+        }
+      });
+      
+      // 跳转到成功页面 (step 999)
+      dispatch({ type: 'SET_STEP', payload: 999 });
+      
+      setIsProcessing(false);
       
     } catch (error) {
-      console.error('Payment error:', error);
-      alert('支付处理失败，请重试');
+      console.error('❌ 支付错误详情:', error);
+      alert(`支付处理失败: ${error instanceof Error ? error.message : '未知错误'}`);
       setIsProcessing(false);
     }
   };
