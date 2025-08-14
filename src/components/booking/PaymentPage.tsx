@@ -3,12 +3,11 @@ import { useApp } from '../../context/AppContext';
 import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
 
-// 直接在组件内定义配置，避免导入路径问题
+// Square配置
 const SQUARE_CONFIG = {
   applicationId: 'sandbox-sq0idb-uH8yFqW9VJ7Xfg5Dlmzbug',
   locationId: 'LHWGABJMFKASZ',
   environment: 'sandbox' as const,
-  baseUrl: 'https://squareupsandbox.com/checkout',
 };
 
 const ARTIST_DEPOSITS = {
@@ -20,59 +19,6 @@ const ARTIST_DEPOSITS = {
   'maili': 50,
   'keani': 50,
 } as const;
-
-// 生成Square支付链接函数
-const generateSquarePaymentUrl = (
-  artistId: string,
-  amount: number,
-  customerInfo: {
-    name: string;
-    email: string;
-    phone: string;
-  }
-) => {
-  const deposit = ARTIST_DEPOSITS[artistId as keyof typeof ARTIST_DEPOSITS] || amount;
-  
-  // 获取艺术家名称
-  const getArtistName = (id: string): string => {
-    const artistNames: {[key: string]: string} = {
-      'jing': 'Jing (Jingxi Gu)',
-      'rachel': 'Rachel Hong',
-      'jas': 'Jasmine Hsueh (Jas)',
-      'lauren': 'Lauren Hacaga',
-      'annika': 'Annika Riggins',
-      'maili': 'Maili Cohen',
-      'keani': 'Keani Chavez'
-    };
-    return artistNames[id] || 'Selected Artist';
-  };
-  
-  // Square支付参数
-  const params = new URLSearchParams({
-    // 基本支付信息
-    'line_items[0][name]': `Tattoo Deposit - ${getArtistName(artistId)}`,
-    'line_items[0][variation_name]': 'Tattoo Consultation Deposit',
-    'line_items[0][quantity]': '1',
-    'line_items[0][base_price_money][amount]': (deposit * 100).toString(), // Square使用分为单位
-    'line_items[0][base_price_money][currency]': 'USD',
-    
-    // 客户信息
-    'prefill[email]': customerInfo.email,
-    'prefill[given_name]': customerInfo.name.split(' ')[0] || customerInfo.name,
-    'prefill[family_name]': customerInfo.name.split(' ').slice(1).join(' ') || '',
-    
-    // 跳转URL
-    'redirect_url': `${window.location.origin}/booking-success`,
-    
-    // 商家信息
-    'location_id': SQUARE_CONFIG.locationId,
-    
-    // 其他设置
-    'note': `Tattoo appointment deposit for ${customerInfo.name}. Phone: ${customerInfo.phone}`,
-  });
-  
-  return `${SQUARE_CONFIG.baseUrl}?${params.toString()}`;
-};
 
 const PaymentPage: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -104,6 +50,7 @@ const PaymentPage: React.FC = () => {
     return ARTIST_DEPOSITS[artistId as keyof typeof ARTIST_DEPOSITS] || 100;
   };
 
+  // 临时支付处理 - 直接跳转到成功页面进行测试
   const handleSquarePayment = () => {
     try {
       setIsProcessing(true);
@@ -115,29 +62,38 @@ const PaymentPage: React.FC = () => {
         return;
       }
 
-      // 生成Square支付链接
-      const paymentUrl = generateSquarePaymentUrl(
-        state.formData.artistId || '',
-        getDepositAmount(),
-        {
+      // 模拟支付处理
+      console.log('Processing payment for:', {
+        artist: state.formData.artistId,
+        amount: getDepositAmount(),
+        customer: {
           name: state.formData.name,
           email: state.formData.email,
-          phone: state.formData.phone || ''
+          phone: state.formData.phone
         }
-      );
+      });
 
-      // 跳转到Square支付页面
-      window.location.href = paymentUrl;
+      // 模拟支付延迟
+      setTimeout(() => {
+        // 暂时直接跳转到成功页面测试流程
+        window.location.href = '/booking-success';
+      }, 2000);
       
     } catch (error) {
       console.error('Payment error:', error);
-      alert('支付链接生成失败，请重试');
+      alert('支付处理失败，请重试');
       setIsProcessing(false);
     }
   };
 
+  // 真实的Square支付集成（备用）
+  const handleRealSquarePayment = () => {
+    // 这里可以实现真正的Square Web Payments SDK集成
+    // 需要加载Square的JavaScript SDK并创建支付表单
+    alert('真实Square支付集成即将完成！目前使用测试模式。');
+  };
+
   const handlePayPalPayment = () => {
-    // PayPal集成（可选功能）
     alert('PayPal支付功能即将上线');
   };
 
@@ -258,7 +214,7 @@ const PaymentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Square Payment Section */}
+        {/* Payment Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Secure Payment
@@ -269,9 +225,9 @@ const PaymentPage: React.FC = () => {
             <div className="flex items-start space-x-3">
               <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-900">Secure Payment by Square</p>
+                <p className="text-sm font-medium text-blue-900">Test Mode Active</p>
                 <p className="text-xs text-blue-700 mt-1">
-                  You'll be redirected to Square's secure payment page to complete your transaction.
+                  Currently in development mode. Payment will be processed securely once live.
                 </p>
               </div>
             </div>
@@ -290,9 +246,8 @@ const PaymentPage: React.FC = () => {
             >
               <CreditCard className="w-5 h-5" />
               <span className="font-medium">
-                {isProcessing ? 'Redirecting...' : `Pay $${getDepositAmount()} with Square`}
+                {isProcessing ? 'Processing...' : `Confirm $${getDepositAmount()} Deposit`}
               </span>
-              <ExternalLink className="w-4 h-4" />
             </button>
 
             <button
@@ -307,17 +262,17 @@ const PaymentPage: React.FC = () => {
           {/* 支付信息提示 */}
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">
-              🔒 Your payment is secure and encrypted by Square
+              🔒 Your payment will be secure and encrypted
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              We accept all major credit cards
+              All major credit cards accepted
             </p>
           </div>
 
           {/* 测试模式提示 */}
-          <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-            <p className="text-xs text-orange-700 text-center">
-              🧪 Test Mode: Use any valid card number for testing
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-xs text-green-700 text-center">
+              ✅ Demo Mode: Click to test the complete booking flow
             </p>
           </div>
         </div>
