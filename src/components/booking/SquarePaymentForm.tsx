@@ -35,32 +35,65 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
   const paymentsRef = useRef<any>(null);
   const cardRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const mountedRef = useRef(true);
 
-  // 确保DOM元素存在后再初始化Square
+  // 组件卸载时清理
   useEffect(() => {
-    // 延迟确保DOM完全渲染
-    const initTimer = setTimeout(() => {
-      loadSquareSDK();
-    }, 100);
+    return () => {
+      mountedRef.current = false;
+      if (cardRef.current) {
+        try {
+          cardRef.current.destroy();
+        } catch (e) {
+          console.log('Card cleanup error:', e);
+        }
+      }
+    };
+  }, []);
 
-    return () => clearTimeout(initTimer);
+  // 初始化Square
+  useEffect(() => {
+    let initTimer: NodeJS.Timeout;
+    
+    const startInitialization = () => {
+      // 确保组件仍然挂载且容器存在
+      if (!mountedRef.current || !containerRef.current) {
+        return;
+      }
+      
+      initTimer = setTimeout(() => {
+        if (mountedRef.current) {
+          loadSquareSDK();
+        }
+      }, 500); // 增加延迟确保DOM完全准备好
+    };
+
+    startInitialization();
+
+    return () => {
+      if (initTimer) {
+        clearTimeout(initTimer);
+      }
+    };
   }, []);
 
   const loadSquareSDK = async () => {
     try {
+      if (!mountedRef.current) return;
+      
       console.log('🚀 开始加载 Square SDK...');
       
-      // 检查DOM元素是否存在
+      // 检查容器是否存在
       if (!containerRef.current) {
-        console.error('❌ Card container element not found');
+        console.error('❌ Container ref not available');
         setError('Payment form container not ready');
         setIsLoading(false);
         return;
       }
 
-      // 检查是否已经加载了Square SDK
+      // 如果Square SDK已存在，直接初始化
       if (window.Square) {
-        console.log('✅ Square SDK 已存在，直接初始化');
+        console.log('✅ Square SDK 已存在');
         await initializeSquare();
         return;
       }
@@ -69,22 +102,31 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
       const script = document.createElement('script');
       script.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
       script.async = true;
+      
       script.onload = async () => {
-        console.log('✅ Square SDK 加载成功');
+        if (!mountedRef.current) return;
+        console.log('✅ Square SDK 加载完成');
+        
         // 再次延迟确保一切就绪
         setTimeout(async () => {
-          await initializeSquare();
-        }, 200);
+          if (mountedRef.current) {
+            await initializeSquare();
+          }
+        }, 300);
       };
+      
       script.onerror = () => {
+        if (!mountedRef.current) return;
         console.error('❌ Square SDK 加载失败');
         setError('Failed to load Square payment system');
         setIsLoading(false);
       };
       
       document.head.appendChild(script);
+      
     } catch (err) {
-      console.error('❌ Square SDK 初始化错误:', err);
+      if (!mountedRef.current) return;
+      console.error('❌ Square SDK 加载错误:', err);
       setError('Payment system initialization failed');
       setIsLoading(false);
     }
@@ -92,20 +134,20 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
   const initializeSquare = async () => {
     try {
-      console.log('🚀 初始化 Square Payments...');
+      if (!mountedRef.current) return;
+      
+      console.log('🚀 开始初始化 Square Payments...');
       
       if (!window.Square) {
         throw new Error('Square SDK not loaded');
       }
 
-      // 再次检查DOM元素
-      const cardContainer = document.getElementById('card-container');
-      if (!cardContainer) {
-        console.error('❌ #card-container 元素未找到');
-        throw new Error('Card container element not found');
+      // 使用容器引用而不是ID
+      if (!containerRef.current) {
+        throw new Error('Container reference not available');
       }
 
-      console.log('✅ DOM 元素检查通过，开始初始化 Payments');
+      console.log('✅ 容器引用检查通过');
 
       // 初始化 Square Payments
       const payments = window.Square.payments(applicationId, locationId);
@@ -113,46 +155,55 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
       console.log('✅ Square Payments 实例创建成功');
 
-      // 创建信用卡支付表单
+      // 创建信用卡支付表单 - 直接使用DOM元素而不是选择器
       const card = await payments.card({
         style: {
           '.input-container': {
             borderColor: '#E5E7EB',
-            borderRadius: '8px',
+            borderRadius: '6px',
             borderWidth: '1px',
+            padding: '12px',
           },
           '.input-container.is-focus': {
             borderColor: '#3B82F6',
+            boxShadow: '0 0 0 1px #3B82F6',
           },
           '.input-container.is-error': {
             borderColor: '#EF4444',
           },
           '.message-text': {
             color: '#EF4444',
-            fontSize: '12px',
-          },
-          '.message-icon': {
-            color: '#EF4444',
+            fontSize: '14px',
+            marginTop: '4px',
           },
           'input': {
             fontSize: '16px',
-            fontFamily: 'Arial, sans-serif',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            color: '#1F2937',
           },
         }
       });
 
+      if (!mountedRef.current) return;
+
       console.log('✅ Square Card 组件创建成功');
 
-      // 附加到DOM
-      await card.attach('#card-container');
+      // 直接附加到DOM元素
+      await card.attach(containerRef.current);
+      
+      if (!mountedRef.current) return;
+      
       cardRef.current = card;
 
       console.log('✅ Square Card 组件附加成功');
+      
       setIsReady(true);
       setIsLoading(false);
       setError(null);
 
     } catch (err: any) {
+      if (!mountedRef.current) return;
+      
       console.error('❌ Square 初始化失败:', err);
       setError(`Initialization failed: ${err.message}`);
       setIsLoading(false);
@@ -174,7 +225,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
       const result = await cardRef.current.tokenize();
       
       if (result.status === 'OK') {
-        console.log('✅ 获取支付令牌成功:', result.token);
+        console.log('✅ 获取支付令牌成功');
         
         // 模拟服务器端支付处理
         const paymentResult = await processPayment(result.token, amount);
@@ -215,40 +266,68 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     // 模拟成功响应
     return {
       success: true,
-      paymentId: 'test_payment_' + Date.now(),
+      paymentId: 'square_payment_' + Date.now(),
       amount: amount
     };
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    setIsLoading(true);
+    setIsReady(false);
+    
+    // 清理现有的card实例
+    if (cardRef.current) {
+      try {
+        cardRef.current.destroy();
+        cardRef.current = null;
+      } catch (e) {
+        console.log('Card cleanup during retry:', e);
+      }
+    }
+    
+    // 重新初始化
+    setTimeout(() => {
+      if (mountedRef.current) {
+        loadSquareSDK();
+      }
+    }, 1000);
   };
 
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="animate-pulse">
-          <div className="h-12 bg-gray-200 rounded-lg mb-4"></div>
-          <div className="h-10 bg-gray-200 rounded-lg"></div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Card Information
+          </label>
+          <div className="min-h-[56px] border border-gray-300 rounded-lg p-3 bg-gray-50 flex items-center justify-center">
+            <div className="flex items-center space-x-2 text-gray-500">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
+              <span className="text-sm">Loading payment form...</span>
+            </div>
+          </div>
         </div>
-        <p className="text-sm text-gray-600 text-center">Loading payment form...</p>
       </div>
     );
   }
 
   if (error && !isReady) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-        <div className="flex items-center space-x-2">
-          <AlertCircle className="w-5 h-5 text-red-600" />
-          <p className="text-sm text-red-800">{error}</p>
+      <div className="space-y-4">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center space-x-2 mb-2">
+            <AlertCircle className="w-5 h-5 text-red-600" />
+            <p className="text-sm text-red-800 font-medium">Payment form failed to load</p>
+          </div>
+          <p className="text-sm text-red-700 mb-3">{error}</p>
+          <button 
+            onClick={handleRetry}
+            className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
-        <button 
-          onClick={() => {
-            setError(null);
-            setIsLoading(true);
-            loadSquareSDK();
-          }} 
-          className="mt-2 text-sm text-red-600 underline"
-        >
-          Try again
-        </button>
       </div>
     );
   }
@@ -262,21 +341,15 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
         </label>
         <div 
           ref={containerRef}
-          id="card-container" 
-          className="min-h-[56px] border border-gray-300 rounded-lg p-3 bg-white"
+          className="min-h-[56px] border border-gray-300 rounded-lg bg-white"
+          style={{ minHeight: '56px' }}
         >
           {/* Square Card component will be attached here */}
-          {!isReady && (
-            <div className="flex items-center justify-center h-12 text-gray-500">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400 mr-2"></div>
-              Initializing payment form...
-            </div>
-          )}
         </div>
       </div>
 
       {/* Error Display */}
-      {error && (
+      {error && isReady && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 text-red-600" />
@@ -290,9 +363,10 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-xs text-blue-800 font-medium mb-1">Test Mode - Use these test cards:</p>
           <div className="text-xs text-blue-700 space-y-1">
-            <p>• Visa: 4111 1111 1111 1111</p>
-            <p>• Mastercard: 5555 5555 5555 4444</p>
-            <p>• Any future expiry date and any CVV</p>
+            <p>• <strong>Visa:</strong> 4111 1111 1111 1111</p>
+            <p>• <strong>Mastercard:</strong> 5555 5555 5555 4444</p>
+            <p>• <strong>Expiry:</strong> Any future date (e.g., 12/25)</p>
+            <p>• <strong>CVV:</strong> Any 3 digits (e.g., 123)</p>
           </div>
         </div>
       )}
