@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Instagram } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface Artist {
   name: string;
@@ -7,9 +7,9 @@ interface Artist {
   experience: string;
   specialties: string[];
   dayRate: string;
-  description: string;
-  portfolio: string[];
-  reviews: Array<{
+  description?: string;
+  portfolio?: string[];
+  reviews?: Array<{
     name: string;
     rating: number;
     comment: string;
@@ -23,48 +23,27 @@ interface ArtistCardProps {
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, isSelected = false }) => {
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Artist card clicked:', artist.name);
+  const handleClick = () => {
     onSelect();
   };
 
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Select button clicked:', artist.name);
-    onSelect();
-  };
+  // 安全地处理specialties数组
+  const specialties = artist.specialties || [];
 
   return (
     <div
       className={`bg-white border-2 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer ${
-        isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+        isSelected ? 'border-blue-500' : 'border-gray-200'
       }`}
-      onClick={handleCardClick}
+      onClick={handleClick}
     >
       {/* Artist Photo */}
-      <div className="aspect-square overflow-hidden relative">
+      <div className="aspect-square overflow-hidden">
         <img
           src={artist.image}
           alt={artist.name}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover"
         />
-        {/* Artist Type Badge */}
-        <div className="absolute top-3 left-3">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            artist.name === 'Jingxi Gu' ? 'bg-yellow-500 text-white' :
-            ['Rachel Hong', 'Jasmine Hsueh'].includes(artist.name) ? 'bg-blue-500 text-white' :
-            ['Lauren Hacaga', 'Annika Riggins'].includes(artist.name) ? 'bg-green-500 text-white' :
-            'bg-purple-500 text-white'
-          }`}>
-            {artist.name === 'Jingxi Gu' ? 'Lead Artist' :
-             ['Rachel Hong', 'Jasmine Hsueh'].includes(artist.name) ? 'Senior Artist' :
-             ['Lauren Hacaga', 'Annika Riggins'].includes(artist.name) ? 'Junior Artist' :
-             'Apprentice'}
-          </span>
-        </div>
       </div>
 
       {/* Artist Info */}
@@ -79,22 +58,19 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, isSelected = 
 
         <p className="text-sm text-gray-600 mb-3">{artist.experience}</p>
 
-        {/* Specialties */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {artist.specialties.slice(0, 3).map((specialty, index) => (
-            <span
-              key={index}
-              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-            >
-              {specialty}
-            </span>
-          ))}
-          {artist.specialties.length > 3 && (
-            <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full">
-              +{artist.specialties.length - 3} more
-            </span>
-          )}
-        </div>
+        {/* Specialties - 安全处理 */}
+        {specialties.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {specialties.slice(0, 3).map((specialty, index) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+              >
+                {specialty}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Pricing */}
         <div className="flex items-center justify-between mb-4">
@@ -104,29 +80,14 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, isSelected = 
 
         {/* Action Button */}
         <button
-          onClick={handleButtonClick}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-            isSelected
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
-          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+          className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
-          {isSelected ? 'Selected' : 'Select Artist'}
+          Select Artist
         </button>
-
-        {/* Instagram Link */}
-        <div className="mt-3 text-center">
-          <a
-            href={`https://instagram.com/${artist.name.toLowerCase().replace(' ', '_')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Instagram className="w-3 h-3" />
-            <span>View Portfolio</span>
-          </a>
-        </div>
       </div>
     </div>
   );
