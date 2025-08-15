@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useApp } from '../../context/AppContext';
 import { ARTISTS_DATA } from '../../data/artists';
 import ArtistCard from '../artist/ArtistCard';
 
 const Step1ArtistSelection: React.FC = () => {
-  const { state, dispatch } = useAppContext();
+  const { state, dispatch } = useApp();
 
   const handleArtistSelect = (artistName: string) => {
     dispatch({ type: 'SET_SELECTED_ARTIST', payload: artistName });
