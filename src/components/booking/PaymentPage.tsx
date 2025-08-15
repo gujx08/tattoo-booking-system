@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useApp } from '../../context/AppContext';
 import Button from '../common/Button';
 import SquarePaymentForm from './SquarePaymentForm';
 
 const PaymentPage: React.FC = () => {
-  const { state, dispatch } = useAppContext();
+  const { state, dispatch } = useApp();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
