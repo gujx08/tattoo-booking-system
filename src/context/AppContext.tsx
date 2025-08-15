@@ -142,11 +142,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   );
 };
 
-// Hook to use the context
-export const useAppContext = (): AppContextType => {
+// Hook to use the context - 保持原来的名字 useApp
+export const useApp = (): AppContextType => {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useAppContext must be used within an AppProvider');
+    throw new Error('useApp must be used within an AppProvider');
   }
   return context;
 };
