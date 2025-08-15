@@ -7,27 +7,9 @@ const Step1ArtistSelection: React.FC = () => {
   const { state, dispatch } = useApp();
 
   const handleArtistSelect = (artistName: string) => {
-    console.log('Selecting artist:', artistName);
-    console.log('Current state:', state);
-    
-    try {
-      dispatch({ type: 'SET_SELECTED_ARTIST', payload: artistName });
-      console.log('Artist set, now changing step...');
-      dispatch({ type: 'SET_STEP', payload: 2 });
-      console.log('Step changed to 2');
-    } catch (error) {
-      console.error('Error in handleArtistSelect:', error);
-    }
+    dispatch({ type: 'SET_SELECTED_ARTIST', payload: artistName });
+    dispatch({ type: 'SET_STEP', payload: 2 });
   };
-
-  const handleNeedHelp = () => {
-    console.log('Need help clicked');
-    handleArtistSelect('I need help choosing the right artist');
-  };
-
-  console.log('Step1ArtistSelection rendered');
-  console.log('Artists data:', ARTISTS_DATA);
-  console.log('Current selected artist:', state.selectedArtist);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -39,17 +21,20 @@ const Step1ArtistSelection: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-        {ARTISTS_DATA.map((artist) => (
-          <ArtistCard
-            key={artist.name}
-            artist={artist}
-            onSelect={() => {
-              console.log('ArtistCard onSelect called for:', artist.name);
-              handleArtistSelect(artist.name);
-            }}
-            isSelected={state.selectedArtist === artist.name}
-          />
-        ))}
+        {ARTISTS_DATA && ARTISTS_DATA.length > 0 ? (
+          ARTISTS_DATA.map((artist) => (
+            <ArtistCard
+              key={artist.name}
+              artist={artist}
+              onSelect={() => handleArtistSelect(artist.name)}
+              isSelected={state.selectedArtist === artist.name}
+            />
+          ))
+        ) : (
+          <div className="col-span-3 text-center py-8">
+            <p className="text-gray-500">Loading artists...</p>
+          </div>
+        )}
       </div>
 
       {/* Need Help Option */}
@@ -62,20 +47,12 @@ const Step1ArtistSelection: React.FC = () => {
             Let us help you find the perfect artist based on your tattoo idea, style preferences, and budget.
           </p>
           <button
-            onClick={handleNeedHelp}
+            onClick={() => handleArtistSelect('I need help choosing the right artist')}
             className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             I need help choosing the right artist
           </button>
         </div>
-      </div>
-
-      {/* Debug Info */}
-      <div className="mt-8 p-4 bg-gray-100 rounded-lg text-sm">
-        <h4 className="font-semibold mb-2">Debug Info:</h4>
-        <p>Current Step: {state.currentStep}</p>
-        <p>Selected Artist: {state.selectedArtist || 'None'}</p>
-        <p>Artists Count: {ARTISTS_DATA.length}</p>
       </div>
     </div>
   );
