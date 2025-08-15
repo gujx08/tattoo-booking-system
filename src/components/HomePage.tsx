@@ -1,11 +1,11 @@
 import React from 'react';
 import { Calendar, MapPin, Phone, Clock, Instagram, Star } from 'lucide-react';
-import { useAppContext } from '../context/AppContext';
+import { useApp } from '../context/AppContext';
 import { ARTISTS_DATA } from '../data/artists';
 import Button from './common/Button';
 
 const HomePage: React.FC = () => {
-  const { dispatch } = useAppContext();
+  const { dispatch } = useApp();
 
   const handleArtistSelect = (artistName: string) => {
     dispatch({ type: 'SET_SELECTED_ARTIST', payload: artistName });
