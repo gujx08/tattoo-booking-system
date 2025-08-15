@@ -7,9 +7,27 @@ const Step1ArtistSelection: React.FC = () => {
   const { state, dispatch } = useApp();
 
   const handleArtistSelect = (artistName: string) => {
-    dispatch({ type: 'SET_SELECTED_ARTIST', payload: artistName });
-    dispatch({ type: 'SET_STEP', payload: 2 });
+    console.log('Selecting artist:', artistName);
+    console.log('Current state:', state);
+    
+    try {
+      dispatch({ type: 'SET_SELECTED_ARTIST', payload: artistName });
+      console.log('Artist set, now changing step...');
+      dispatch({ type: 'SET_STEP', payload: 2 });
+      console.log('Step changed to 2');
+    } catch (error) {
+      console.error('Error in handleArtistSelect:', error);
+    }
   };
+
+  const handleNeedHelp = () => {
+    console.log('Need help clicked');
+    handleArtistSelect('I need help choosing the right artist');
+  };
+
+  console.log('Step1ArtistSelection rendered');
+  console.log('Artists data:', ARTISTS_DATA);
+  console.log('Current selected artist:', state.selectedArtist);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -25,7 +43,10 @@ const Step1ArtistSelection: React.FC = () => {
           <ArtistCard
             key={artist.name}
             artist={artist}
-            onSelect={() => handleArtistSelect(artist.name)}
+            onSelect={() => {
+              console.log('ArtistCard onSelect called for:', artist.name);
+              handleArtistSelect(artist.name);
+            }}
             isSelected={state.selectedArtist === artist.name}
           />
         ))}
@@ -41,12 +62,20 @@ const Step1ArtistSelection: React.FC = () => {
             Let us help you find the perfect artist based on your tattoo idea, style preferences, and budget.
           </p>
           <button
-            onClick={() => handleArtistSelect('I need help choosing the right artist')}
+            onClick={handleNeedHelp}
             className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             I need help choosing the right artist
           </button>
         </div>
+      </div>
+
+      {/* Debug Info */}
+      <div className="mt-8 p-4 bg-gray-100 rounded-lg text-sm">
+        <h4 className="font-semibold mb-2">Debug Info:</h4>
+        <p>Current Step: {state.currentStep}</p>
+        <p>Selected Artist: {state.selectedArtist || 'None'}</p>
+        <p>Artists Count: {ARTISTS_DATA.length}</p>
       </div>
     </div>
   );
