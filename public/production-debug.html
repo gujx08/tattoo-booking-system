@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产环境诊断 - Patch Tattoo Therapy</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .debug-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .debug-button { padding: 12px 24px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .debug-button:hover { background: #0056b3; }
+        .success-button { background: #28a745; }
+        .success-button:hover { background: #1e7e34; }
+        .warning-button { background: #ffc107; color: #212529; }
+        .warning-button:hover { background: #e0a800; }
+        .danger-button { background: #dc3545; }
+        .danger-button:hover { background: #c82333; }
+        .info-box { background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .code-block { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px; margin: 10px 0; }
+        .status-success { color: #28a745; font-weight: bold; }
+        .status-error { color: #dc3545; font-weight: bold; }
+        .status-warning { color: #ffc107; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔧 生产环境诊断工具</h1>
+        
+        <div class="info-box">
+            <h3>📋 诊断目标</h3>
+            <p>专门诊断生产环境 <code>booking.patchtattootherapy.com</code> 的问题。</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>🌐 生产环境检测</h3>
+            <div id="productionInfo">
+                <p>正在检测生产环境信息...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔗 路由测试</h3>
+            <button class="debug-button" onclick="testProductionRoutes()">
+                🎯 测试生产环境路由
+            </button>
+            
+            <button class="debug-button" onclick="testSuccessPage()">
+                ✅ 测试Success页面
+            </button>
+            
+            <button class="debug-button" onclick="testStripeConfig()">
+                💳 测试Stripe配置
+            </button>
+            
+            <button class="debug-button warning-button" onclick="checkNetlifyConfig()">
+                🌐 检查Netlify配置
+            </button>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 测试结果</h3>
+            <div id="testResults">
+                <p>测试结果将在这里显示...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 网络请求分析</h3>
+            <button class="debug-button" onclick="analyzeNetworkRequests()">
+                🌐 分析网络请求
+            </button>
+            <div id="networkAnalysis">
+                <p>网络分析结果将在这里显示...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📋 问题诊断</h3>
+            <div id="diagnosis">
+                <p>问题诊断结果将在这里显示...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🛠️ 修复建议</h3>
+            <div id="fixSuggestions">
+                <p>修复建议将在这里显示...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const resultsElement = document.getElementById('testResults');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            resultsElement.innerHTML += logEntry + '<br>';
+            console.log(logEntry);
+        }
+
+        function updateProductionInfo() {
+            const infoElement = document.getElementById('productionInfo');
+            const info = {
+                hostname: window.location.hostname,
+                protocol: window.location.protocol,
+                port: window.location.port,
+                pathname: window.location.pathname,
+                href: window.location.href,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+                isProduction: window.location.hostname === 'booking.patchtattootherapy.com'
+            };
+            
+            infoElement.innerHTML = `
+                <div class="code-block">
+                    <strong>生产环境信息:</strong><br>
+                    Hostname: ${info.hostname}<br>
+                    Protocol: ${info.protocol}<br>
+                    Port: ${info.port || 'default'}<br>
+                    Pathname: ${info.pathname}<br>
+                    Full URL: ${info.href}<br>
+                    Is Production: ${info.isProduction ? '✅ 是' : '❌ 否'}<br>
+                    Timestamp: ${info.timestamp}
+                </div>
+            `;
+        }
+
+        function testProductionRoutes() {
+            log('🎯 开始测试生产环境路由...');
+            
+            const routes = ['/', '/success', '/booking-success', '/nonexistent'];
+            
+            routes.forEach(route => {
+                fetch(route)
+                    .then(response => {
+                        const status = response.status;
+                        const statusText = response.statusText;
+                        const isSuccess = response.ok;
+                        
+                        log(`${route}: ${status} ${statusText}`, isSuccess ? 'success' : 'error');
+                        
+                        if (route === '/success' && status === 200) {
+                            log('✅ Success页面路由正常', 'success');
+                        } else if (route === '/success' && status === 404) {
+                            log('❌ Success页面路由失败 - 404错误', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        log(`${route}: 请求失败 - ${error.message}`, 'error');
+                    });
+            });
+        }
+
+        function testSuccessPage() {
+            log('✅ 测试Success页面功能...');
+            
+            // 创建测试数据
+            const testData = {
+                formData: {
+                    name: 'Production Test User',
+                    email: 'production-test@example.com',
+                    tattooIdea: 'Production test tattoo'
+                },
+                selectedArtist: {
+                    displayName: 'Jing',
+                    name: 'Jingxi Gu'
+                },
+                depositAmount: 300,
+                timestamp: new Date().toISOString()
+            };
+            
+            // 保存测试数据
+            localStorage.setItem('patchTattooBooking', JSON.stringify(testData));
+            log('✅ 测试数据已保存到localStorage', 'success');
+            
+            // 测试Success页面访问
+            setTimeout(() => {
+                log('🔗 跳转到 /success 页面...', 'warning');
+                window.location.href = '/success';
+            }, 1000);
+        }
+
+        function testStripeConfig() {
+            log('💳 测试Stripe配置...');
+            
+            // 模拟Stripe配置检测
+            const isProduction = window.location.hostname === 'booking.patchtattootherapy.com';
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname.includes('127.0.0.1');
+            
+            log(`环境检测: ${isProduction ? '生产环境' : isLocalhost ? '本地环境' : '其他环境'}`, 'info');
+            
+            // 测试Payment Links
+            const testLinks = {
+                'jing': 'https://buy.stripe.com/00w6oHgLY6Zf5WW45Gfw400',
+                'jasmine': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
+                'maili': 'https://buy.stripe.com/00w5kD9jwerH9988lWfw402'
+            };
+            
+            Object.entries(testLinks).forEach(([artist, link]) => {
+                log(`测试 ${artist} 的Payment Link: ${link}`, 'info');
+                
+                // 测试链接可访问性
+                fetch(link, { method: 'HEAD', mode: 'no-cors' })
+                    .then(() => {
+                        log(`✅ ${artist} Payment Link 可访问`, 'success');
+                    })
+                    .catch(() => {
+                        log(`⚠️ ${artist} Payment Link 可能有问题`, 'warning');
+                    });
+            });
+        }
+
+        function checkNetlifyConfig() {
+            log('🌐 检查Netlify配置...');
+            
+            // 检查_redirects文件
+            fetch('/_redirects')
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('_redirects文件不存在');
+                    }
+                })
+                .then(content => {
+                    log('✅ _redirects文件存在', 'success');
+                    log(`内容: ${content.trim()}`, 'info');
+                    
+                    if (content.includes('/*') && content.includes('/index.html')) {
+                        log('✅ 重定向配置正确', 'success');
+                    } else {
+                        log('❌ 重定向配置可能有问题', 'error');
+                    }
+                })
+                .catch(error => {
+                    log(`❌ _redirects文件检查失败: ${error.message}`, 'error');
+                });
+        }
+
+        function analyzeNetworkRequests() {
+            log('🌐 分析网络请求...');
+            
+            const networkElement = document.getElementById('networkAnalysis');
+            networkElement.innerHTML = '<p>正在分析网络请求...</p>';
+            
+            // 测试关键资源
+            const resources = [
+                '/',
+                '/success',
+                '/assets/',
+                '/_redirects',
+                'https://api.stripe.com',
+                'https://api.emailjs.com'
+            ];
+            
+            resources.forEach(resource => {
+                const startTime = performance.now();
+                
+                fetch(resource, { method: 'HEAD', mode: 'no-cors' })
+                    .then(() => {
+                        const endTime = performance.now();
+                        const duration = Math.round(endTime - startTime);
+                        
+                        networkElement.innerHTML += `
+                            <div class="status-success">
+                                ${resource}: ✅ 响应时间 ${duration}ms
+                            </div>
+                        `;
+                        
+                        log(`${resource}: 响应时间 ${duration}ms`, 'success');
+                    })
+                    .catch(error => {
+                        networkElement.innerHTML += `
+                            <div class="status-error">
+                                ${resource}: ❌ 请求失败 - ${error.message}
+                            </div>
+                        `;
+                        
+                        log(`${resource}: 请求失败 - ${error.message}`, 'error');
+                    });
+            });
+        }
+
+        function runDiagnosis() {
+            log('🔍 开始问题诊断...');
+            
+            const diagnosisElement = document.getElementById('diagnosis');
+            let diagnosis = '<strong>🔍 生产环境问题诊断:</strong><br><br>';
+            
+            // 检查环境
+            const isProduction = window.location.hostname === 'booking.patchtattootherapy.com';
+            diagnosis += isProduction ? '✅ 生产环境检测正确<br>' : '❌ 环境检测异常<br>';
+            
+            // 检查协议
+            const isHttps = window.location.protocol === 'https:';
+            diagnosis += isHttps ? '✅ HTTPS协议<br>' : '❌ 非HTTPS协议<br>';
+            
+            // 检查路由支持
+            const hasHistory = 'pushState' in window.history;
+            diagnosis += hasHistory ? '✅ History API支持<br>' : '❌ History API不支持<br>';
+            
+            // 检查localStorage
+            const hasLocalStorage = typeof(Storage) !== "undefined";
+            diagnosis += hasLocalStorage ? '✅ localStorage支持<br>' : '❌ localStorage不支持<br>';
+            
+            diagnosis += '<br><strong>可能的问题:</strong><br>';
+            diagnosis += '1. Netlify部署配置问题<br>';
+            diagnosis += '2. _redirects文件缺失或错误<br>';
+            diagnosis += '3. 构建输出不完整<br>';
+            diagnosis += '4. 缓存问题<br>';
+            diagnosis += '5. CDN缓存问题<br>';
+            
+            diagnosisElement.innerHTML = diagnosis;
+        }
+
+        function generateFixSuggestions() {
+            log('🛠️ 生成修复建议...');
+            
+            const suggestionsElement = document.getElementById('fixSuggestions');
+            let suggestions = '<strong>🛠️ 修复建议:</strong><br><br>';
+            
+            suggestions += '<strong>1. 检查Netlify部署:</strong><br>';
+            suggestions += '- 确认_redirects文件已正确部署<br>';
+            suggestions += '- 检查Netlify构建日志<br>';
+            suggestions += '- 验证部署状态<br><br>';
+            
+            suggestions += '<strong>2. 重新部署:</strong><br>';
+            suggestions += '- 提交最新代码到Git仓库<br>';
+            suggestions += '- 触发Netlify重新部署<br>';
+            suggestions += '- 等待部署完成<br><br>';
+            
+            suggestions += '<strong>3. 清除缓存:</strong><br>';
+            suggestions += '- 清除浏览器缓存<br>';
+            suggestions += '- 清除CDN缓存<br>';
+            suggestions += '- 使用无痕模式测试<br><br>';
+            
+            suggestions += '<strong>4. 验证配置:</strong><br>';
+            suggestions += '- 检查Stripe Payment Links配置<br>';
+            suggestions += '- 验证EmailJS配置<br>';
+            suggestions += '- 确认所有环境变量<br><br>';
+            
+            suggestions += '<strong>5. 联系支持:</strong><br>';
+            suggestions += '- 如果问题持续，联系Netlify支持<br>';
+            suggestions += '- 检查域名DNS配置<br>';
+            
+            suggestionsElement.innerHTML = suggestions;
+        }
+
+        // 页面加载时自动运行
+        window.onload = function() {
+            log('🚀 生产环境诊断工具加载完成');
+            updateProductionInfo();
+            runDiagnosis();
+            generateFixSuggestions();
+        };
+    </script>
+</body>
+</html>

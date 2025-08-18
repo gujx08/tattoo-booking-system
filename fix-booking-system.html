@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预订系统修复工具 - Patch Tattoo Therapy</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .fix-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .fix-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .fix-button { padding: 12px 24px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .fix-button:hover { background: #0056b3; }
+        .success-button { background: #28a745; }
+        .success-button:hover { background: #1e7e34; }
+        .warning-button { background: #ffc107; color: #212529; }
+        .warning-button:hover { background: #e0a800; }
+        .danger-button { background: #dc3545; }
+        .danger-button:hover { background: #c82333; }
+        .info-box { background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .code-block { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px; margin: 10px 0; }
+        .status-success { color: #28a745; font-weight: bold; }
+        .status-error { color: #dc3545; font-weight: bold; }
+        .status-warning { color: #ffc107; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="fix-container">
+        <h1>🔧 预订系统修复工具</h1>
+        
+        <div class="info-box">
+            <h3>📋 修复目标</h3>
+            <p>解决以下问题：</p>
+            <ul>
+                <li>❌ 支付页面显示"支付表单加载失败"</li>
+                <li>❌ 咨询选择跳转到错误页面</li>
+                <li>❌ Success页面路由无法访问</li>
+            </ul>
+        </div>
+
+        <div class="fix-section">
+            <h3>🧹 清理缓存和数据</h3>
+            <button class="fix-button danger-button" onclick="clearAllData()">
+                🗑️ 清除所有缓存和数据
+            </button>
+            
+            <button class="fix-button warning-button" onclick="clearLocalStorage()">
+                💾 清除localStorage数据
+            </button>
+            
+            <button class="fix-button" onclick="clearSessionStorage()">
+                📝 清除SessionStorage
+            </button>
+        </div>
+
+        <div class="fix-section">
+            <h3>🔄 重置系统状态</h3>
+            <button class="fix-button" onclick="resetBookingState()">
+                🔄 重置预订状态
+            </button>
+            
+            <button class="fix-button" onclick="testSuccessRoute()">
+                🎯 测试Success页面路由
+            </button>
+            
+            <button class="fix-button" onclick="testPaymentFlow()">
+                💳 测试支付流程
+            </button>
+        </div>
+
+        <div class="fix-section">
+            <h3>🌐 环境检测</h3>
+            <button class="fix-button" onclick="checkEnvironment()">
+                🔍 检测环境配置
+            </button>
+            
+            <button class="fix-button" onclick="testNetworkConnectivity()">
+                🌐 测试网络连接
+            </button>
+        </div>
+
+        <div class="fix-section">
+            <h3>📊 修复状态</h3>
+            <div id="fixStatus">
+                <p>修复状态将在这里显示...</p>
+            </div>
+        </div>
+
+        <div class="fix-section">
+            <h3>📋 修复步骤</h3>
+            <ol>
+                <li><strong>清理缓存</strong> - 点击"清除所有缓存和数据"</li>
+                <li><strong>重置状态</strong> - 点击"重置预订状态"</li>
+                <li><strong>测试路由</strong> - 点击"测试Success页面路由"</li>
+                <li><strong>验证流程</strong> - 重新测试完整预订流程</li>
+            </ol>
+        </div>
+
+        <div class="fix-section">
+            <h3>🎯 验证修复</h3>
+            <button class="fix-button success-button" onclick="validateFix()">
+                ✅ 验证修复结果
+            </button>
+            
+            <div id="validationResults">
+                <p>验证结果将在这里显示...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const statusElement = document.getElementById('fixStatus');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            statusElement.innerHTML += logEntry + '<br>';
+            console.log(logEntry);
+        }
+
+        function clearAllData() {
+            log('🧹 开始清除所有缓存和数据...');
+            
+            try {
+                // 清除localStorage
+                localStorage.clear();
+                log('✅ localStorage已清除', 'success');
+                
+                // 清除sessionStorage
+                sessionStorage.clear();
+                log('✅ sessionStorage已清除', 'success');
+                
+                // 清除IndexedDB（如果存在）
+                if ('indexedDB' in window) {
+                    indexedDB.databases().then(databases => {
+                        databases.forEach(db => {
+                            indexedDB.deleteDatabase(db.name);
+                        });
+                        log('✅ IndexedDB已清除', 'success');
+                    });
+                }
+                
+                // 清除Service Worker缓存
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(registrations => {
+                        registrations.forEach(registration => {
+                            registration.unregister();
+                        });
+                        log('✅ Service Worker已清除', 'success');
+                    });
+                }
+                
+                // 清除浏览器缓存（通过重新加载）
+                setTimeout(() => {
+                    log('🔄 即将重新加载页面以清除缓存...', 'warning');
+                    window.location.reload(true);
+                }, 2000);
+                
+            } catch (error) {
+                log(`❌ 清除数据时出错: ${error.message}`, 'error');
+            }
+        }
+
+        function clearLocalStorage() {
+            log('💾 清除localStorage数据...');
+            
+            try {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('patch') || key.includes('booking') || key.includes('tattoo')) {
+                        localStorage.removeItem(key);
+                        log(`🗑️ 已删除: ${key}`);
+                    }
+                });
+                log('✅ localStorage数据已清除', 'success');
+            } catch (error) {
+                log(`❌ 清除localStorage失败: ${error.message}`, 'error');
+            }
+        }
+
+        function clearSessionStorage() {
+            log('📝 清除SessionStorage...');
+            
+            try {
+                sessionStorage.clear();
+                log('✅ SessionStorage已清除', 'success');
+            } catch (error) {
+                log(`❌ 清除SessionStorage失败: ${error.message}`, 'error');
+            }
+        }
+
+        function resetBookingState() {
+            log('🔄 重置预订状态...');
+            
+            try {
+                // 清除预订相关数据
+                localStorage.removeItem('patchTattooBooking');
+                localStorage.removeItem('currentStep');
+                localStorage.removeItem('formData');
+                localStorage.removeItem('selectedArtist');
+                
+                log('✅ 预订状态已重置', 'success');
+                
+                // 跳转到首页重新开始
+                setTimeout(() => {
+                    log('🔄 跳转到首页重新开始...', 'warning');
+                    window.location.href = '/';
+                }, 1000);
+                
+            } catch (error) {
+                log(`❌ 重置预订状态失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testSuccessRoute() {
+            log('🎯 测试Success页面路由...');
+            
+            // 创建测试数据
+            const testData = {
+                formData: {
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    tattooIdea: 'Test tattoo'
+                },
+                selectedArtist: {
+                    displayName: 'Jing',
+                    name: 'Jingxi Gu'
+                },
+                depositAmount: 300,
+                timestamp: new Date().toISOString()
+            };
+            
+            // 保存测试数据
+            localStorage.setItem('patchTattooBooking', JSON.stringify(testData));
+            log('✅ 测试数据已保存', 'success');
+            
+            // 测试路由
+            setTimeout(() => {
+                log('🔗 跳转到 /success 页面...', 'warning');
+                window.location.href = '/success';
+            }, 1000);
+        }
+
+        function testPaymentFlow() {
+            log('💳 测试支付流程...');
+            
+            // 创建完整的测试数据
+            const testData = {
+                formData: {
+                    artistId: 'jing',
+                    name: 'Payment Test User',
+                    email: 'payment-test@example.com',
+                    phone: '(555) 123-4567',
+                    tattooIdea: 'Payment test tattoo',
+                    placement: 'Right forearm',
+                    colorPreference: 'Black and gray',
+                    needsConsultation: false
+                },
+                selectedArtist: {
+                    id: 'jing',
+                    name: 'Jingxi Gu',
+                    displayName: 'Jing',
+                    category: 'Lead Artist',
+                    deposit: 300
+                },
+                consultationChoice: false,
+                timestamp: new Date().toISOString(),
+                depositAmount: 300,
+                status: 'PENDING_PAYMENT'
+            };
+            
+            // 保存测试数据
+            localStorage.setItem('patchTattooBooking', JSON.stringify(testData));
+            log('✅ 支付测试数据已保存', 'success');
+            
+            // 跳转到支付页面
+            setTimeout(() => {
+                log('🔗 跳转到支付页面...', 'warning');
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        function checkEnvironment() {
+            log('🔍 检测环境配置...');
+            
+            const envInfo = {
+                hostname: window.location.hostname,
+                protocol: window.location.protocol,
+                port: window.location.port,
+                userAgent: navigator.userAgent,
+                localStorage: typeof(Storage) !== "undefined",
+                sessionStorage: typeof(Storage) !== "undefined",
+                indexedDB: 'indexedDB' in window,
+                serviceWorker: 'serviceWorker' in navigator
+            };
+            
+            log(`🌐 环境信息:`, 'info');
+            log(`- Hostname: ${envInfo.hostname}`, 'info');
+            log(`- Protocol: ${envInfo.protocol}`, 'info');
+            log(`- Port: ${envInfo.port || 'default'}`, 'info');
+            log(`- localStorage: ${envInfo.localStorage ? '✅ 支持' : '❌ 不支持'}`, envInfo.localStorage ? 'success' : 'error');
+            log(`- sessionStorage: ${envInfo.sessionStorage ? '✅ 支持' : '❌ 不支持'}`, envInfo.sessionStorage ? 'success' : 'error');
+            log(`- IndexedDB: ${envInfo.indexedDB ? '✅ 支持' : '❌ 不支持'}`, envInfo.indexedDB ? 'success' : 'error');
+            log(`- Service Worker: ${envInfo.serviceWorker ? '✅ 支持' : '❌ 不支持'}`, envInfo.serviceWorker ? 'success' : 'error');
+        }
+
+        function testNetworkConnectivity() {
+            log('🌐 测试网络连接...');
+            
+            // 测试多个端点
+            const testUrls = [
+                '/',
+                '/success',
+                'https://api.stripe.com',
+                'https://api.emailjs.com'
+            ];
+            
+            testUrls.forEach(url => {
+                fetch(url, { method: 'HEAD' })
+                    .then(response => {
+                        log(`${url}: ✅ 连接正常 (${response.status})`, 'success');
+                    })
+                    .catch(error => {
+                        log(`${url}: ❌ 连接失败 - ${error.message}`, 'error');
+                    });
+            });
+        }
+
+        function validateFix() {
+            log('✅ 开始验证修复结果...');
+            
+            const validationElement = document.getElementById('validationResults');
+            let validation = '<strong>🔍 修复验证结果:</strong><br><br>';
+            
+            // 检查localStorage
+            const hasBookingData = localStorage.getItem('patchTattooBooking');
+            validation += hasBookingData ? '✅ localStorage数据正常<br>' : '❌ localStorage数据缺失<br>';
+            
+            // 检查路由支持
+            const hasHistory = 'pushState' in window.history;
+            validation += hasHistory ? '✅ History API支持<br>' : '❌ History API不支持<br>';
+            
+            // 检查环境
+            const isProduction = window.location.hostname === 'booking.patchtattootherapy.com';
+            validation += isProduction ? '✅ 生产环境检测<br>' : '⚠️ 非生产环境<br>';
+            
+            // 检查协议
+            const isHttps = window.location.protocol === 'https:';
+            validation += isHttps ? '✅ HTTPS协议<br>' : '❌ 非HTTPS协议<br>';
+            
+            validation += '<br><strong>建议操作:</strong><br>';
+            if (!hasBookingData) {
+                validation += '1. 重新完成预订流程<br>';
+            }
+            if (!isHttps && isProduction) {
+                validation += '2. 确保使用HTTPS协议<br>';
+            }
+            validation += '3. 清除浏览器缓存<br>';
+            validation += '4. 重新测试完整流程<br>';
+            
+            validationElement.innerHTML = validation;
+            log('✅ 验证完成', 'success');
+        }
+
+        // 页面加载时自动检测
+        window.onload = function() {
+            log('🚀 修复工具加载完成');
+            checkEnvironment();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预订草稿邮件测试 - Patch Tattoo Therapy</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .success { background: #28a745; }
+        .warning { background: #ffc107; color: #000; }
+        .info { background: #17a2b8; }
+        .debug-info { background: #f8f9fa; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        .data-display { background: #e9ecef; padding: 10px; border-radius: 3px; margin: 10px 0; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 预订草稿邮件功能测试</h1>
+    
+    <div class="debug-info">
+        <h3>🔍 功能说明</h3>
+        <p><strong>触发时机:</strong> 用户在咨询选择页面点击任一选项后</p>
+        <p><strong>邮件内容:</strong> 包含完整的6步表单数据 + 咨询选择</p>
+        <p><strong>收件人:</strong> info@patchtattootherapy.com</p>
+        <p><strong>数据保存:</strong> localStorage + 邮件发送</p>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 测试预订流程</h3>
+        <button class="test-button" onclick="testCompleteFlow()">测试完整预订流程</button>
+        <button class="test-button success" onclick="testConsultationChoice()">测试咨询选择页面</button>
+        <button class="test-button warning" onclick="testPaymentPage()">测试支付页面数据恢复</button>
+        <button class="test-button info" onclick="clearTestData()">清除测试数据</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📧 邮件内容预览</h3>
+        <div id="emailPreview" class="data-display">
+            <p>点击测试按钮查看邮件内容预览...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>💾 localStorage数据</h3>
+        <div id="localStorageData" class="data-display">
+            <p>点击测试按钮查看localStorage数据...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 测试步骤</h3>
+        <ol>
+            <li><strong>步骤1:</strong> 点击"测试完整预订流程" - 模拟用户填写6步表单</li>
+            <li><strong>步骤2:</strong> 点击"测试咨询选择页面" - 模拟用户选择咨询选项</li>
+            <li><strong>步骤3:</strong> 查看邮件内容预览和localStorage数据</li>
+            <li><strong>步骤4:</strong> 点击"测试支付页面数据恢复" - 验证数据恢复功能</li>
+            <li><strong>步骤5:</strong> 访问主应用测试实际功能</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 预期结果</h3>
+        <p>✅ <strong>邮件发送:</strong> 管理员收到包含完整表单数据的预订草稿邮件</p>
+        <p>✅ <strong>数据保存:</strong> localStorage中保存完整的预订数据</p>
+        <p>✅ <strong>流程跳转:</strong> 无论选择什么咨询选项，都直接跳转到支付页面</p>
+        <p>✅ <strong>数据恢复:</strong> 支付页面能正确显示预订摘要</p>
+        <p>✅ <strong>UI不变:</strong> 所有现有界面和样式保持不变</p>
+    </div>
+
+    <script>
+        // 模拟完整的预订数据
+        const mockBookingData = {
+            formData: {
+                artistId: 'jing',
+                name: 'Test User',
+                email: 'test@example.com',
+                phone: '(555) 123-4567',
+                tattooIdea: 'A beautiful dragon tattoo with cherry blossoms',
+                referenceImages: ['dragon_ref1.jpg', 'dragon_ref2.jpg'],
+                additionalNotes: 'I want it to be colorful and detailed',
+                instagramReference: '@testuser',
+                backgroundStory: 'This represents my journey and strength',
+                placement: 'Full sleeve on left arm',
+                bodyPhotos: ['arm_photo1.jpg'],
+                placementCertainty: 'Very certain',
+                openToSuggestions: 'Yes, open to artist suggestions',
+                colorPreference: 'I like vibrant colors, the more vivid, the better.',
+                skinTone: 'Medium-Light',
+                isFirstTattoo: 'I have 1-2 small walk-in tattoos from when I was young',
+                additionalInfo: 'I have sensitive skin, please use gentle ink',
+                needsConsultation: true
+            },
+            selectedArtist: {
+                id: 'jing',
+                name: 'Jingxi Gu',
+                displayName: 'Jing',
+                category: 'Lead Artist',
+                deposit: 300
+            },
+            consultationChoice: true,
+            timestamp: new Date().toISOString(),
+            depositAmount: 300,
+            status: 'PENDING_PAYMENT'
+        };
+
+        function testCompleteFlow() {
+            console.log('🧪 测试完整预订流程...');
+            
+            // 模拟保存到localStorage
+            localStorage.setItem('patchTattooBooking', JSON.stringify(mockBookingData));
+            
+            // 显示邮件预览
+            displayEmailPreview(mockBookingData);
+            
+            // 显示localStorage数据
+            displayLocalStorageData();
+            
+            console.log('✅ 完整预订流程测试完成');
+        }
+
+        function testConsultationChoice() {
+            console.log('🧪 测试咨询选择页面...');
+            
+            // 模拟咨询选择逻辑
+            const consultationChoice = Math.random() > 0.5;
+            const updatedData = {
+                ...mockBookingData,
+                consultationChoice: consultationChoice,
+                formData: {
+                    ...mockBookingData.formData,
+                    needsConsultation: consultationChoice
+                }
+            };
+            
+            // 保存更新后的数据
+            localStorage.setItem('patchTattooBooking', JSON.stringify(updatedData));
+            
+            // 显示邮件预览
+            displayEmailPreview(updatedData);
+            
+            // 显示localStorage数据
+            displayLocalStorageData();
+            
+            console.log(`✅ 咨询选择测试完成 - 选择: ${consultationChoice ? '需要咨询' : '不需要咨询'}`);
+        }
+
+        function testPaymentPage() {
+            console.log('🧪 测试支付页面数据恢复...');
+            
+            const savedData = localStorage.getItem('patchTattooBooking');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                console.log('📋 恢复的预订数据:', parsedData);
+                
+                // 显示恢复的数据
+                document.getElementById('localStorageData').innerHTML = 
+                    `<strong>✅ 数据恢复成功!</strong><br>
+                     <strong>客户:</strong> ${parsedData.formData.name}<br>
+                     <strong>艺术家:</strong> ${parsedData.selectedArtist.displayName}<br>
+                     <strong>定金:</strong> $${parsedData.depositAmount}<br>
+                     <strong>咨询:</strong> ${parsedData.consultationChoice ? '需要' : '不需要'}<br>
+                     <strong>时间:</strong> ${new Date(parsedData.timestamp).toLocaleString()}`;
+            } else {
+                console.log('❌ 没有找到保存的预订数据');
+                document.getElementById('localStorageData').innerHTML = 
+                    '<strong>❌ 没有找到保存的预订数据</strong>';
+            }
+        }
+
+        function clearTestData() {
+            console.log('🧹 清除测试数据...');
+            localStorage.removeItem('patchTattooBooking');
+            document.getElementById('emailPreview').innerHTML = '<p>测试数据已清除...</p>';
+            document.getElementById('localStorageData').innerHTML = '<p>localStorage数据已清除...</p>';
+            console.log('✅ 测试数据清除完成');
+        }
+
+        function displayEmailPreview(data) {
+            const preview = `
+                <strong>📧 预订草稿邮件预览:</strong><br><br>
+                <strong>收件人:</strong> info@patchtattootherapy.com<br>
+                <strong>主题:</strong> New Booking Request - Pending Payment<br><br>
+                <strong>客户信息:</strong><br>
+                - 姓名: ${data.formData.name}<br>
+                - 邮箱: ${data.formData.email}<br>
+                - 电话: ${data.formData.phone}<br><br>
+                <strong>纹身师:</strong> ${data.selectedArtist.displayName}<br>
+                <strong>定金:</strong> $${data.depositAmount}<br>
+                <strong>咨询需求:</strong> ${data.consultationChoice ? '需要' : '不需要'}<br><br>
+                <strong>纹身想法:</strong> ${data.formData.tattooIdea}<br>
+                <strong>位置:</strong> ${data.formData.placement}<br>
+                <strong>颜色偏好:</strong> ${data.formData.colorPreference}<br>
+                <strong>参考图片:</strong> ${data.formData.referenceImages.length} 张<br>
+                <strong>身体照片:</strong> ${data.formData.bodyPhotos.length} 张<br><br>
+                <strong>状态:</strong> ${data.status}<br>
+                <strong>时间:</strong> ${new Date(data.timestamp).toLocaleString()}
+            `;
+            document.getElementById('emailPreview').innerHTML = preview;
+        }
+
+        function displayLocalStorageData() {
+            const savedData = localStorage.getItem('patchTattooBooking');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                document.getElementById('localStorageData').innerHTML = 
+                    `<strong>💾 localStorage数据:</strong><br>
+                     <pre>${JSON.stringify(parsedData, null, 2)}</pre>`;
+            } else {
+                document.getElementById('localStorageData').innerHTML = 
+                    '<strong>❌ localStorage中没有数据</strong>';
+            }
+        }
+
+        // 页面加载时显示当前状态
+        window.onload = function() {
+            displayLocalStorageData();
+        };
+    </script>
+</body>
+</html>

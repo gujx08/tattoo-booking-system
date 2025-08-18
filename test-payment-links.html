@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试Payment Links配置</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .debug-info { background: #f8f9fa; padding: 10px; border-radius: 3px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Payment Links 配置测试</h1>
+    
+    <div class="debug-info">
+        <h3>🔍 环境信息</h3>
+        <p><strong>当前域名:</strong> <span id="hostname"></span></p>
+        <p><strong>强制测试模式:</strong> <span id="forceMode"></span></p>
+        <p><strong>检测到的环境:</strong> <span id="detectedEnv"></span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>💰 测试不同艺术家的Payment Links</h3>
+        <button class="test-button" onclick="testPaymentLink('jing')">测试 Jing ($300)</button>
+        <button class="test-button" onclick="testPaymentLink('rachel')">测试 Rachel ($100)</button>
+        <button class="test-button" onclick="testPaymentLink('jasmine')">测试 Jasmine ($100)</button>
+        <button class="test-button" onclick="testPaymentLink('lauren')">测试 Lauren ($100)</button>
+        <button class="test-button" onclick="testPaymentLink('annika')">测试 Annika ($100)</button>
+        <button class="test-button" onclick="testPaymentLink('maili')">测试 Maili ($50)</button>
+        <button class="test-button" onclick="testPaymentLink('keani')">测试 Keani ($50)</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 测试结果</h3>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        // 模拟配置
+        const FORCE_TEST_MODE = true;
+        
+        const STRIPE_PAYMENT_LINKS = {
+            'jing': 'https://buy.stripe.com/00w6oHgLY6Zf5WW45Gfw400',
+            'rachel': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
+            'jasmine': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
+            'lauren': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
+            'annika': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
+            'maili': 'https://buy.stripe.com/00w5kD9jwerH9988lWfw402',
+            'keani': 'https://buy.stripe.com/00w5kD9jwerH9988lWfw402'
+        };
+
+        const STRIPE_TEST_PAYMENT_LINKS = {
+            'jing': 'https://buy.stripe.com/test_00w6oHgLY6Zf5WW45Gfw400',
+            'rachel': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
+            'jasmine': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
+            'lauren': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
+            'annika': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
+            'maili': 'https://buy.stripe.com/test_00w5kD9jwerH9988lWfw402',
+            'keani': 'https://buy.stripe.com/test_00w5kD9jwerH9988lWfw402'
+        };
+
+        function getStripePaymentLink(artistId) {
+            const isTestMode = FORCE_TEST_MODE || 
+                               window.location.hostname === 'localhost' || 
+                               window.location.hostname.includes('127.0.0.1') || 
+                               window.location.hostname.includes('localhost');
+            
+            console.log('🔍 环境检测:', {
+                hostname: window.location.hostname,
+                isTestMode: isTestMode,
+                forceTestMode: FORCE_TEST_MODE,
+                artistId: artistId
+            });
+            
+            if (isTestMode) {
+                const testLink = STRIPE_TEST_PAYMENT_LINKS[artistId] || STRIPE_TEST_PAYMENT_LINKS.rachel;
+                console.log('🧪 使用测试环境链接:', testLink);
+                return testLink;
+            } else {
+                const prodLink = STRIPE_PAYMENT_LINKS[artistId] || STRIPE_PAYMENT_LINKS.rachel;
+                console.log('🚀 使用生产环境链接:', prodLink);
+                return prodLink;
+            }
+        }
+
+        function testPaymentLink(artistId) {
+            const link = getStripePaymentLink(artistId);
+            const isTest = link.includes('test_');
+            
+            const result = `
+                <div style="margin: 10px 0; padding: 10px; border: 1px solid ${isTest ? '#28a745' : '#dc3545'}; border-radius: 3px;">
+                    <strong>${artistId.toUpperCase()}</strong><br>
+                    <strong>链接:</strong> ${link}<br>
+                    <strong>环境:</strong> ${isTest ? '🧪 测试环境' : '🚀 生产环境'}<br>
+                    <strong>状态:</strong> ${isTest ? '✅ 正确' : '❌ 错误 - 应该使用测试环境'}
+                </div>
+            `;
+            
+            document.getElementById('testResults').innerHTML += result;
+            
+            // 打开链接进行测试
+            window.open(link, '_blank');
+        }
+
+        // 显示环境信息
+        document.getElementById('hostname').textContent = window.location.hostname;
+        document.getElementById('forceMode').textContent = FORCE_TEST_MODE ? '是' : '否';
+        
+        const isTestMode = FORCE_TEST_MODE || 
+                           window.location.hostname === 'localhost' || 
+                           window.location.hostname.includes('127.0.0.1') || 
+                           window.location.hostname.includes('localhost');
+        document.getElementById('detectedEnv').textContent = isTestMode ? '🧪 测试环境' : '🚀 生产环境';
+    </script>
+</body>
+</html>

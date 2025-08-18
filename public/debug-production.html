@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产环境调试 - Patch Tattoo Therapy</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .debug-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .debug-button { padding: 12px 24px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .debug-button:hover { background: #0056b3; }
+        .success-button { background: #28a745; }
+        .success-button:hover { background: #1e7e34; }
+        .warning-button { background: #ffc107; color: #212529; }
+        .warning-button:hover { background: #e0a800; }
+        .info-box { background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .code-block { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px; margin: 10px 0; }
+        .status-success { color: #28a745; font-weight: bold; }
+        .status-error { color: #dc3545; font-weight: bold; }
+        .status-warning { color: #ffc107; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔧 生产环境调试工具</h1>
+        
+        <div class="info-box">
+            <h3>📋 调试目标</h3>
+            <p>诊断生产环境中 <code>/success</code> 路由无法访问的问题。</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>🌐 环境信息</h3>
+            <div id="environmentInfo">
+                <p>正在检测环境信息...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔗 路由测试</h3>
+            <button class="debug-button" onclick="testSuccessRoute()">
+                🎯 测试 /success 路由
+            </button>
+            
+            <button class="debug-button" onclick="testHomeRoute()">
+                🏠 测试首页路由
+            </button>
+            
+            <button class="debug-button" onclick="testDirectAccess()">
+                🔗 直接访问 /success
+            </button>
+            
+            <button class="debug-button warning-button" onclick="checkLocalStorage()">
+                💾 检查localStorage
+            </button>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 测试结果</h3>
+            <div id="testResults">
+                <p>测试结果将在这里显示...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 网络请求</h3>
+            <button class="debug-button" onclick="testNetworkRequests()">
+                🌐 测试网络请求
+            </button>
+            <div id="networkResults">
+                <p>网络请求结果将在这里显示...</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📋 问题诊断</h3>
+            <div id="diagnosis">
+                <p>问题诊断结果将在这里显示...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const resultsElement = document.getElementById('testResults');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            resultsElement.innerHTML += logEntry + '<br>';
+            console.log(logEntry);
+        }
+
+        function updateEnvironmentInfo() {
+            const envElement = document.getElementById('environmentInfo');
+            const info = {
+                hostname: window.location.hostname,
+                protocol: window.location.protocol,
+                port: window.location.port,
+                pathname: window.location.pathname,
+                href: window.location.href,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            };
+            
+            envElement.innerHTML = `
+                <div class="code-block">
+                    <strong>环境信息:</strong><br>
+                    Hostname: ${info.hostname}<br>
+                    Protocol: ${info.protocol}<br>
+                    Port: ${info.port || 'default'}<br>
+                    Pathname: ${info.pathname}<br>
+                    Full URL: ${info.href}<br>
+                    User Agent: ${info.userAgent.substring(0, 100)}...<br>
+                    Timestamp: ${info.timestamp}
+                </div>
+            `;
+        }
+
+        function testSuccessRoute() {
+            log('🧪 开始测试 /success 路由...');
+            
+            // 测试fetch请求
+            fetch('/success')
+                .then(response => {
+                    log(`📡 响应状态: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                    log(`📡 响应类型: ${response.type}`);
+                    log(`📡 响应URL: ${response.url}`);
+                    return response.text();
+                })
+                .then(text => {
+                    log(`📄 响应内容长度: ${text.length} 字符`);
+                    if (text.includes('SuccessPage') || text.includes('Booking Successful')) {
+                        log('✅ 找到Success页面内容', 'success');
+                    } else if (text.includes('index.html')) {
+                        log('⚠️ 返回了index.html，可能是SPA路由', 'warning');
+                    } else {
+                        log('❌ 未找到预期的Success页面内容', 'error');
+                    }
+                })
+                .catch(error => {
+                    log(`❌ 请求失败: ${error.message}`, 'error');
+                });
+        }
+
+        function testHomeRoute() {
+            log('🏠 测试首页路由...');
+            
+            fetch('/')
+                .then(response => {
+                    log(`📡 首页响应状态: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                    return response.text();
+                })
+                .then(text => {
+                    log(`📄 首页内容长度: ${text.length} 字符`);
+                    if (text.includes('React') || text.includes('app')) {
+                        log('✅ 首页正常加载', 'success');
+                    } else {
+                        log('❌ 首页内容异常', 'error');
+                    }
+                })
+                .catch(error => {
+                    log(`❌ 首页请求失败: ${error.message}`, 'error');
+                });
+        }
+
+        function testDirectAccess() {
+            log('🔗 尝试直接访问 /success...');
+            
+            // 保存当前URL
+            const currentUrl = window.location.href;
+            
+            // 尝试跳转到success页面
+            window.location.href = '/success';
+            
+            // 5秒后检查是否还在当前页面
+            setTimeout(() => {
+                if (window.location.href === currentUrl) {
+                    log('❌ 路由跳转失败，仍在当前页面', 'error');
+                } else {
+                    log('✅ 路由跳转成功', 'success');
+                }
+            }, 5000);
+        }
+
+        function checkLocalStorage() {
+            log('💾 检查localStorage数据...');
+            
+            const savedData = localStorage.getItem('patchTattooBooking');
+            if (savedData) {
+                try {
+                    const bookingData = JSON.parse(savedData);
+                    log('✅ 找到localStorage数据', 'success');
+                    log(`- 客户: ${bookingData.formData?.name || 'N/A'}`);
+                    log(`- 艺术家: ${bookingData.selectedArtist?.displayName || 'N/A'}`);
+                    log(`- 时间戳: ${bookingData.timestamp || 'N/A'}`);
+                } catch (error) {
+                    log(`❌ 解析localStorage数据失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('⚠️ 没有找到localStorage数据', 'warning');
+            }
+        }
+
+        function testNetworkRequests() {
+            log('🌐 测试网络请求...');
+            
+            const networkElement = document.getElementById('networkResults');
+            networkElement.innerHTML = '<p>正在测试网络请求...</p>';
+            
+            // 测试多个路径
+            const testPaths = ['/', '/success', '/booking-success', '/nonexistent'];
+            
+            testPaths.forEach(path => {
+                fetch(path)
+                    .then(response => {
+                        const status = response.status;
+                        const statusText = response.statusText;
+                        const isSuccess = response.ok;
+                        
+                        networkElement.innerHTML += `
+                            <div class="${isSuccess ? 'status-success' : 'status-error'}">
+                                ${path}: ${status} ${statusText}
+                            </div>
+                        `;
+                        
+                        log(`${path}: ${status} ${statusText}`, isSuccess ? 'success' : 'error');
+                    })
+                    .catch(error => {
+                        networkElement.innerHTML += `
+                            <div class="status-error">
+                                ${path}: 请求失败 - ${error.message}
+                            </div>
+                        `;
+                        log(`${path}: 请求失败 - ${error.message}`, 'error');
+                    });
+            });
+        }
+
+        function runDiagnosis() {
+            log('🔍 开始问题诊断...');
+            
+            const diagnosisElement = document.getElementById('diagnosis');
+            let diagnosis = '<strong>🔍 问题诊断结果:</strong><br><br>';
+            
+            // 检查环境
+            const isProduction = window.location.hostname === 'booking.patchtattootherapy.com';
+            diagnosis += isProduction ? '✅ 生产环境检测正确<br>' : '❌ 环境检测异常<br>';
+            
+            // 检查协议
+            const isHttps = window.location.protocol === 'https:';
+            diagnosis += isHttps ? '✅ HTTPS协议<br>' : '❌ 非HTTPS协议<br>';
+            
+            // 检查localStorage
+            const hasLocalStorage = typeof(Storage) !== "undefined";
+            diagnosis += hasLocalStorage ? '✅ localStorage支持<br>' : '❌ localStorage不支持<br>';
+            
+            // 检查路由支持
+            const hasHistory = 'pushState' in window.history;
+            diagnosis += hasHistory ? '✅ History API支持<br>' : '❌ History API不支持<br>';
+            
+            diagnosis += '<br><strong>可能的问题:</strong><br>';
+            diagnosis += '1. Netlify重定向配置问题<br>';
+            diagnosis += '2. React Router配置问题<br>';
+            diagnosis += '3. 构建输出问题<br>';
+            diagnosis += '4. 缓存问题<br>';
+            
+            diagnosis += '<br><strong>建议解决方案:</strong><br>';
+            diagnosis += '1. 检查Netlify的_redirects文件<br>';
+            diagnosis += '2. 重新部署应用<br>';
+            diagnosis += '3. 清除浏览器缓存<br>';
+            diagnosis += '4. 检查构建日志<br>';
+            
+            diagnosisElement.innerHTML = diagnosis;
+        }
+
+        // 页面加载时自动运行
+        window.onload = function() {
+            log('🚀 生产环境调试工具加载完成');
+            updateEnvironmentInfo();
+            runDiagnosis();
+        };
+    </script>
+</body>
+</html>

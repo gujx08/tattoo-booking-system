@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路由测试 - Patch Tattoo Therapy</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .success { background: #28a745; }
+        .warning { background: #ffc107; color: #000; }
+    </style>
+</head>
+<body>
+    <h1>🧪 路由配置测试</h1>
+    
+    <div class="test-section">
+        <h3>📋 当前路由配置</h3>
+        <ul>
+            <li><strong>/</strong> - 主应用 (HomePage 或 BookingWizard)</li>
+            <li><strong>/success</strong> - 独立的Success页面</li>
+            <li><strong>/booking-success</strong> - 重定向到 /success</li>
+            <li><strong>/*</strong> - 重定向到 /</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>🔗 测试路由链接</h3>
+        <button class="test-button" onclick="testRoute('/')">测试首页 (/)</button>
+        <button class="test-button success" onclick="testRoute('/success')">测试Success页面 (/success)</button>
+        <button class="test-button warning" onclick="testRoute('/booking-success')">测试重定向 (/booking-success)</button>
+        <button class="test-button" onclick="testRoute('/invalid')">测试无效路径 (/invalid)</button>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 Success页面访问方式</h3>
+        <p><strong>方式1:</strong> 通过URL直接访问 <code>/success</code></p>
+        <p><strong>方式2:</strong> 在预约流程中自动跳转 (currentStep = 10)</p>
+        <p><strong>方式3:</strong> Stripe支付成功后重定向</p>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 测试说明</h3>
+        <p>✅ <strong>/success</strong> - 应该显示独立的Success页面</p>
+        <p>✅ <strong>/booking-success</strong> - 应该重定向到 /success</p>
+        <p>✅ <strong>/invalid</strong> - 应该重定向到首页</p>
+        <p>✅ <strong>/</strong> - 应该显示主应用</p>
+    </div>
+
+    <script>
+        function testRoute(path) {
+            console.log(`🧪 测试路由: ${path}`);
+            window.open(path, '_blank');
+        }
+
+        // 显示当前环境信息
+        console.log('🔍 当前环境信息:');
+        console.log('- 域名:', window.location.hostname);
+        console.log('- 端口:', window.location.port);
+        console.log('- 协议:', window.location.protocol);
+        console.log('- 完整URL:', window.location.href);
+    </script>
+</body>
+</html>
