@@ -1,23 +1,23 @@
 // src/config/stripeConfig.ts
 
-// ⚠️ 重要：当前使用的是生产环境的Payment Links
-// 测试时需要使用测试环境的Payment Links
+// 🚀 生产环境配置 - Live Payment Links
+// 所有Payment Links都是生产环境的真实链接
 
-// 🔧 强制测试模式 - 设置为 true 强制使用测试环境
-const FORCE_TEST_MODE = true;
+// 🔧 生产模式 - 设置为 false 使用生产环境
+const FORCE_TEST_MODE = false;
 
-// 生产环境 Payment Links (当前使用)
+// 🚀 Live Payment Links - 生产环境
 export const STRIPE_PAYMENT_LINKS = {
   // $300 定金 - Jing (Lead Artist)
   'jing': 'https://buy.stripe.com/00w6oHgLY6Zf5WW45Gfw400',
   
-  // $100 定金 - Rachel, Jasmine, Lauren, Annika
+  // $100 定金 - Senior & Junior Artists
   'rachel': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
   'jasmine': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
   'lauren': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
   'annika': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
   
-  // $50 定金 - Maili, Keani (Apprentices)
+  // $50 定金 - Apprentices
   'maili': 'https://buy.stripe.com/00w5kD9jwerH9988lWfw402',
   'keani': 'https://buy.stripe.com/00w5kD9jwerH9988lWfw402'
 } as const;
@@ -66,7 +66,7 @@ export const getArtistName = (artistId: string): string => {
 
 // 获取Stripe支付链接
 export const getStripePaymentLink = (artistId: string, customerEmail?: string): string => {
-  // 环境检测逻辑
+  // 环境检测逻辑 - 生产环境使用Live Payment Links
   const isTestMode = FORCE_TEST_MODE || 
                      window.location.hostname === 'localhost' || 
                      window.location.hostname.includes('127.0.0.1') || 
@@ -88,9 +88,9 @@ export const getStripePaymentLink = (artistId: string, customerEmail?: string): 
     baseLink = STRIPE_TEST_PAYMENT_LINKS[artistId as keyof typeof STRIPE_TEST_PAYMENT_LINKS] || STRIPE_TEST_PAYMENT_LINKS.rachel;
     console.log('🧪 使用测试环境链接:', baseLink);
   } else {
-    // 生产环境 - 使用生产Payment Links
+    // 生产环境 - 使用Live Payment Links
     baseLink = STRIPE_PAYMENT_LINKS[artistId as keyof typeof STRIPE_PAYMENT_LINKS] || STRIPE_PAYMENT_LINKS.rachel;
-    console.log('🚀 使用生产环境链接:', baseLink);
+    console.log('🚀 使用Live Payment Links:', baseLink);
   }
   
   // 如果有客户邮箱，添加到URL参数中
