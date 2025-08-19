@@ -6,7 +6,29 @@ import Button from '../common/Button';
 import { sendBookingConfirmationEmail } from '../../services/emailService';
 
 // 全局标记，防止多个组件实例同时发送邮件
-const emailSentGlobal = new Set<string>();
+// 使用localStorage作为持久化存储，防止页面刷新后重复发送
+const getEmailSentGlobal = () => {
+  try {
+    const stored = localStorage.getItem('emailSentGlobal');
+    return stored ? new Set(JSON.parse(stored)) : new Set<string>();
+  } catch {
+    return new Set<string>();
+  }
+};
+
+const setEmailSentGlobal = (emailId: string) => {
+  try {
+    const current = getEmailSentGlobal();
+    current.add(emailId);
+    localStorage.setItem('emailSentGlobal', JSON.stringify([...current]));
+  } catch (error) {
+    console.warn('无法保存邮件发送状态到localStorage:', error);
+  }
+};
+
+const isEmailSentGlobal = (emailId: string) => {
+  return getEmailSentGlobal().has(emailId);
+};
 
 const SuccessPage: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -32,7 +54,7 @@ const SuccessPage: React.FC = () => {
     // 多重检查防止重复发送
     if (
       hasSentRef.current || 
-      emailSentGlobal.has(emailId) ||
+      isEmailSentGlobal(emailId) ||
       emailSent || 
       isProcessing ||
       !componentMountedRef.current
@@ -49,7 +71,7 @@ const SuccessPage: React.FC = () => {
 
     // 立即标记为已发送，防止重复
     hasSentRef.current = true;
-    emailSentGlobal.add(emailId);
+    setEmailSentGlobal(emailId);
     setIsProcessing(true);
 
     console.log('🚀 准备发送确认邮件...');
@@ -105,7 +127,7 @@ const SuccessPage: React.FC = () => {
       } else {
         console.warn('⚠️ 邮件发送失败:', result.error);
         // 发送失败时移除标记，允许重试
-        emailSentGlobal.delete(emailId);
+        // 注意：由于使用localStorage，这里不删除标记，避免重复发送
         hasSentRef.current = false;
         setEmailSent(false);
       }
@@ -116,8 +138,7 @@ const SuccessPage: React.FC = () => {
       // 确保组件仍然挂载再处理错误
       if (!componentMountedRef.current) return;
       
-      // 发送异常时移除标记，允许重试
-      emailSentGlobal.delete(emailId);
+      // 发送异常时不删除localStorage标记，避免重复发送
       hasSentRef.current = false;
       setEmailSent(false);
     } finally {
@@ -129,8 +150,12 @@ const SuccessPage: React.FC = () => {
   };
 
   const handleBackHome = () => {
-    // 清理全局标记
-    emailSentGlobal.clear();
+    // 清理localStorage中的邮件发送标记
+    try {
+      localStorage.removeItem('emailSentGlobal');
+    } catch (error) {
+      console.warn('清理邮件发送标记失败:', error);
+    }
     
     dispatch({ type: 'RESET_FORM' });
     dispatch({ type: 'SET_STEP', payload: 0 }); // 跳转到首页（纹身师选择页）
