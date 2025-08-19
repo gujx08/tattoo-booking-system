@@ -43,7 +43,7 @@ const PaymentPage: React.FC = () => {
     return getDepositAmount(artistId);
   };
 
-  const handleStripePayment = async () => {
+  const handleStripePayment = () => {
     try {
       setIsProcessing(true);
       
@@ -67,27 +67,25 @@ const PaymentPage: React.FC = () => {
       // 保存到localStorage（备份）
       localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
 
-      // 发送预订草稿邮件
-      console.log('📧 发送预订草稿邮件...');
-      try {
-        const emailResult = await sendBookingDraftEmail(completeBookingData);
-        if (emailResult.success) {
-          console.log('✅ 预订草稿邮件发送成功');
-        } else {
-          console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
-        }
-      } catch (emailError) {
-        console.error('❌ 邮件发送出错:', emailError);
-        // 邮件发送失败不影响支付流程
-      }
-
       // 获取Stripe支付链接，并预填充客户邮箱
       const artistId = state.formData.artistId || '';
       const customerEmail = state.formData.email || '';
       const paymentUrl = getStripePaymentLink(artistId, customerEmail);
 
-      // 跳转到Stripe支付页面
+      // 立即跳转到Stripe支付页面
       window.location.href = paymentUrl;
+
+      // 在后台异步发送预订草稿邮件（不阻塞用户）
+      console.log('📧 后台异步发送预订草稿邮件...');
+      sendBookingDraftEmail(completeBookingData).then(emailResult => {
+        if (emailResult.success) {
+          console.log('✅ 预订草稿邮件发送成功');
+        } else {
+          console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
+        }
+      }).catch(emailError => {
+        console.error('❌ 邮件发送出错:', emailError);
+      });
       
     } catch (error) {
       console.error('Payment error:', error);
