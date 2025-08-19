@@ -64,7 +64,7 @@ https://buy.stripe.com/00w5kD9jwerH9988lWfw402
 ## 🔧 技术实现
 
 ### 核心函数
-- `getStripePaymentLink(artistId)` - 获取对应艺术家的支付链接
+- `getStripePaymentLink(artistId, customerEmail?)` - 获取对应艺术家的支付链接，可选择预填充客户邮箱
 - `getDepositAmount(artistId)` - 获取对应艺术家的定金金额
 - `getArtistName(artistId)` - 获取艺术家名称
 

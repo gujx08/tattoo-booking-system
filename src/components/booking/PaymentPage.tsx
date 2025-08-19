@@ -53,9 +53,10 @@ const PaymentPage: React.FC = () => {
         return;
       }
 
-      // 获取Stripe支付链接
+      // 获取Stripe支付链接，并预填充客户邮箱
       const artistId = state.formData.artistId || '';
-      const paymentUrl = getStripePaymentLink(artistId);
+      const customerEmail = state.formData.email || '';
+      const paymentUrl = getStripePaymentLink(artistId, customerEmail);
 
       // 跳转到Stripe支付页面
       window.location.href = paymentUrl;

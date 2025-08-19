@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email Prefill</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 测试邮箱预填充功能</h1>
+    
+    <div class="test-section">
+        <h3>测试邮箱预填充URL生成</h3>
+        <input type="email" id="testEmail" placeholder="输入测试邮箱" value="test@example.com">
+        <button onclick="testEmailPrefill()">测试邮箱预填充</button>
+        <div id="emailPrefillResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>测试不同艺术家的支付链接</h3>
+        <select id="artistSelect">
+            <option value="jing">Jing ($300)</option>
+            <option value="rachel">Rachel ($100)</option>
+            <option value="jasmine">Jasmine ($100)</option>
+            <option value="lauren">Lauren ($100)</option>
+            <option value="annika">Annika ($100)</option>
+            <option value="maili">Maili ($50)</option>
+            <option value="keani">Keani ($50)</option>
+        </select>
+        <button onclick="testArtistLinks()">测试艺术家链接</button>
+        <div id="artistLinksResult" class="result"></div>
+    </div>
+
+    <script>
+        // 模拟Stripe配置
+        const STRIPE_TEST_PAYMENT_LINKS = {
+            'jing': 'https://buy.stripe.com/test_cNi14ngLYcjz4SS31Cfw403',
+            'rachel': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+            'jasmine': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+            'lauren': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+            'annika': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+            'maili': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+            'keani': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404'
+        };
+
+        // 模拟getStripePaymentLink函数
+        function getStripePaymentLink(artistId, customerEmail) {
+            const baseLink = STRIPE_TEST_PAYMENT_LINKS[artistId] || STRIPE_TEST_PAYMENT_LINKS.rachel;
+            
+            if (customerEmail && customerEmail.trim()) {
+                const separator = baseLink.includes('?') ? '&' : '?';
+                return `${baseLink}${separator}prefilled_email=${encodeURIComponent(customerEmail.trim())}`;
+            }
+            
+            return baseLink;
+        }
+
+        function testEmailPrefill() {
+            const email = document.getElementById('testEmail').value;
+            const result = document.getElementById('emailPrefillResult');
+            
+            if (!email) {
+                result.innerHTML = '<strong>❌ 错误:</strong> 请输入邮箱地址';
+                return;
+            }
+
+            const testCases = [
+                { artist: 'jing', email: email },
+                { artist: 'rachel', email: email },
+                { artist: 'maili', email: email }
+            ];
+
+            let html = '<h4>📧 邮箱预填充测试结果:</h4>';
+            testCases.forEach(test => {
+                const link = getStripePaymentLink(test.artist, test.email);
+                html += `
+                    <div style="margin: 10px 0; padding: 8px; background: white; border-left: 3px solid #007bff;">
+                        <strong>${test.artist}:</strong><br>
+                        <code style="word-break: break-all;">${link}</code>
+                    </div>
+                `;
+            });
+
+            result.innerHTML = html;
+        }
+
+        function testArtistLinks() {
+            const artist = document.getElementById('artistSelect').value;
+            const result = document.getElementById('artistLinksResult');
+            
+            const testEmails = [
+                'customer@example.com',
+                'test.user@gmail.com',
+                'user+test@domain.co.uk'
+            ];
+
+            let html = `<h4>🎨 ${artist} 的支付链接测试:</h4>`;
+            
+            // 测试无邮箱
+            const baseLink = getStripePaymentLink(artist);
+            html += `
+                <div style="margin: 10px 0; padding: 8px; background: white; border-left: 3px solid #28a745;">
+                    <strong>无邮箱预填充:</strong><br>
+                    <code>${baseLink}</code>
+                </div>
+            `;
+
+            // 测试有邮箱
+            testEmails.forEach(email => {
+                const link = getStripePaymentLink(artist, email);
+                html += `
+                    <div style="margin: 10px 0; padding: 8px; background: white; border-left: 3px solid #007bff;">
+                        <strong>邮箱: ${email}</strong><br>
+                        <code style="word-break: break-all;">${link}</code>
+                    </div>
+                `;
+            });
+
+            result.innerHTML = html;
+        }
+
+        // 页面加载时自动测试
+        window.onload = function() {
+            testEmailPrefill();
+            testArtistLinks();
+        };
+    </script>
+</body>
+</html>

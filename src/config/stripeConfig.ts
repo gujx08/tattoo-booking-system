@@ -65,7 +65,7 @@ export const getArtistName = (artistId: string): string => {
 };
 
 // 获取Stripe支付链接
-export const getStripePaymentLink = (artistId: string): string => {
+export const getStripePaymentLink = (artistId: string, customerEmail?: string): string => {
   // 环境检测逻辑
   const isTestMode = FORCE_TEST_MODE || 
                      window.location.hostname === 'localhost' || 
@@ -77,20 +77,31 @@ export const getStripePaymentLink = (artistId: string): string => {
     isTestMode: isTestMode,
     forceTestMode: FORCE_TEST_MODE,
     artistId: artistId,
+    customerEmail: customerEmail,
     currentUrl: window.location.href
   });
   
+  let baseLink: string;
+  
   if (isTestMode) {
     // 测试环境 - 使用测试Payment Links
-    const testLink = STRIPE_TEST_PAYMENT_LINKS[artistId as keyof typeof STRIPE_TEST_PAYMENT_LINKS] || STRIPE_TEST_PAYMENT_LINKS.rachel;
-    console.log('🧪 使用测试环境链接:', testLink);
-    return testLink;
+    baseLink = STRIPE_TEST_PAYMENT_LINKS[artistId as keyof typeof STRIPE_TEST_PAYMENT_LINKS] || STRIPE_TEST_PAYMENT_LINKS.rachel;
+    console.log('🧪 使用测试环境链接:', baseLink);
   } else {
     // 生产环境 - 使用生产Payment Links
-    const prodLink = STRIPE_PAYMENT_LINKS[artistId as keyof typeof STRIPE_PAYMENT_LINKS] || STRIPE_PAYMENT_LINKS.rachel;
-    console.log('🚀 使用生产环境链接:', prodLink);
-    return prodLink;
+    baseLink = STRIPE_PAYMENT_LINKS[artistId as keyof typeof STRIPE_PAYMENT_LINKS] || STRIPE_PAYMENT_LINKS.rachel;
+    console.log('🚀 使用生产环境链接:', baseLink);
   }
+  
+  // 如果有客户邮箱，添加到URL参数中
+  if (customerEmail && customerEmail.trim()) {
+    const separator = baseLink.includes('?') ? '&' : '?';
+    const finalLink = `${baseLink}${separator}prefilled_email=${encodeURIComponent(customerEmail.trim())}`;
+    console.log('📧 添加邮箱预填充参数:', finalLink);
+    return finalLink;
+  }
+  
+  return baseLink;
 };
 
 // 获取成功页面URL
