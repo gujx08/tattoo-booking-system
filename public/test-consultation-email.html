@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Consultation Email Variables</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        input, textarea { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 100%; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .debug-info { background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 测试咨询时间邮件变量</h1>
+    
+    <div class="test-section">
+        <h3>模拟预订数据</h3>
+        
+        <div class="form-group">
+            <label>客户姓名:</label>
+            <input type="text" id="customerName" value="Test User" placeholder="输入客户姓名">
+        </div>
+        
+        <div class="form-group">
+            <label>客户邮箱:</label>
+            <input type="email" id="customerEmail" value="test@example.com" placeholder="输入客户邮箱">
+        </div>
+        
+        <div class="form-group">
+            <label>选中的艺术家:</label>
+            <select id="selectedArtist">
+                <option value="jing">Jing</option>
+                <option value="rachel">Rachel</option>
+                <option value="jasmine">Jasmine</option>
+                <option value="lauren">Lauren</option>
+                <option value="annika">Annika</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>是否需要咨询:</label>
+            <select id="needsConsultation" onchange="toggleConsultationFields()">
+                <option value="false">No consultation needed</option>
+                <option value="true">Yes, I need consultation</option>
+            </select>
+        </div>
+        
+        <div id="consultationFields" style="display: none;">
+            <div class="form-group">
+                <label>咨询日期:</label>
+                <input type="text" id="consultationDate" value="Wednesday, January 15, 2025" placeholder="咨询日期">
+            </div>
+            
+            <div class="form-group">
+                <label>咨询时间:</label>
+                <input type="text" id="consultationTime" value="8:00 PM - 8:30 PM" placeholder="咨询时间">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>纹身想法:</label>
+            <textarea id="tattooIdea" rows="3" placeholder="描述纹身想法">I want a small dragon tattoo on my forearm</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>位置:</label>
+            <input type="text" id="placement" value="Forearm" placeholder="纹身位置">
+        </div>
+        
+        <div class="form-group">
+            <label>颜色偏好:</label>
+            <input type="text" id="colorPreference" value="Black and grey" placeholder="颜色偏好">
+        </div>
+        
+        <button onclick="testConsultationEmail()">测试咨询时间邮件变量</button>
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <script>
+        function toggleConsultationFields() {
+            const needsConsultation = document.getElementById('needsConsultation').value;
+            const consultationFields = document.getElementById('consultationFields');
+            
+            if (needsConsultation === 'true') {
+                consultationFields.style.display = 'block';
+            } else {
+                consultationFields.style.display = 'none';
+            }
+        }
+
+        function testConsultationEmail() {
+            const result = document.getElementById('testResult');
+            result.innerHTML = '<p>🔄 正在测试咨询时间邮件变量...</p>';
+
+            // 收集表单数据
+            const needsConsultation = document.getElementById('needsConsultation').value === 'true';
+            const consultationDate = document.getElementById('consultationDate').value;
+            const consultationTime = document.getElementById('consultationTime').value;
+
+            // 模拟PaymentPage的数据结构
+            const completeBookingData = {
+                formData: {
+                    name: document.getElementById('customerName').value,
+                    email: document.getElementById('customerEmail').value,
+                    needsConsultation: needsConsultation,
+                    consultationDate: consultationDate,
+                    consultationTime: consultationTime,
+                    tattooIdea: document.getElementById('tattooIdea').value,
+                    placement: document.getElementById('placement').value,
+                    colorPreference: document.getElementById('colorPreference').value
+                },
+                selectedArtist: {
+                    id: document.getElementById('selectedArtist').value,
+                    name: document.getElementById('selectedArtist').options[document.getElementById('selectedArtist').selectedIndex].text
+                },
+                consultationChoice: needsConsultation,
+                timestamp: new Date().toISOString(),
+                depositAmount: 100,
+                status: 'PENDING_PAYMENT'
+            };
+
+            // 模拟邮件服务中的consultation_details逻辑
+            const consultation_details = (() => {
+                // 检查是否需要咨询（支持多种字段名）
+                const needsConsultation = completeBookingData.consultationChoice || 
+                                         completeBookingData.formData?.needsConsultation || 
+                                         false;
+                
+                if (needsConsultation) {
+                    // 需要咨询，显示具体时间
+                    const consultationDate = completeBookingData.formData?.consultationDate || '';
+                    const consultationTime = completeBookingData.formData?.consultationTime || '';
+                    
+                    if (consultationDate && consultationTime) {
+                        return `Yes - ${consultationDate} at ${consultationTime}`;
+                    } else {
+                        return 'Yes - consultation time to be scheduled';
+                    }
+                } else {
+                    // 不需要咨询
+                    return 'No consultation needed';
+                }
+            })();
+
+            // 准备邮件模板参数
+            const templateParams = {
+                // 客户基本信息
+                customer_name: completeBookingData.formData?.name || '',
+                customer_email: completeBookingData.formData?.email || '',
+                customer_phone: completeBookingData.formData?.phone || '',
+                
+                // 纹身师信息
+                selected_artist: completeBookingData.selectedArtist?.name || '',
+                artist_id: completeBookingData.selectedArtist?.id || '',
+                
+                // 纹身详情
+                tattoo_idea: completeBookingData.formData?.tattooIdea || '',
+                size_placement: completeBookingData.formData?.placement || '',
+                color_preference: completeBookingData.formData?.colorPreference || '',
+                
+                // 咨询信息
+                consultation_details: consultation_details,
+                deposit_amount: completeBookingData.depositAmount || 0,
+                
+                // 其他字段
+                instagram_link: '',
+                background_story: '',
+                placement_certainty: '',
+                body_assessment: '',
+                skin_tone: '',
+                tattoo_experience: '',
+                additional_info: ''
+            };
+
+            // 显示调试信息
+            let html = `
+                <h4>📧 邮件模板参数测试结果:</h4>
+                
+                <div class="debug-info">
+                    <h5>🔍 调试信息:</h5>
+                    <p><strong>needsConsultation:</strong> ${needsConsultation}</p>
+                    <p><strong>consultationDate:</strong> "${consultationDate}"</p>
+                    <p><strong>consultationTime:</strong> "${consultationTime}"</p>
+                    <p><strong>consultationChoice:</strong> ${completeBookingData.consultationChoice}</p>
+                </div>
+                
+                <h5>📨 邮件模板变量:</h5>
+            `;
+
+            // 显示关键变量
+            const keyVariables = [
+                'customer_name',
+                'selected_artist', 
+                'consultation_details',
+                'tattoo_idea',
+                'size_placement',
+                'color_preference',
+                'deposit_amount'
+            ];
+
+            keyVariables.forEach(key => {
+                html += `
+                    <div style="margin: 10px 0; padding: 8px; background: white; border-left: 3px solid #007bff;">
+                        <strong>${key}:</strong><br>
+                        <code style="word-break: break-all;">${templateParams[key]}</code>
+                    </div>
+                `;
+            });
+
+            // 显示完整的模板参数
+            html += `
+                <h5>📋 完整模板参数:</h5>
+                <pre style="background: white; padding: 10px; border-radius: 3px; overflow-x: auto;">${JSON.stringify(templateParams, null, 2)}</pre>
+            `;
+
+            result.innerHTML = html;
+        }
+
+        // 页面加载时初始化
+        window.onload = function() {
+            toggleConsultationFields();
+        };
+    </script>
+</body>
+</html>

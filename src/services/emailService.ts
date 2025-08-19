@@ -252,10 +252,23 @@ export const sendBookingDraftEmail = async (bookingData: any) => {
       
       // 咨询信息 - 显示具体的咨询时间或"No consultation needed"
       consultation_details: (() => {
-        if (bookingData.consultationChoice) {
+        // 检查是否需要咨询（支持多种字段名）
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
           // 需要咨询，显示具体时间
           const consultationDate = bookingData.formData?.consultationDate || '';
           const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          console.log('🔍 咨询信息调试:', {
+            needsConsultation,
+            consultationDate,
+            consultationTime,
+            formData: bookingData.formData
+          });
+          
           if (consultationDate && consultationTime) {
             return `Yes - ${consultationDate} at ${consultationTime}`;
           } else {
