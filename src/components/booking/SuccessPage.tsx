@@ -48,8 +48,24 @@ const SuccessPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // 尝试从localStorage恢复数据
+    let bookingDataFromStorage = null;
+    try {
+      const savedBooking = localStorage.getItem('patchTattooBooking');
+      if (savedBooking) {
+        bookingDataFromStorage = JSON.parse(savedBooking);
+        console.log('📋 从localStorage恢复的预订数据:', bookingDataFromStorage);
+      }
+    } catch (error) {
+      console.error('❌ 解析localStorage数据失败:', error);
+    }
+
+    // 使用AppContext数据或localStorage数据
+    const effectiveFormData = state.formData?.name ? state.formData : bookingDataFromStorage?.formData;
+    const effectiveSelectedArtist = selectedArtist || bookingDataFromStorage?.selectedArtist;
+    
     // 创建唯一的邮件标识，基于用户数据而不是时间戳
-    const emailId = `${state.formData?.email || 'unknown'}_${state.formData?.name || 'unknown'}_${selectedArtist?.id || 'unknown'}`;
+    const emailId = `${effectiveFormData?.email || 'unknown'}_${effectiveFormData?.name || 'unknown'}_${effectiveSelectedArtist?.id || 'unknown'}`;
     
     // 多重检查防止重复发送
     if (
@@ -64,8 +80,13 @@ const SuccessPage: React.FC = () => {
     }
 
     // 检查是否有有效的预约数据
-    if (!state.formData?.name || !state.formData?.email) {
+    if (!effectiveFormData?.name || !effectiveFormData?.email) {
       console.warn('❌ 缺少必要数据，跳过邮件发送');
+      console.log('🔍 当前数据状态:', {
+        stateFormData: state.formData,
+        localStorageData: bookingDataFromStorage,
+        effectiveFormData: effectiveFormData
+      });
       return;
     }
 
@@ -97,21 +118,36 @@ const SuccessPage: React.FC = () => {
         return;
       }
 
+      // 尝试从localStorage恢复数据
+      let bookingDataFromStorage = null;
+      try {
+        const savedBooking = localStorage.getItem('patchTattooBooking');
+        if (savedBooking) {
+          bookingDataFromStorage = JSON.parse(savedBooking);
+        }
+      } catch (error) {
+        console.error('❌ 解析localStorage数据失败:', error);
+      }
+
+      // 使用AppContext数据或localStorage数据
+      const effectiveFormData = state.formData?.name ? state.formData : bookingDataFromStorage?.formData;
+      const effectiveSelectedArtist = selectedArtist || bookingDataFromStorage?.selectedArtist;
+
       console.log('📤 开始发送邮件流程...');
-      console.log('🔍 state.formData:', state.formData);
-      console.log('🔍 selectedArtist:', selectedArtist);
+      console.log('🔍 effectiveFormData:', effectiveFormData);
+      console.log('🔍 effectiveSelectedArtist:', effectiveSelectedArtist);
       
       const bookingData = {
-        name: state.formData?.name || 'Customer',
-        email: state.formData?.email || 'test@example.com',
-        phone: state.formData?.phone || 'Not provided',
-        selectedArtist: selectedArtist?.displayName || selectedArtist?.name || 'Jing',
-        tattooIdea: state.formData?.tattooIdea || 'Custom design consultation',
-        needsConsultation: state.formData?.needsConsultation ? 'Yes' : 'No',
-        consultationDate: state.formData?.consultationDate || 'To be scheduled',
-        consultationTime: state.formData?.consultationTime || 'To be scheduled',
-        placement: state.formData?.placement || 'To be discussed',
-        colorPreference: state.formData?.colorPreference || 'To be discussed'
+        name: effectiveFormData?.name || 'Customer',
+        email: effectiveFormData?.email || 'test@example.com',
+        phone: effectiveFormData?.phone || 'Not provided',
+        selectedArtist: effectiveSelectedArtist?.displayName || effectiveSelectedArtist?.name || 'Jing',
+        tattooIdea: effectiveFormData?.tattooIdea || 'Custom design consultation',
+        needsConsultation: effectiveFormData?.needsConsultation ? 'Yes' : 'No',
+        consultationDate: effectiveFormData?.consultationDate || 'To be scheduled',
+        consultationTime: effectiveFormData?.consultationTime || 'To be scheduled',
+        placement: effectiveFormData?.placement || 'To be discussed',
+        colorPreference: effectiveFormData?.colorPreference || 'To be discussed'
       };
 
       console.log('📨 准备发送的邮件数据:', bookingData);
