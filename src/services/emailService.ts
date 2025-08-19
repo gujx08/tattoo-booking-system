@@ -279,6 +279,45 @@ export const sendBookingDraftEmail = async (bookingData: any) => {
           return 'No consultation needed';
         }
       })(),
+      
+      // 同时发送多个可能的变量名，确保EmailJS模板能接收到
+      needs_consultation: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
+      
+      consultation_needed: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
       deposit_amount: bookingData.depositAmount || 0,
       
       // 预约时间信息
