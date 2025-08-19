@@ -72,19 +72,25 @@ const PaymentPage: React.FC = () => {
       const customerEmail = state.formData.email || '';
       const paymentUrl = getStripePaymentLink(artistId, customerEmail);
 
-      // 立即跳转到Stripe支付页面
-      window.location.href = paymentUrl;
-
       // 在后台异步发送预订草稿邮件（不阻塞用户）
       console.log('📧 后台异步发送预订草稿邮件...');
+      console.log('📋 发送的预订数据:', completeBookingData);
+      
+      // 先发送邮件，然后再跳转
       sendBookingDraftEmail(completeBookingData).then(emailResult => {
         if (emailResult.success) {
           console.log('✅ 预订草稿邮件发送成功');
+          // 邮件发送成功后跳转到Stripe
+          window.location.href = paymentUrl;
         } else {
           console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
+          // 即使邮件发送失败，也要跳转到Stripe
+          window.location.href = paymentUrl;
         }
       }).catch(emailError => {
         console.error('❌ 邮件发送出错:', emailError);
+        // 即使邮件发送出错，也要跳转到Stripe
+        window.location.href = paymentUrl;
       });
       
     } catch (error) {
