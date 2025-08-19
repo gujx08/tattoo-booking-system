@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Consultation Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 100%; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .debug { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 调试咨询数据</h1>
+    
+    <div class="test-section">
+        <h3>模拟咨询数据保存</h3>
+        
+        <div class="form-group">
+            <label>咨询日期:</label>
+            <input type="text" id="consultationDate" value="Wednesday, January 15, 2025" placeholder="咨询日期">
+        </div>
+        
+        <div class="form-group">
+            <label>咨询时间:</label>
+            <input type="text" id="consultationTime" value="8:00 PM - 8:30 PM" placeholder="咨询时间">
+        </div>
+        
+        <div class="form-group">
+            <label>需要咨询:</label>
+            <select id="needsConsultation">
+                <option value="true">是</option>
+                <option value="false">否</option>
+            </select>
+        </div>
+        
+        <button onclick="testConsultationData()">测试咨询数据</button>
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <script>
+        function testConsultationData() {
+            const result = document.getElementById('testResult');
+            const consultationDate = document.getElementById('consultationDate').value;
+            const consultationTime = document.getElementById('consultationTime').value;
+            const needsConsultation = document.getElementById('needsConsultation').value === 'true';
+            
+            // 模拟state.formData
+            const formData = {
+                name: 'Test User',
+                email: 'test@example.com',
+                phone: '123-456-7890',
+                artistId: 'rachel',
+                needsConsultation: needsConsultation,
+                consultationDate: consultationDate,
+                consultationTime: consultationTime,
+                tattooIdea: 'A small dragon tattoo on forearm',
+                placement: 'Forearm',
+                colorPreference: 'Black and grey'
+            };
+            
+            // 模拟completeBookingData
+            const completeBookingData = {
+                formData: formData,
+                selectedArtist: {
+                    id: 'rachel',
+                    name: 'Rachel Hong',
+                    displayName: 'Rachel Hong'
+                },
+                consultationChoice: needsConsultation,
+                timestamp: new Date().toISOString(),
+                depositAmount: 100,
+                status: 'PENDING_PAYMENT'
+            };
+            
+            // 模拟emailService.ts中的逻辑
+            const needsConsultationCheck = completeBookingData.consultationChoice || 
+                                         completeBookingData.formData?.needsConsultation || 
+                                         false;
+            
+            let consultationDetails;
+            if (needsConsultationCheck) {
+                const date = completeBookingData.formData?.consultationDate || '';
+                const time = completeBookingData.formData?.consultationTime || '';
+                
+                if (date && time) {
+                    consultationDetails = `Yes - ${date} at ${time}`;
+                } else {
+                    consultationDetails = 'Yes - consultation time to be scheduled';
+                }
+            } else {
+                consultationDetails = 'No consultation needed';
+            }
+            
+            const templateParams = {
+                customer_name: completeBookingData.formData?.name || '',
+                customer_email: completeBookingData.formData?.email || '',
+                customer_phone: completeBookingData.formData?.phone || '',
+                selected_artist: completeBookingData.selectedArtist?.displayName || '',
+                consultation_details: consultationDetails,
+                deposit_amount: completeBookingData.depositAmount || 0,
+                tattoo_idea: completeBookingData.formData?.tattooIdea || '',
+                size_placement: completeBookingData.formData?.placement || '',
+                color_preference: completeBookingData.formData?.colorPreference || ''
+            };
+            
+            result.innerHTML = `
+                <div class="debug">
+                    <h4>🔍 调试信息</h4>
+                    <p><strong>formData.needsConsultation:</strong> ${formData.needsConsultation}</p>
+                    <p><strong>formData.consultationDate:</strong> ${formData.consultationDate}</p>
+                    <p><strong>formData.consultationTime:</strong> ${formData.consultationTime}</p>
+                    <p><strong>completeBookingData.consultationChoice:</strong> ${completeBookingData.consultationChoice}</p>
+                    <p><strong>needsConsultationCheck:</strong> ${needsConsultationCheck}</p>
+                    <p><strong>consultation_details:</strong> ${consultationDetails}</p>
+                </div>
+                
+                <div class="success">
+                    <h4>📨 最终模板参数</h4>
+                    <pre>${JSON.stringify(templateParams, null, 2)}</pre>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

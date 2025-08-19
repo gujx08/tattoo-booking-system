@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Actual Data Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .debug { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 测试实际数据流</h1>
+    
+    <div class="test-section">
+        <h3>模拟实际预订流程数据</h3>
+        
+        <div class="form-group">
+            <label>测试场景:</label>
+            <select id="testScenario">
+                <option value="rachel-with-consultation">Rachel + 需要咨询</option>
+                <option value="jing-without-consultation">Jing + 不需要咨询</option>
+                <option value="help-choosing">Help Choosing Artist</option>
+            </select>
+        </div>
+        
+        <button onclick="testActualDataFlow()">测试实际数据流</button>
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // EmailJS配置
+        const EMAILJS_CONFIG = {
+            serviceId: 'service_lp4pjsb',
+            publicKey: 'ct8snDhw429TxbuI_',
+            templates: {
+                bookingDraft: 'template_26uphex'
+            }
+        };
+
+        // 初始化EmailJS
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+
+        // 模拟实际的数据结构
+        function createActualBookingData(scenario) {
+            switch(scenario) {
+                case 'rachel-with-consultation':
+                    return {
+                        formData: {
+                            name: 'Test User',
+                            email: 'test@example.com',
+                            phone: '123-456-7890',
+                            artistId: 'rachel',
+                            needsConsultation: true,
+                            consultationDate: 'Wednesday, January 15, 2025',
+                            consultationTime: '8:00 PM - 8:30 PM',
+                            tattooIdea: 'A small dragon tattoo on forearm',
+                            placement: 'Forearm',
+                            colorPreference: 'Black and grey',
+                            isFirstTattoo: 'Yes it is, I never had tattoos before',
+                            additionalInfo: 'Test consultation details'
+                        },
+                        selectedArtist: {
+                            id: 'rachel',
+                            name: 'Rachel Hong',
+                            displayName: 'Rachel Hong'
+                        },
+                        consultationChoice: true,
+                        timestamp: new Date().toISOString(),
+                        depositAmount: 100,
+                        status: 'PENDING_PAYMENT'
+                    };
+                    
+                case 'jing-without-consultation':
+                    return {
+                        formData: {
+                            name: 'Test User',
+                            email: 'test@example.com',
+                            phone: '123-456-7890',
+                            artistId: 'jing',
+                            needsConsultation: false,
+                            tattooIdea: 'A small dragon tattoo on forearm',
+                            placement: 'Forearm',
+                            colorPreference: 'Black and grey',
+                            isFirstTattoo: 'Yes it is, I never had tattoos before',
+                            additionalInfo: 'Test no consultation'
+                        },
+                        selectedArtist: {
+                            id: 'jing',
+                            name: 'Jing (Jingxi Gu)',
+                            displayName: 'Jing (Jingxi Gu)'
+                        },
+                        consultationChoice: false,
+                        timestamp: new Date().toISOString(),
+                        depositAmount: 300,
+                        status: 'PENDING_PAYMENT'
+                    };
+                    
+                case 'help-choosing':
+                    return {
+                        formData: {
+                            name: 'Test User',
+                            email: 'test@example.com',
+                            phone: '123-456-7890',
+                            artistId: 'help',
+                            needsHelpChoosing: true,
+                            tattooIdea: 'A small dragon tattoo on forearm',
+                            placement: 'Forearm',
+                            colorPreference: 'Black and grey',
+                            isFirstTattoo: 'Yes it is, I never had tattoos before',
+                            additionalInfo: 'Test help choosing artist'
+                        },
+                        selectedArtist: {
+                            id: 'help',
+                            name: 'Need Recommendation',
+                            displayName: 'Need Recommendation'
+                        },
+                        consultationChoice: false,
+                        timestamp: new Date().toISOString(),
+                        depositAmount: 0,
+                        status: 'HELP_CHOOSING_ARTIST'
+                    };
+            }
+        }
+
+        // 模拟emailService.ts中的逻辑
+        function generateTemplateParams(bookingData) {
+            console.log('📋 原始预订数据:', bookingData);
+            
+            // 检查是否需要咨询（支持多种字段名）
+            const needsConsultation = bookingData.consultationChoice || 
+                                     bookingData.formData?.needsConsultation || 
+                                     false;
+            
+            console.log('🔍 咨询检查:', {
+                consultationChoice: bookingData.consultationChoice,
+                formDataNeedsConsultation: bookingData.formData?.needsConsultation,
+                finalNeedsConsultation: needsConsultation
+            });
+            
+            let consultationDetails;
+            if (needsConsultation) {
+                // 需要咨询，显示具体时间
+                const consultationDate = bookingData.formData?.consultationDate || '';
+                const consultationTime = bookingData.formData?.consultationTime || '';
+                
+                console.log('📅 咨询时间信息:', {
+                    consultationDate,
+                    consultationTime
+                });
+                
+                if (consultationDate && consultationTime) {
+                    consultationDetails = `Yes - ${consultationDate} at ${consultationTime}`;
+                } else {
+                    consultationDetails = 'Yes - consultation time to be scheduled';
+                }
+            } else {
+                // 不需要咨询
+                consultationDetails = 'No consultation needed';
+            }
+            
+            console.log('📧 最终咨询详情:', consultationDetails);
+            
+            const templateParams = {
+                // 邮件基本信息
+                to_name: 'Patch Tattoo Therapy Management',
+                to_email: 'info@patchtattootherapy.com',
+                subject: 'Test - Actual Data Flow',
+                timestamp: bookingData.timestamp || new Date().toISOString(),
+                status: bookingData.status || 'PENDING_PAYMENT',
+                
+                // 客户基本信息
+                customer_name: bookingData.formData?.name || '',
+                customer_email: bookingData.formData?.email || '',
+                customer_phone: bookingData.formData?.phone || '',
+                
+                // 纹身师信息
+                selected_artist: (() => {
+                    if (bookingData.formData?.needsHelpChoosing) {
+                        return 'Need Recommendation';
+                    }
+                    return bookingData.selectedArtist?.displayName || bookingData.selectedArtist?.name || 'Not Selected';
+                })(),
+                artist_id: bookingData.selectedArtist?.id || '',
+                
+                // 纹身详情
+                tattoo_idea: bookingData.formData?.tattooIdea || '',
+                size_placement: bookingData.formData?.placement || '',
+                color_preference: bookingData.formData?.colorPreference || '',
+                instagram_link: bookingData.formData?.instagramReference || '',
+                background_story: bookingData.formData?.backgroundStory || '',
+                placement_certainty: bookingData.formData?.placementCertainty || '',
+                body_assessment: bookingData.formData?.openToSuggestions || '',
+                skin_tone: bookingData.formData?.skinTone || '',
+                tattoo_experience: bookingData.formData?.isFirstTattoo || '',
+                additional_info: bookingData.formData?.additionalInfo || '',
+                
+                // 咨询信息 - 这是关键！
+                consultation_details: consultationDetails,
+                
+                deposit_amount: bookingData.depositAmount || 0
+            };
+            
+            console.log('📨 最终模板参数:', templateParams);
+            return templateParams;
+        }
+
+        function testActualDataFlow() {
+            const result = document.getElementById('testResult');
+            const scenario = document.getElementById('testScenario').value;
+            
+            result.innerHTML = '<p>🔄 正在测试实际数据流...</p>';
+
+            try {
+                // 1. 创建实际预订数据
+                const bookingData = createActualBookingData(scenario);
+                console.log('📊 创建的预订数据:', bookingData);
+                
+                // 2. 生成模板参数
+                const templateParams = generateTemplateParams(bookingData);
+                
+                // 3. 显示调试信息
+                result.innerHTML = `
+                    <div class="debug">
+                        <h4>🔍 调试信息</h4>
+                        <p><strong>测试场景:</strong> ${scenario}</p>
+                        <p><strong>consultation_details:</strong> ${templateParams.consultation_details}</p>
+                        <p><strong>selected_artist:</strong> ${templateParams.selected_artist}</p>
+                        <p><strong>deposit_amount:</strong> $${templateParams.deposit_amount}</p>
+                    </div>
+                `;
+                
+                // 4. 发送邮件
+                emailjs.send(
+                    EMAILJS_CONFIG.serviceId,
+                    EMAILJS_CONFIG.templates.bookingDraft,
+                    templateParams
+                ).then(
+                    function(response) {
+                        console.log('✅ 邮件发送成功:', response);
+                        result.innerHTML += `
+                            <div class="success">
+                                <h4>✅ 测试邮件发送成功!</h4>
+                                <p><strong>状态:</strong> ${response.status}</p>
+                                <p><strong>邮件ID:</strong> ${response.text}</p>
+                                <p><strong>收件人:</strong> info@patchtattootherapy.com</p>
+                                <p><strong>consultation_details:</strong> ${templateParams.consultation_details}</p>
+                            </div>
+                        `;
+                    },
+                    function(error) {
+                        console.error('❌ 邮件发送失败:', error);
+                        result.innerHTML += `
+                            <div class="error">
+                                <h4>❌ 测试邮件发送失败</h4>
+                                <p><strong>错误:</strong> ${error.text}</p>
+                                <p><strong>状态:</strong> ${error.status}</p>
+                            </div>
+                        `;
+                    }
+                );
+                
+            } catch (error) {
+                console.error('❌ 测试过程出错:', error);
+                result.innerHTML = `
+                    <div class="error">
+                        <h4>❌ 测试过程出错</h4>
+                        <p><strong>错误:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
