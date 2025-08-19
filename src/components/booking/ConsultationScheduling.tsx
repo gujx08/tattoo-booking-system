@@ -111,7 +111,7 @@ const ConsultationScheduling: React.FC = () => {
   };
 
   const handleBack = () => {
-    dispatch({ type: 'SET_STEP', payload: 7 });
+    dispatch({ type: 'SET_STEP', payload: 7 }); // 跳转回ConsultationChoice页面
   };
 
   const availableDates = generateWednesdayDates();

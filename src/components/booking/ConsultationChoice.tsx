@@ -9,7 +9,7 @@ const ConsultationChoice: React.FC = () => {
 
   const handleConsultationChoice = async (needsConsultation: boolean) => {
     try {
-      // 1. 更新AppContext状态
+      // 1. 立即更新AppContext状态
       dispatch({ 
         type: 'UPDATE_FORM_DATA', 
         payload: { needsConsultation } 
@@ -28,19 +28,26 @@ const ConsultationChoice: React.FC = () => {
       // 3. 保存到localStorage（备份）
       localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
 
-      // 4. 发送预订草稿邮件
-      console.log('📧 发送预订草稿邮件...');
-      const emailResult = await sendBookingDraftEmail(completeBookingData);
-      
-      if (emailResult.success) {
-        console.log('✅ 预订草稿邮件发送成功');
+      // 4. 根据选择决定跳转方向
+      if (needsConsultation) {
+        // 需要咨询 → 跳转到咨询时间选择页面
+        dispatch({ type: 'SET_STEP', payload: 8 });
       } else {
-        console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
-        // 邮件发送失败不影响流程继续
+        // 不需要咨询 → 直接跳转到支付页面
+        dispatch({ type: 'SET_STEP', payload: 9 });
       }
 
-      // 5. 直接跳转到支付页面（不管选择什么）
-      dispatch({ type: 'SET_STEP', payload: 9 }); // 直接跳转到支付页面
+      // 5. 异步发送预订草稿邮件（不阻塞用户界面）
+      console.log('📧 异步发送预订草稿邮件...');
+      sendBookingDraftEmail(completeBookingData).then(emailResult => {
+        if (emailResult.success) {
+          console.log('✅ 预订草稿邮件发送成功');
+        } else {
+          console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
+        }
+      }).catch(error => {
+        console.error('❌ 邮件发送出错:', error);
+      });
 
     } catch (error) {
       console.error('❌ 处理咨询选择时出错:', error);
