@@ -233,8 +233,22 @@ export const sendBookingDraftEmail = async (bookingData: any) => {
       tattoo_experience: bookingData.formData?.isFirstTattoo || '',
       additional_info: bookingData.formData?.additionalInfo || '',
       
-      // 咨询信息
-      needs_consultation: bookingData.consultationChoice ? 'Yes' : 'No',
+      // 咨询信息 - 显示具体的咨询时间或"No consultation needed"
+      needs_consultation: (() => {
+        if (bookingData.consultationChoice) {
+          // 需要咨询，显示具体时间
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          // 不需要咨询
+          return 'No consultation needed';
+        }
+      })(),
       deposit_amount: bookingData.depositAmount || 0,
       
       // 预约时间信息

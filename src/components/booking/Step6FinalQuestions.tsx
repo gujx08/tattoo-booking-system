@@ -35,8 +35,16 @@ const Step6FinalQuestions: React.FC = () => {
 
   const handleNext = () => {
     if (validate()) {
-      // Navigate to consultation choice
-      dispatch({ type: 'SET_STEP', payload: 7 });
+      // 检查是否是"Help Choosing Artist"流程
+      if (state.formData.needsHelpChoosing) {
+        // 显示成功弹窗并返回首页
+        alert("Success! Our management team will get back to you with the recommendation for a best fit artist");
+        dispatch({ type: 'RESET_FORM' });
+        dispatch({ type: 'SET_STEP', payload: 0 }); // 返回首页
+      } else {
+        // 正常流程：跳转到咨询选择页面
+        dispatch({ type: 'SET_STEP', payload: 7 });
+      }
     }
   };
 

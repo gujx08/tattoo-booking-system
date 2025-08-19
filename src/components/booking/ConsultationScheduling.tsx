@@ -125,6 +125,9 @@ const ConsultationScheduling: React.FC = () => {
         <p className="text-gray-600 text-lg">
           {getSelectedArtistName()}'s consultation time is: Every Wednesday 8PM-8:30PM or 8:45PM-9:15PM
         </p>
+        <p className="text-gray-500 text-sm mt-2">
+          You can also change the consultation time later with the artist via email
+        </p>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
