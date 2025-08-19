@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Calendar, Clock, ChevronDown } from 'lucide-react';
 import Button from '../common/Button';
+import { sendBookingDraftEmail } from '../../services/emailService';
 
 const ConsultationScheduling: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -95,17 +96,53 @@ const ConsultationScheduling: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validate()) {
       const selectedDateOption = generateWednesdayDates().find(d => d.value === selectedDate);
+      const selectedTimeOption = timeSlots.find(t => t.value === selectedTime);
       
+      // 保存咨询时间到formData
       dispatch({ 
         type: 'UPDATE_FORM_DATA', 
         payload: { 
           consultationDate: selectedDateOption?.label || selectedDate,
-          consultationTime: timeSlots.find(t => t.value === selectedTime)?.label || selectedTime
+          consultationTime: selectedTimeOption?.label || selectedTime
         } 
       });
+      
+      // 准备完整的预订数据
+      const completeBookingData = {
+        formData: {
+          ...state.formData,
+          consultationDate: selectedDateOption?.label || selectedDate,
+          consultationTime: selectedTimeOption?.label || selectedTime
+        },
+        selectedArtist: state.selectedArtist,
+        consultationChoice: true,
+        timestamp: new Date().toISOString(),
+        depositAmount: 0, // 稍后在PaymentPage中会重新计算
+        status: 'PENDING_PAYMENT'
+      };
+      
+      // 保存到localStorage（备份）
+      localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
+      
+      // 发送预订草稿邮件
+      console.log('📧 发送预订草稿邮件（咨询时间选择后）...');
+      console.log('📋 发送的预订数据:', completeBookingData);
+      
+      try {
+        const emailResult = await sendBookingDraftEmail(completeBookingData);
+        if (emailResult.success) {
+          console.log('✅ 预订草稿邮件发送成功');
+        } else {
+          console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('❌ 邮件发送出错:', emailError);
+      }
+      
+      // 跳转到支付页面
       dispatch({ type: 'SET_STEP', payload: 9 });
     }
   };
