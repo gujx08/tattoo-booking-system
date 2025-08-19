@@ -130,7 +130,7 @@
   additional_info: string,
   
   // 咨询信息
-  needs_consultation: 'Yes' | 'No',
+  consultation_details: 'Yes - [date] at [time]' | 'No consultation needed',
   deposit_amount: number,
   
   // 时间信息

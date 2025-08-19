@@ -158,7 +158,7 @@ const SuccessPage: React.FC = () => {
     }
     
     dispatch({ type: 'RESET_FORM' });
-    dispatch({ type: 'SET_STEP', payload: 0 }); // 跳转到首页（纹身师选择页）
+    dispatch({ type: 'SET_STEP', payload: 1 }); // 跳转到纹身师选择页面
   };
 
   return (

@@ -106,9 +106,19 @@ export const sendBookingConfirmationEmail = async (bookingData: any) => {
       color_preference: bookingData.colorPreference || 'Not specified',
       
       // 咨询信息
-      consultation_needed: bookingData.needsConsultation ? 'Yes' : 'No',
-      consultation_date: bookingData.consultationDate || 'To be scheduled',
-      consultation_time: bookingData.consultationTime || 'To be scheduled',
+      consultation_details: (() => {
+        if (bookingData.needsConsultation) {
+          const consultationDate = bookingData.consultationDate || '';
+          const consultationTime = bookingData.consultationTime || '';
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
       
       // 预约时间信息
       booking_date: new Date().toLocaleDateString('en-US', {
@@ -241,7 +251,7 @@ export const sendBookingDraftEmail = async (bookingData: any) => {
       additional_info: bookingData.formData?.additionalInfo || '',
       
       // 咨询信息 - 显示具体的咨询时间或"No consultation needed"
-      needs_consultation: (() => {
+      consultation_details: (() => {
         if (bookingData.consultationChoice) {
           // 需要咨询，显示具体时间
           const consultationDate = bookingData.formData?.consultationDate || '';
