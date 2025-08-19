@@ -33,9 +33,9 @@ export const STRIPE_TEST_PAYMENT_LINKS = {
   'lauren': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
   'annika': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
   
-  // $50 定金 - Maili, Keani (Apprentices)
-  'maili': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
-  'keani': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404'
+  // $50 定金 - Maili, Keani (Apprentices) - 需要创建新的$50测试链接
+  'maili': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404', // 临时使用$100链接
+  'keani': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404'  // 临时使用$100链接
 } as const;
 
 // 艺术家定金配置

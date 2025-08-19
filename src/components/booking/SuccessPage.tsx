@@ -133,7 +133,7 @@ const SuccessPage: React.FC = () => {
     emailSentGlobal.clear();
     
     dispatch({ type: 'RESET_FORM' });
-    dispatch({ type: 'SET_STEP', payload: 1 });
+    dispatch({ type: 'SET_STEP', payload: 0 }); // 跳转到首页（纹身师选择页）
   };
 
   return (
