@@ -37,17 +37,8 @@ const ConsultationChoice: React.FC = () => {
         dispatch({ type: 'SET_STEP', payload: 9 });
       }
 
-      // 5. 异步发送预订草稿邮件（不阻塞用户界面）
-      console.log('📧 异步发送预订草稿邮件...');
-      sendBookingDraftEmail(completeBookingData).then(emailResult => {
-        if (emailResult.success) {
-          console.log('✅ 预订草稿邮件发送成功');
-        } else {
-          console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
-        }
-      }).catch(error => {
-        console.error('❌ 邮件发送出错:', error);
-      });
+      // 5. 不在这里发送邮件，等到用户完成所有步骤后再发送
+      console.log('📝 预订数据已保存，邮件将在完成所有步骤后发送');
 
     } catch (error) {
       console.error('❌ 处理咨询选择时出错:', error);

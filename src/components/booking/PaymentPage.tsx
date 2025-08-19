@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
 import { getStripePaymentLink, getDepositAmount, getArtistName } from '../../config/stripeConfig';
+import { sendBookingDraftEmail } from '../../services/emailService';
 
 const PaymentPage: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -42,7 +43,7 @@ const PaymentPage: React.FC = () => {
     return getDepositAmount(artistId);
   };
 
-  const handleStripePayment = () => {
+  const handleStripePayment = async () => {
     try {
       setIsProcessing(true);
       
@@ -51,6 +52,33 @@ const PaymentPage: React.FC = () => {
         alert('请确保已填写姓名和邮箱信息');
         setIsProcessing(false);
         return;
+      }
+
+      // 准备完整的预订数据
+      const completeBookingData = {
+        formData: state.formData,
+        selectedArtist: state.selectedArtist,
+        consultationChoice: state.formData.needsConsultation,
+        timestamp: new Date().toISOString(),
+        depositAmount: getCurrentDepositAmount(),
+        status: 'PENDING_PAYMENT'
+      };
+
+      // 保存到localStorage（备份）
+      localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
+
+      // 发送预订草稿邮件
+      console.log('📧 发送预订草稿邮件...');
+      try {
+        const emailResult = await sendBookingDraftEmail(completeBookingData);
+        if (emailResult.success) {
+          console.log('✅ 预订草稿邮件发送成功');
+        } else {
+          console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('❌ 邮件发送出错:', emailError);
+        // 邮件发送失败不影响支付流程
       }
 
       // 获取Stripe支付链接，并预填充客户邮箱
