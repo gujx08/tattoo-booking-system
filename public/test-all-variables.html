@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test All Variables</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .debug { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 测试所有可能的变量名</h1>
+    
+    <div class="test-section">
+        <h3>发送所有可能的咨询相关变量</h3>
+        <p>这个测试会发送所有可能的变量名，确保EmailJS模板能接收到正确的变量。</p>
+        
+        <button onclick="sendAllVariables()">发送测试邮件</button>
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // EmailJS配置
+        const EMAILJS_CONFIG = {
+            serviceId: 'service_lp4pjsb',
+            publicKey: 'ct8snDhw429TxbuI_',
+            templates: {
+                bookingDraft: 'template_26uphex'
+            }
+        };
+
+        // 初始化EmailJS
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+
+        function sendAllVariables() {
+            const result = document.getElementById('testResult');
+            result.innerHTML = '<p>🔄 正在发送测试邮件...</p>';
+
+            // 发送所有可能的变量名
+            const templateParams = {
+                // 邮件基本信息
+                to_name: 'Patch Tattoo Therapy Management',
+                to_email: 'info@patchtattootherapy.com',
+                subject: 'Test - All Variables',
+                timestamp: new Date().toISOString(),
+                status: 'PENDING_PAYMENT',
+                
+                // 客户基本信息
+                customer_name: 'Test User',
+                customer_email: 'test@example.com',
+                customer_phone: '123-456-7890',
+                
+                // 纹身师信息
+                selected_artist: 'Rachel Hong',
+                artist_id: 'rachel',
+                
+                // 纹身详情
+                tattoo_idea: 'A small dragon tattoo on forearm',
+                size_placement: 'Forearm',
+                color_preference: 'Black and grey',
+                instagram_link: '',
+                background_story: '',
+                placement_certainty: '',
+                body_assessment: '',
+                skin_tone: '',
+                tattoo_experience: 'Yes it is, I never had tattoos before',
+                additional_info: 'Test all variables',
+                
+                // 咨询信息 - 发送所有可能的变量名
+                consultation_details: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                needs_consultation: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_needed: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_info: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_details: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_time: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_date: 'Wednesday, January 15, 2025',
+                consultation_schedule: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                
+                // 其他可能的变量名
+                needs_consultation: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_required: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                consultation_choice: 'Yes - Wednesday, January 15, 2025 at 8:00 PM - 8:30 PM',
+                
+                deposit_amount: 100
+            };
+
+            console.log('📨 发送的模板参数:', templateParams);
+
+            // 发送邮件
+            emailjs.send(
+                EMAILJS_CONFIG.serviceId,
+                EMAILJS_CONFIG.templates.bookingDraft,
+                templateParams
+            ).then(
+                function(response) {
+                    console.log('✅ 邮件发送成功:', response);
+                    result.innerHTML = `
+                        <div class="success">
+                            <h4>✅ 测试邮件发送成功!</h4>
+                            <p><strong>状态:</strong> ${response.status}</p>
+                            <p><strong>邮件ID:</strong> ${response.text}</p>
+                            <p><strong>收件人:</strong> info@patchtattootherapy.com</p>
+                            <p><strong>说明:</strong> 已发送所有可能的咨询相关变量名</p>
+                        </div>
+                        
+                        <div class="debug">
+                            <h4>📋 发送的变量列表</h4>
+                            <ul>
+                                <li>consultation_details</li>
+                                <li>needs_consultation</li>
+                                <li>consultation_needed</li>
+                                <li>consultation</li>
+                                <li>consultation_info</li>
+                                <li>consultation_time</li>
+                                <li>consultation_date</li>
+                                <li>consultation_schedule</li>
+                                <li>consultation_required</li>
+                                <li>consultation_choice</li>
+                            </ul>
+                            <p><strong>请检查收到的邮件，看看哪个变量名能正确显示咨询信息。</strong></p>
+                        </div>
+                    `;
+                },
+                function(error) {
+                    console.error('❌ 邮件发送失败:', error);
+                    result.innerHTML = `
+                        <div class="error">
+                            <h4>❌ 测试邮件发送失败</h4>
+                            <p><strong>错误:</strong> ${error.text}</p>
+                            <p><strong>状态:</strong> ${error.status}</p>
+                        </div>
+                    `;
+                }
+            );
+        }
+    </script>
+</body>
+</html>

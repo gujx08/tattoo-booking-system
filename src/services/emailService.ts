@@ -318,6 +318,122 @@ export const sendBookingDraftEmail = async (bookingData: any) => {
           return 'No consultation needed';
         }
       })(),
+      
+      // 发送更多可能的变量名
+      consultation: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
+      
+      consultation_info: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
+      
+      consultation_time: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
+      
+      consultation_date: bookingData.formData?.consultationDate || '',
+      consultation_schedule: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
+      
+      consultation_required: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
+      
+      consultation_choice: (() => {
+        const needsConsultation = bookingData.consultationChoice || 
+                                 bookingData.formData?.needsConsultation || 
+                                 false;
+        
+        if (needsConsultation) {
+          const consultationDate = bookingData.formData?.consultationDate || '';
+          const consultationTime = bookingData.formData?.consultationTime || '';
+          
+          if (consultationDate && consultationTime) {
+            return `Yes - ${consultationDate} at ${consultationTime}`;
+          } else {
+            return 'Yes - consultation time to be scheduled';
+          }
+        } else {
+          return 'No consultation needed';
+        }
+      })(),
       deposit_amount: bookingData.depositAmount || 0,
       
       // 预约时间信息
