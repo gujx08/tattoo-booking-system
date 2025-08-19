@@ -3,8 +3,8 @@
 // ⚠️ 重要：当前使用的是生产环境的Payment Links
 // 测试时需要使用测试环境的Payment Links
 
-// 🔧 强制测试模式 - 设置为 false 以使用生产环境
-const FORCE_TEST_MODE = false;
+// 🔧 强制测试模式 - 设置为 true 强制使用测试环境
+const FORCE_TEST_MODE = true;
 
 // 生产环境 Payment Links (当前使用)
 export const STRIPE_PAYMENT_LINKS = {
@@ -25,17 +25,17 @@ export const STRIPE_PAYMENT_LINKS = {
 // 测试环境 Payment Links (已创建)
 export const STRIPE_TEST_PAYMENT_LINKS = {
   // $300 定金 - Jing (Lead Artist)
-  'jing': 'https://buy.stripe.com/test_00w6oHgLY6Zf5WW45Gfw400',
+  'jing': 'https://buy.stripe.com/test_cNi14ngLYcjz4SS31Cfw403',
   
   // $100 定金 - Rachel, Jasmine, Lauren, Annika
-  'rachel': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
-  'jasmine': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
-  'lauren': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
-  'annika': 'https://buy.stripe.com/test_3cIeVd8fsabr0CC31Cfw401',
+  'rachel': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+  'jasmine': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+  'lauren': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+  'annika': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
   
   // $50 定金 - Maili, Keani (Apprentices)
-  'maili': 'https://buy.stripe.com/test_00w5kD9jwerH9988lWfw402',
-  'keani': 'https://buy.stripe.com/test_00w5kD9jwerH9988lWfw402'
+  'maili': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
+  'keani': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404'
 } as const;
 
 // 艺术家定金配置
