@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { CheckCircle, Mail, Home } from 'lucide-react';
+import { CheckCircle, Mail } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import Button from '../common/Button';
 // 导入我们的邮件服务
@@ -149,17 +149,7 @@ const SuccessPage: React.FC = () => {
     }
   };
 
-  const handleBackHome = () => {
-    // 清理localStorage中的邮件发送标记
-    try {
-      localStorage.removeItem('emailSentGlobal');
-    } catch (error) {
-      console.warn('清理邮件发送标记失败:', error);
-    }
-    
-    dispatch({ type: 'RESET_FORM' });
-    dispatch({ type: 'SET_STEP', payload: 1 }); // 跳转到纹身师选择页面
-  };
+
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -242,12 +232,7 @@ const SuccessPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="text-center">
-        <Button onClick={handleBackHome} size="lg" className="inline-flex items-center">
-          <Home className="w-4 h-4 mr-2" />
-          Book Another Appointment
-        </Button>
-      </div>
+
 
       {/* 开发调试信息 */}
       {process.env.NODE_ENV === 'development' && (

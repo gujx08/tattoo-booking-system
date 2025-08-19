@@ -19,22 +19,10 @@ const AppContent: React.FC = () => {
 
 // 独立的Success页面组件，不依赖BookingWizard的状态
 const StandaloneSuccessPage: React.FC = () => {
-  const handleBackHome = () => {
-    // 清理localStorage中的邮件发送标记
-    try {
-      localStorage.removeItem('emailSentGlobal');
-    } catch (error) {
-      console.warn('清理邮件发送标记失败:', error);
-    }
-    
-    // 直接跳转到首页
-    window.location.href = '/';
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <SuccessPage onBackHome={handleBackHome} />
+      <SuccessPage />
     </div>
   );
 };
