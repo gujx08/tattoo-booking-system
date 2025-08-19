@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Help Choosing Artist Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        input, textarea { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 100%; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🧪 测试Help Choosing Artist流程</h1>
+    
+    <div class="test-section">
+        <h3>模拟Help Choosing Artist表单数据</h3>
+        
+        <div class="form-group">
+            <label>客户姓名:</label>
+            <input type="text" id="customerName" value="Test User" placeholder="输入客户姓名">
+        </div>
+        
+        <div class="form-group">
+            <label>客户邮箱:</label>
+            <input type="email" id="customerEmail" value="test@example.com" placeholder="输入客户邮箱">
+        </div>
+        
+        <div class="form-group">
+            <label>客户电话:</label>
+            <input type="tel" id="customerPhone" value="123-456-7890" placeholder="输入客户电话">
+        </div>
+        
+        <div class="form-group">
+            <label>纹身想法:</label>
+            <textarea id="tattooIdea" rows="3" placeholder="描述纹身想法">I want a small dragon tattoo on my forearm</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>位置:</label>
+            <input type="text" id="placement" value="Forearm" placeholder="纹身位置">
+        </div>
+        
+        <div class="form-group">
+            <label>颜色偏好:</label>
+            <input type="text" id="colorPreference" value="Black and grey" placeholder="颜色偏好">
+        </div>
+        
+        <div class="form-group">
+            <label>纹身经验:</label>
+            <input type="text" id="tattooExperience" value="Yes it is, I never had tattoos before" placeholder="纹身经验">
+        </div>
+        
+        <div class="form-group">
+            <label>额外信息:</label>
+            <textarea id="additionalInfo" rows="2" placeholder="额外信息">I need help choosing the right artist for my style</textarea>
+        </div>
+        
+        <button onclick="testHelpChoosingFlow()">测试Help Choosing Artist流程</button>
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>EmailJS配置检查</h3>
+        <button onclick="checkEmailJSConfig()">检查EmailJS配置</button>
+        <div id="configResult" class="result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // EmailJS配置
+        const EMAILJS_CONFIG = {
+            serviceId: 'service_lp4pjsb',
+            publicKey: 'ct8snDhw429TxbuI_',
+            templates: {
+                bookingDraft: 'template_26uphex'
+            }
+        };
+
+        // 初始化EmailJS
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+
+        function checkEmailJSConfig() {
+            const result = document.getElementById('configResult');
+            result.innerHTML = `
+                <h4>📧 EmailJS配置检查:</h4>
+                <p><strong>Service ID:</strong> ${EMAILJS_CONFIG.serviceId}</p>
+                <p><strong>Public Key:</strong> ${EMAILJS_CONFIG.publicKey}</p>
+                <p><strong>Template ID:</strong> ${EMAILJS_CONFIG.templates.bookingDraft}</p>
+                <p><strong>状态:</strong> ✅ 配置完整</p>
+            `;
+        }
+
+        function testHelpChoosingFlow() {
+            const result = document.getElementById('testResult');
+            result.innerHTML = '<p>🔄 正在测试Help Choosing Artist流程...</p>';
+
+            // 收集表单数据
+            const formData = {
+                name: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value,
+                tattooIdea: document.getElementById('tattooIdea').value,
+                placement: document.getElementById('placement').value,
+                colorPreference: document.getElementById('colorPreference').value,
+                isFirstTattoo: document.getElementById('tattooExperience').value,
+                additionalInfo: document.getElementById('additionalInfo').value,
+                needsHelpChoosing: true,
+                artistId: 'help'
+            };
+
+            // 准备邮件数据
+            const bookingData = {
+                formData: formData,
+                selectedArtist: null, // Help choosing流程没有选中的艺术家
+                consultationChoice: false,
+                timestamp: new Date().toISOString(),
+                depositAmount: 0,
+                status: 'HELP_CHOOSING_ARTIST'
+            };
+
+            // 准备邮件模板参数
+            const templateParams = {
+                // 邮件基本信息
+                to_name: 'Patch Tattoo Therapy Management',
+                to_email: 'info@patchtattootherapy.com',
+                subject: 'New Help Choosing Artist Request',
+                timestamp: bookingData.timestamp,
+                status: 'HELP_CHOOSING_ARTIST',
+                
+                // 客户基本信息
+                customer_name: bookingData.formData?.name || '',
+                customer_email: bookingData.formData?.email || '',
+                customer_phone: bookingData.formData?.phone || '',
+                
+                // 纹身师信息 - Help choosing流程显示"Need Recommendation"
+                selected_artist: 'Need Recommendation',
+                artist_id: 'help',
+                
+                // 纹身详情
+                tattoo_idea: bookingData.formData?.tattooIdea || '',
+                size_placement: bookingData.formData?.placement || '',
+                color_preference: bookingData.formData?.colorPreference || '',
+                
+                // 个人信息
+                tattoo_experience: bookingData.formData?.isFirstTattoo || '',
+                additional_info: bookingData.formData?.additionalInfo || '',
+                
+                // 咨询信息
+                needs_consultation: 'No consultation needed',
+                deposit_amount: 0,
+                
+                // 预约时间信息
+                booking_date: new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                booking_time: new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            console.log('📨 准备发送的邮件数据:', templateParams);
+
+            // 发送邮件
+            emailjs.send(
+                EMAILJS_CONFIG.serviceId,
+                EMAILJS_CONFIG.templates.bookingDraft,
+                templateParams
+            ).then(
+                function(response) {
+                    console.log('✅ 邮件发送成功:', response);
+                    result.innerHTML = `
+                        <h4>✅ Help Choosing Artist邮件发送成功!</h4>
+                        <p><strong>状态:</strong> ${response.status}</p>
+                        <p><strong>邮件ID:</strong> ${response.text}</p>
+                        <p><strong>收件人:</strong> info@patchtattootherapy.com</p>
+                        <p><strong>艺术家字段:</strong> Need Recommendation</p>
+                        <p><strong>状态:</strong> HELP_CHOOSING_ARTIST</p>
+                    `;
+                },
+                function(error) {
+                    console.error('❌ 邮件发送失败:', error);
+                    result.innerHTML = `
+                        <h4>❌ 邮件发送失败</h4>
+                        <p><strong>错误:</strong> ${error.text}</p>
+                        <p><strong>状态:</strong> ${error.status}</p>
+                    `;
+                }
+            );
+        }
+
+        // 页面加载时自动检查配置
+        window.onload = function() {
+            checkEmailJSConfig();
+        };
+    </script>
+</body>
+</html>

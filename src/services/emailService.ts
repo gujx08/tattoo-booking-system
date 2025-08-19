@@ -209,7 +209,14 @@ export const sendBookingDraftEmail = async (bookingData: any) => {
       customer_phone: bookingData.formData?.phone || '',
       
       // 纹身师信息
-      selected_artist: bookingData.selectedArtist?.displayName || bookingData.selectedArtist?.name || '',
+      selected_artist: (() => {
+        // 如果是"Help Choosing Artist"流程，显示"Need Recommendation"
+        if (bookingData.formData?.needsHelpChoosing) {
+          return 'Need Recommendation';
+        }
+        // 否则显示选中的艺术家
+        return bookingData.selectedArtist?.displayName || bookingData.selectedArtist?.name || 'Not Selected';
+      })(),
       artist_id: bookingData.selectedArtist?.id || '',
       
       // Step 3 - 纹身想法

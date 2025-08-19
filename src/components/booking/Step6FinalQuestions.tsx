@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import Button from '../common/Button';
+import { sendBookingDraftEmail } from '../../services/emailService';
+import { getDepositAmount } from '../../config/stripeConfig';
 
 const Step6FinalQuestions: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -33,14 +35,45 @@ const Step6FinalQuestions: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validate()) {
       // 检查是否是"Help Choosing Artist"流程
       if (state.formData.needsHelpChoosing) {
-        // 显示成功弹窗并返回首页
-        alert("Success! Our management team will get back to you with the recommendation for a best fit artist");
-        dispatch({ type: 'RESET_FORM' });
-        dispatch({ type: 'SET_STEP', payload: 0 }); // 返回首页
+        try {
+          // 准备完整预订数据
+          const completeBookingData = {
+            formData: state.formData,
+            selectedArtist: state.selectedArtist,
+            consultationChoice: false, // Help choosing流程不需要咨询
+            timestamp: new Date().toISOString(),
+            depositAmount: 0, // Help choosing流程不需要定金
+            status: 'HELP_CHOOSING_ARTIST'
+          };
+
+          // 保存到localStorage（备份）
+          localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
+
+          // 发送预订草稿邮件
+          console.log('📧 发送Help Choosing Artist邮件...');
+          const emailResult = await sendBookingDraftEmail(completeBookingData);
+          
+          if (emailResult.success) {
+            console.log('✅ Help Choosing Artist邮件发送成功');
+          } else {
+            console.warn('⚠️ Help Choosing Artist邮件发送失败:', emailResult.error);
+          }
+
+          // 显示成功弹窗并返回纹身师选择页面
+          alert("Success! Our management team will get back to you with the recommendation for a best fit artist");
+          dispatch({ type: 'RESET_FORM' });
+          dispatch({ type: 'SET_STEP', payload: 1 }); // 返回纹身师选择页面
+        } catch (error) {
+          console.error('❌ Help Choosing Artist流程出错:', error);
+          // 即使邮件发送失败，也要显示成功信息并跳转
+          alert("Success! Our management team will get back to you with the recommendation for a best fit artist");
+          dispatch({ type: 'RESET_FORM' });
+          dispatch({ type: 'SET_STEP', payload: 1 });
+        }
       } else {
         // 正常流程：跳转到咨询选择页面
         dispatch({ type: 'SET_STEP', payload: 7 });
