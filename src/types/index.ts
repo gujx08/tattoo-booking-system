@@ -70,6 +70,8 @@ export interface AppState {
   validationErrors: ValidationErrors;
   isSubmitting: boolean;
   selectedArtist?: Artist;
+  showNotification: boolean;
+  notificationMessage: string;
 }
 
 export type AppAction = 
@@ -78,6 +80,8 @@ export type AppAction =
   | { type: 'SET_VALIDATION_ERRORS'; payload: ValidationErrors }
   | { type: 'SET_SUBMITTING'; payload: boolean }
   | { type: 'SET_SELECTED_ARTIST'; payload: Artist }
+  | { type: 'SHOW_NOTIFICATION'; payload: string }
+  | { type: 'HIDE_NOTIFICATION' }
   | { type: 'RESET_FORM' };
 
 // 导出额外的实用类型

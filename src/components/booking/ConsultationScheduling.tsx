@@ -137,6 +137,12 @@ const ConsultationScheduling: React.FC = () => {
         // 保存到localStorage（备份）
         localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
         
+        // 显示通知弹窗
+        dispatch({ 
+          type: 'SHOW_NOTIFICATION', 
+          payload: 'Your tattoo idea is being saved. Artist will see it after receiving the deposit' 
+        });
+        
         // 发送预订草稿邮件
         console.log('📧 发送预订草稿邮件（咨询时间选择后）...');
         console.log('📋 发送的预订数据:', completeBookingData);
@@ -148,13 +154,17 @@ const ConsultationScheduling: React.FC = () => {
           console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
         }
         
-        // 跳转到支付页面
-        dispatch({ type: 'SET_STEP', payload: 9 });
+        // 延迟跳转到支付页面，让用户看到通知
+        setTimeout(() => {
+          dispatch({ type: 'SET_STEP', payload: 9 });
+        }, 2000);
         
       } catch (emailError) {
         console.error('❌ 邮件发送出错:', emailError);
         // 即使邮件发送失败，也要跳转到支付页面
-        dispatch({ type: 'SET_STEP', payload: 9 });
+        setTimeout(() => {
+          dispatch({ type: 'SET_STEP', payload: 9 });
+        }, 2000);
       } finally {
         setIsProcessing(false);
       }

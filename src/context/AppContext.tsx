@@ -30,7 +30,9 @@ const initialState: AppState = {
   formData: initialFormData,
   validationErrors: {},
   isSubmitting: false,
-  selectedArtist: undefined
+  selectedArtist: undefined,
+  showNotification: false,
+  notificationMessage: ''
 };
 
 const appReducer = (state: AppState, action: AppAction): AppState => {
@@ -53,6 +55,20 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
     case 'SET_SELECTED_ARTIST':
       return { ...state, selectedArtist: action.payload };
     
+    case 'SHOW_NOTIFICATION':
+      return { 
+        ...state, 
+        showNotification: true,
+        notificationMessage: action.payload 
+      };
+    
+    case 'HIDE_NOTIFICATION':
+      return { 
+        ...state, 
+        showNotification: false,
+        notificationMessage: '' 
+      };
+    
     case 'RESET_FORM':
       return { 
         ...initialState, 
@@ -60,7 +76,9 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
         formData: { ...initialFormData },
         validationErrors: {},
         isSubmitting: false,
-        selectedArtist: undefined
+        selectedArtist: undefined,
+        showNotification: false,
+        notificationMessage: ''
       };
     
     default:

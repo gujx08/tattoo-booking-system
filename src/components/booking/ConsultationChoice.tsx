@@ -33,12 +33,33 @@ const ConsultationChoice: React.FC = () => {
         // 需要咨询 → 跳转到咨询时间选择页面
         dispatch({ type: 'SET_STEP', payload: 8 });
       } else {
-        // 不需要咨询 → 直接跳转到支付页面
-        dispatch({ type: 'SET_STEP', payload: 9 });
+        // 不需要咨询 → 发送邮件并显示通知弹窗
+        // 显示通知弹窗
+        dispatch({ 
+          type: 'SHOW_NOTIFICATION', 
+          payload: 'Your tattoo idea is being saved. Artist will see it after receiving the deposit' 
+        });
+        
+        // 发送预订草稿邮件
+        console.log('📧 发送预订草稿邮件（不需要咨询）...');
+        console.log('📋 发送的预订数据:', completeBookingData);
+        
+        try {
+          const emailResult = await sendBookingDraftEmail(completeBookingData);
+          if (emailResult.success) {
+            console.log('✅ 预订草稿邮件发送成功');
+          } else {
+            console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
+          }
+        } catch (emailError) {
+          console.error('❌ 邮件发送出错:', emailError);
+        }
+        
+        // 延迟跳转到支付页面，让用户看到通知
+        setTimeout(() => {
+          dispatch({ type: 'SET_STEP', payload: 9 });
+        }, 2000);
       }
-
-      // 5. 不在这里发送邮件，等到用户完成所有步骤后再发送
-      console.log('📝 预订数据已保存，邮件将在完成所有步骤后发送');
 
     } catch (error) {
       console.error('❌ 处理咨询选择时出错:', error);

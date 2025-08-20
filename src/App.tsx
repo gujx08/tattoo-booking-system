@@ -5,6 +5,7 @@ import Header from './components/common/Header';
 import HomePage from './components/HomePage';
 import BookingWizard from './components/BookingWizard';
 import SuccessPage from './components/booking/SuccessPage';
+import NotificationModal from './components/common/NotificationModal';
 
 const AppContent: React.FC = () => {
   const { state } = useApp();
@@ -13,16 +14,26 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       {state.currentStep === 0 ? <HomePage /> : <BookingWizard />}
+      <NotificationModal 
+        isOpen={state.showNotification} 
+        message={state.notificationMessage} 
+      />
     </div>
   );
 };
 
 // 独立的Success页面组件，不依赖BookingWizard的状态
 const StandaloneSuccessPage: React.FC = () => {
+  const { state } = useApp();
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <SuccessPage />
+      <NotificationModal 
+        isOpen={state.showNotification} 
+        message={state.notificationMessage} 
+      />
     </div>
   );
 };

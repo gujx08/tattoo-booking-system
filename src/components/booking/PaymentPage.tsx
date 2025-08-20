@@ -22,7 +22,10 @@ const PaymentPage: React.FC = () => {
         console.error('❌ 解析localStorage数据失败:', error);
       }
     }
-  }, []);
+    
+    // 隐藏通知弹窗
+    dispatch({ type: 'HIDE_NOTIFICATION' });
+  }, [dispatch]);
 
   const getSelectedArtist = () => {
     if (state.selectedArtist) {
