@@ -9,6 +9,7 @@ const ConsultationScheduling: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // 获取选中的纹身师名字
   const getSelectedArtistName = () => {
@@ -97,53 +98,66 @@ const ConsultationScheduling: React.FC = () => {
   };
 
   const handleNext = async () => {
+    // 防止重复点击
+    if (isProcessing) {
+      console.log('⏳ 正在处理中，请稍候...');
+      return;
+    }
+    
     if (validate()) {
-      const selectedDateOption = generateWednesdayDates().find(d => d.value === selectedDate);
-      const selectedTimeOption = timeSlots.find(t => t.value === selectedTime);
-      
-      // 保存咨询时间到formData
-      dispatch({ 
-        type: 'UPDATE_FORM_DATA', 
-        payload: { 
-          consultationDate: selectedDateOption?.label || selectedDate,
-          consultationTime: selectedTimeOption?.label || selectedTime
-        } 
-      });
-      
-      // 准备完整的预订数据
-      const completeBookingData = {
-        formData: {
-          ...state.formData,
-          consultationDate: selectedDateOption?.label || selectedDate,
-          consultationTime: selectedTimeOption?.label || selectedTime
-        },
-        selectedArtist: state.selectedArtist,
-        consultationChoice: true,
-        timestamp: new Date().toISOString(),
-        depositAmount: 0, // 稍后在PaymentPage中会重新计算
-        status: 'PENDING_PAYMENT'
-      };
-      
-      // 保存到localStorage（备份）
-      localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
-      
-      // 发送预订草稿邮件
-      console.log('📧 发送预订草稿邮件（咨询时间选择后）...');
-      console.log('📋 发送的预订数据:', completeBookingData);
+      setIsProcessing(true);
       
       try {
+        const selectedDateOption = generateWednesdayDates().find(d => d.value === selectedDate);
+        const selectedTimeOption = timeSlots.find(t => t.value === selectedTime);
+        
+        // 保存咨询时间到formData
+        dispatch({ 
+          type: 'UPDATE_FORM_DATA', 
+          payload: { 
+            consultationDate: selectedDateOption?.label || selectedDate,
+            consultationTime: selectedTimeOption?.label || selectedTime
+          } 
+        });
+        
+        // 准备完整的预订数据
+        const completeBookingData = {
+          formData: {
+            ...state.formData,
+            consultationDate: selectedDateOption?.label || selectedDate,
+            consultationTime: selectedTimeOption?.label || selectedTime
+          },
+          selectedArtist: state.selectedArtist,
+          consultationChoice: true,
+          timestamp: new Date().toISOString(),
+          depositAmount: 0, // 稍后在PaymentPage中会重新计算
+          status: 'PENDING_PAYMENT'
+        };
+        
+        // 保存到localStorage（备份）
+        localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
+        
+        // 发送预订草稿邮件
+        console.log('📧 发送预订草稿邮件（咨询时间选择后）...');
+        console.log('📋 发送的预订数据:', completeBookingData);
+        
         const emailResult = await sendBookingDraftEmail(completeBookingData);
         if (emailResult.success) {
           console.log('✅ 预订草稿邮件发送成功');
         } else {
           console.warn('⚠️ 预订草稿邮件发送失败:', emailResult.error);
         }
+        
+        // 跳转到支付页面
+        dispatch({ type: 'SET_STEP', payload: 9 });
+        
       } catch (emailError) {
         console.error('❌ 邮件发送出错:', emailError);
+        // 即使邮件发送失败，也要跳转到支付页面
+        dispatch({ type: 'SET_STEP', payload: 9 });
+      } finally {
+        setIsProcessing(false);
       }
-      
-      // 跳转到支付页面
-      dispatch({ type: 'SET_STEP', payload: 9 });
     }
   };
 
@@ -241,9 +255,9 @@ const ConsultationScheduling: React.FC = () => {
         </Button>
         <Button 
           onClick={handleNext}
-          disabled={!selectedDate || !selectedTime}
+          disabled={!selectedDate || !selectedTime || isProcessing}
         >
-          Next
+          {isProcessing ? 'Processing...' : 'Next'}
         </Button>
       </div>
     </div>
