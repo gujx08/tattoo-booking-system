@@ -1,191 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { CheckCircle, Mail } from 'lucide-react';
+import React from 'react';
+import { CheckCircle } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import Button from '../common/Button';
-// 导入我们的邮件服务
-import { sendBookingConfirmationEmail } from '../../services/emailService';
-
-// 全局标记，防止多个组件实例同时发送邮件
-// 使用localStorage作为持久化存储，防止页面刷新后重复发送
-const getEmailSentGlobal = () => {
-  try {
-    const stored = localStorage.getItem('emailSentGlobal');
-    return stored ? new Set(JSON.parse(stored)) : new Set<string>();
-  } catch {
-    return new Set<string>();
-  }
-};
-
-const setEmailSentGlobal = (emailId: string) => {
-  try {
-    const current = getEmailSentGlobal();
-    current.add(emailId);
-    localStorage.setItem('emailSentGlobal', JSON.stringify([...current]));
-  } catch (error) {
-    console.warn('无法保存邮件发送状态到localStorage:', error);
-  }
-};
-
-const isEmailSentGlobal = (emailId: string) => {
-  return getEmailSentGlobal().has(emailId);
-};
 
 const SuccessPage: React.FC = () => {
-  const { state, dispatch } = useApp();
+  const { state } = useApp();
   const selectedArtist = state.selectedArtist;
-  const [emailSent, setEmailSent] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  // 使用 ref 来标记是否已经发送过邮件，防止 StrictMode 重复执行
-  const hasSentRef = useRef(false);
-  const componentMountedRef = useRef(true);
-
-  useEffect(() => {
-    // 组件卸载时的清理函数
-    return () => {
-      componentMountedRef.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    // 尝试从localStorage恢复数据
-    let bookingDataFromStorage = null;
-    try {
-      const savedBooking = localStorage.getItem('patchTattooBooking');
-      if (savedBooking) {
-        bookingDataFromStorage = JSON.parse(savedBooking);
-        console.log('📋 从localStorage恢复的预订数据:', bookingDataFromStorage);
-      }
-    } catch (error) {
-      console.error('❌ 解析localStorage数据失败:', error);
-    }
-
-    // 使用AppContext数据或localStorage数据
-    const effectiveFormData = state.formData?.name ? state.formData : bookingDataFromStorage?.formData;
-    const effectiveSelectedArtist = selectedArtist || bookingDataFromStorage?.selectedArtist;
-    
-    // 创建唯一的邮件标识，基于用户数据而不是时间戳
-    const emailId = `${effectiveFormData?.email || 'unknown'}_${effectiveFormData?.name || 'unknown'}_${effectiveSelectedArtist?.id || 'unknown'}`;
-    
-    // 多重检查防止重复发送
-    if (
-      hasSentRef.current || 
-      isEmailSentGlobal(emailId) ||
-      emailSent || 
-      isProcessing ||
-      !componentMountedRef.current
-    ) {
-      console.log('⏭️ 邮件已发送或正在处理中，跳过重复发送');
-      return;
-    }
-
-    // 检查是否有有效的预约数据
-    if (!effectiveFormData?.name || !effectiveFormData?.email) {
-      console.warn('❌ 缺少必要数据，跳过邮件发送');
-      console.log('🔍 当前数据状态:', {
-        stateFormData: state.formData,
-        localStorageData: bookingDataFromStorage,
-        effectiveFormData: effectiveFormData
-      });
-      return;
-    }
-
-    // 立即标记为已发送，防止重复
-    hasSentRef.current = true;
-    setEmailSentGlobal(emailId);
-    setIsProcessing(true);
-
-    console.log('🚀 准备发送确认邮件...');
-    
-    // 延迟执行，确保组件完全挂载
-    const timer = setTimeout(() => {
-      if (componentMountedRef.current && hasSentRef.current) {
-        sendConfirmationEmailSilently(emailId);
-      }
-    }, 200);
-
-    // 清理函数
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []); // 空依赖数组，只在组件挂载时执行一次
-
-  const sendConfirmationEmailSilently = async (emailId: string) => {
-    try {
-      // 确保组件仍然挂载
-      if (!componentMountedRef.current) {
-        console.log('🚫 组件已卸载，取消邮件发送');
-        return;
-      }
-
-      // 尝试从localStorage恢复数据
-      let bookingDataFromStorage = null;
-      try {
-        const savedBooking = localStorage.getItem('patchTattooBooking');
-        if (savedBooking) {
-          bookingDataFromStorage = JSON.parse(savedBooking);
-        }
-      } catch (error) {
-        console.error('❌ 解析localStorage数据失败:', error);
-      }
-
-      // 使用AppContext数据或localStorage数据
-      const effectiveFormData = state.formData?.name ? state.formData : bookingDataFromStorage?.formData;
-      const effectiveSelectedArtist = selectedArtist || bookingDataFromStorage?.selectedArtist;
-
-      console.log('📤 开始发送邮件流程...');
-      console.log('🔍 effectiveFormData:', effectiveFormData);
-      console.log('🔍 effectiveSelectedArtist:', effectiveSelectedArtist);
-      
-      const bookingData = {
-        name: effectiveFormData?.name || 'Customer',
-        email: effectiveFormData?.email || 'test@example.com',
-        phone: effectiveFormData?.phone || 'Not provided',
-        selectedArtist: effectiveSelectedArtist?.displayName || effectiveSelectedArtist?.name || 'Jing',
-        tattooIdea: effectiveFormData?.tattooIdea || 'Custom design consultation',
-        needsConsultation: effectiveFormData?.needsConsultation ? 'Yes' : 'No',
-        consultationDate: effectiveFormData?.consultationDate || 'To be scheduled',
-        consultationTime: effectiveFormData?.consultationTime || 'To be scheduled',
-        placement: effectiveFormData?.placement || 'To be discussed',
-        colorPreference: effectiveFormData?.colorPreference || 'To be discussed'
-      };
-
-      console.log('📨 准备发送的邮件数据:', bookingData);
-      
-      const result = await sendBookingConfirmationEmail(bookingData);
-      
-      // 确保组件仍然挂载再更新状态
-      if (!componentMountedRef.current) return;
-      
-      if (result.success) {
-        console.log('✅ 邮件发送成功！');
-        setEmailSent(true);
-      } else {
-        console.warn('⚠️ 邮件发送失败:', result.error);
-        // 发送失败时移除标记，允许重试
-        // 注意：由于使用localStorage，这里不删除标记，避免重复发送
-        hasSentRef.current = false;
-        setEmailSent(false);
-      }
-      
-    } catch (error) {
-      console.error('❌ 邮件发送异常:', error);
-      
-      // 确保组件仍然挂载再处理错误
-      if (!componentMountedRef.current) return;
-      
-      // 发送异常时不删除localStorage标记，避免重复发送
-      hasSentRef.current = false;
-      setEmailSent(false);
-    } finally {
-      // 确保组件仍然挂载再更新状态
-      if (componentMountedRef.current) {
-        setIsProcessing(false);
-      }
-    }
-  };
-
-
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -227,27 +46,12 @@ const SuccessPage: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="space-y-4">
           <div className="flex items-start space-x-3">
-            <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
+            <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
             <div>
               <p className="text-sm text-gray-600 mt-1">
-                {emailSent ? (
-                  <span className="text-green-600 font-medium">
-                    ✅ Confirmation email sent successfully!
-                  </span>
-                ) : isProcessing ? (
-                  <span className="text-blue-600 font-medium">
-                    📤 Sending confirmation email...
-                  </span>
-                ) : (
-                  <span className="text-gray-600">
-                    Confirmation emails are being sent to your artist.
-                  </span>
-                )}
-                {emailSent && (
-                  <span className="block mt-1 text-gray-500">
-                    If you don't receive an email within 5 minutes, please contact us at info@patchtattootherapy.com
-                  </span>
-                )}
+                <span className="text-green-600 font-medium">
+                  ✅ Your artist will contact you soon
+                </span>
               </p>
             </div>
           </div>
@@ -267,25 +71,6 @@ const SuccessPage: React.FC = () => {
           <p className="font-medium mt-4">Reminder: if you didn't receive a confirmation email, or an email from your artist, pls contact us.</p>
         </div>
       </div>
-
-
-
-      {/* 开发调试信息 */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-800">
-            <strong>🛡️ 防重复机制:</strong> 多重保护已启用
-          </p>
-          <p className="text-sm text-green-800 mt-1">
-            <strong>📊 发送状态:</strong> 
-            {emailSent ? ' ✅ 已发送' : isProcessing ? ' 🔄 发送中...' : ' ⏳ 待发送'}
-          </p>
-          <p className="text-sm text-green-800 mt-1">
-            <strong>🔒 保护状态:</strong> Ref={hasSentRef.current ? '已标记' : '未标记'} | 
-            挂载={componentMountedRef.current ? '是' : '否'}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

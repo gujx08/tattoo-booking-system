@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Calendar, Clock, ChevronDown } from 'lucide-react';
 import Button from '../common/Button';
 import { sendBookingDraftEmail } from '../../services/emailService';
+import { getDepositAmount } from '../../config/stripeConfig';
 
 const ConsultationScheduling: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -130,7 +131,7 @@ const ConsultationScheduling: React.FC = () => {
           selectedArtist: state.selectedArtist,
           consultationChoice: true,
           timestamp: new Date().toISOString(),
-          depositAmount: 0, // 稍后在PaymentPage中会重新计算
+          depositAmount: getDepositAmount(state.selectedArtist?.id || ''),
           status: 'PENDING_PAYMENT'
         };
         
