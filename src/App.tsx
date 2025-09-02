@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/common/Header';
+import Footer from './components/common/Footer';
 import HomePage from './components/HomePage';
 import BookingWizard from './components/BookingWizard';
 import SuccessPage from './components/booking/SuccessPage';
@@ -11,9 +12,12 @@ const AppContent: React.FC = () => {
   const { state } = useApp();
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      {state.currentStep === 0 ? <HomePage /> : <BookingWizard />}
+      <main className="flex-1">
+        {state.currentStep === 0 ? <HomePage /> : <BookingWizard />}
+      </main>
+      <Footer />
       <NotificationModal 
         isOpen={state.showNotification} 
         message={state.notificationMessage} 
@@ -27,9 +31,12 @@ const StandaloneSuccessPage: React.FC = () => {
   const { state } = useApp();
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <SuccessPage />
+      <main className="flex-1">
+        <SuccessPage />
+      </main>
+      <Footer />
       <NotificationModal 
         isOpen={state.showNotification} 
         message={state.notificationMessage} 
