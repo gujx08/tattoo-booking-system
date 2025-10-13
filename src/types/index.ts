@@ -21,6 +21,7 @@ export interface Artist {
     flashDiscount: string;
   };
   specialNote?: string;
+  hidden?: boolean; // 是否隐藏艺术家卡片
 }
 
 export interface BookingFormData {

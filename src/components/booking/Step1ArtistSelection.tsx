@@ -74,7 +74,11 @@ const Step1ArtistSelection: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {ARTISTS_DATA.filter(artist => artist.id !== 'maili' && artist.id !== 'keani').map((artist) => (
+        {ARTISTS_DATA.filter(artist => 
+          !artist.hidden && 
+          artist.id !== 'maili' && 
+          artist.id !== 'keani'
+        ).map((artist) => (
           <ArtistCard
             key={artist.id}
             artist={artist}
