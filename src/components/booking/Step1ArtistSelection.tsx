@@ -4,6 +4,7 @@ import { ARTISTS_DATA } from '../../data/artists';
 import ArtistCard from '../artist/ArtistCard';
 import ArtistProfile from '../artist/ArtistProfile';
 import Button from '../common/Button';
+import { trackArtistSelection, trackBookingStep } from '../../utils/analytics';
 
 const Step1ArtistSelection: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -12,6 +13,10 @@ const Step1ArtistSelection: React.FC = () => {
   const handleArtistSelect = (artistId: string) => {
     const selectedArtist = ARTISTS_DATA.find(a => a.id === artistId);
     if (selectedArtist) {
+      // 追踪艺术家选择
+      trackArtistSelection(selectedArtist.displayName);
+      trackBookingStep(1, 'Artist Selection');
+      
       dispatch({ type: 'SET_SELECTED_ARTIST', payload: selectedArtist });
       dispatch({ type: 'UPDATE_FORM_DATA', payload: { artistId, needsHelpChoosing: false } });
       dispatch({ type: 'SET_STEP', payload: 2 });

@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
@@ -7,6 +7,19 @@ import HomePage from './components/HomePage';
 import BookingWizard from './components/BookingWizard';
 import SuccessPage from './components/booking/SuccessPage';
 import NotificationModal from './components/common/NotificationModal';
+import { trackPageView } from './utils/analytics';
+
+// 路由追踪组件
+const RouteTracker: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // 追踪页面浏览
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+};
 
 const AppContent: React.FC = () => {
   const { state } = useApp();
@@ -49,6 +62,7 @@ function App() {
   return (
     <Router>
       <AppProvider>
+        <RouteTracker />
         <Routes>
           {/* 主应用路由 */}
           <Route path="/" element={<AppContent />} />

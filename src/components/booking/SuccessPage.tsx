@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { trackBookingComplete } from '../../utils/analytics';
 
 const SuccessPage: React.FC = () => {
   const { state } = useApp();
   const selectedArtist = state.selectedArtist;
+
+  // 追踪预约完成
+  useEffect(() => {
+    if (selectedArtist) {
+      const artistName = selectedArtist.displayName || selectedArtist.name;
+      const depositAmount = selectedArtist.deposit || 0;
+      trackBookingComplete(artistName, depositAmount);
+    }
+  }, [selectedArtist]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">

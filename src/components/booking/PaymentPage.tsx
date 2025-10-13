@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { CreditCard, Calendar, User, MessageSquare, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
 import { getStripePaymentLink, getDepositAmount, getArtistName } from '../../config/stripeConfig';
+import { trackPaymentStart } from '../../utils/analytics';
 
 const PaymentPage: React.FC = () => {
   const { state, dispatch } = useApp();
@@ -68,6 +69,11 @@ const PaymentPage: React.FC = () => {
 
       // 保存到localStorage（备份）
       localStorage.setItem('patchTattooBooking', JSON.stringify(completeBookingData));
+
+      // 追踪支付开始
+      const artistName = state.selectedArtist?.displayName || getArtistName(state.formData.artistId || '');
+      const depositAmount = getCurrentDepositAmount();
+      trackPaymentStart(artistName, depositAmount);
 
       // 获取Stripe支付链接，并预填充客户邮箱
       const artistId = state.formData.artistId || '';
