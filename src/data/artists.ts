@@ -49,7 +49,7 @@ export const ARTISTS_DATA: Artist[] = [
     experience: '3 years',
     deposit: 100,
     specialties: ['Small color realism', 'Manga tattoos', 'Watercolor tattoos'],
-    description: "Rachel mainly does small colorful tattoos with excellent saturation. She also works with watercolor tattoos and manga tattoos. Rachel's tattoos are solid and have great longevity. She likes using vibrant colors and she does a lot of floral, fruit and game themes.",
+    description: "Rachel specializes in bold, colorful tattoos that are built to last. She often works with panel-style compositions and watercolor-inspired designs, blending structure with fluidity. Rachel's artistry shines through her use of vibrant palettes, with a strong focus on floral, nature, and Asian-inspired themes. Known for her excellent saturation and clean execution, her work maintains vibrancy and longevity over time.",
     instagram: '@rachel_tattooartist',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/rachel',
     video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_rachel.mp4',
