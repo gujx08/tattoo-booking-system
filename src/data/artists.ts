@@ -131,6 +131,7 @@ export const ARTISTS_DATA: Artist[] = [
     instagram: '@laurtattoos',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/lauren',
     video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_lauren.mp4',
+    hidden: true, // 隐藏此艺术家卡片
     portfolio: [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/lauren/work_1.jpg',
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/lauren/work_2.jpg',
