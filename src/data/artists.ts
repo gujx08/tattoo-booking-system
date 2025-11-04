@@ -48,7 +48,7 @@ export const ARTISTS_DATA: Artist[] = [
     category: 'Senior Artist',
     experience: '3 years',
     deposit: 100,
-    specialties: ['Small color realism', 'Manga tattoos', 'Watercolor tattoos'],
+    specialties: ['Color Realism', 'Panel tattoos', 'Watercolor style'],
     description: "Rachel specializes in bold, colorful tattoos that are built to last. She often works with panel-style compositions and watercolor-inspired designs, blending structure with fluidity. Rachel's artistry shines through her use of vibrant palettes, with a strong focus on floral, nature, and Asian-inspired themes. Known for her excellent saturation and clean execution, her work maintains vibrancy and longevity over time.",
     instagram: '@rachel_tattooartist',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/rachel',
