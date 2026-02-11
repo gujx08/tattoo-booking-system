@@ -60,7 +60,7 @@ export const ARTISTS_DATA: Artist[] = [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/rachel/work_4.jpg'
     ],
     pricing: {
-      dayRate: 800,
+      dayRate: 1000,
       halfDay: 600,
       minimum: 300,
       touchUp: 'Free',
@@ -99,7 +99,7 @@ export const ARTISTS_DATA: Artist[] = [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/jasmine/work_4.jpg'
     ],
     pricing: {
-      dayRate: 800,
+      dayRate: 1000,
       halfDay: 600,
       minimum: 300,
       touchUp: 'Free',
