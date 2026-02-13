@@ -60,7 +60,7 @@ const SuccessPage: React.FC = () => {
             <div>
               <p className="text-sm text-gray-600 mt-1">
                 <span className="text-green-600 font-medium">
-                  ✅ Your artist will contact you soon
+                  Your tattoo request is sent to your artist. Please allow your artist 3-5 days to get back to you. Sometimes they're busy tattooing!
                 </span>
               </p>
             </div>

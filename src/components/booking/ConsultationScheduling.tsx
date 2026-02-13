@@ -44,7 +44,11 @@ const ConsultationScheduling: React.FC = () => {
     
     const nextWednesday = new Date(today);
     nextWednesday.setDate(today.getDate() + daysUntilWednesday);
-    
+    // 最早可选的周三至少是 7 天后；若下一个周三在 6 天内则从再下一周开始
+    if (daysUntilWednesday < 7) {
+      nextWednesday.setDate(nextWednesday.getDate() + 7);
+    }
+
     // 生成8个周三的日期
     for (let i = 0; i < 8; i++) {
       const date = new Date(nextWednesday);
