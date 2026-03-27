@@ -218,16 +218,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-stone-700 mb-2">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
         {description && (
-          <p className="text-sm text-gray-600 mb-3">{description}</p>
+          <p className="text-sm text-stone-600 mb-3">{description}</p>
         )}
       </div>
 
       {/* Upload Area */}
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+      <div className="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors">
         <input
           ref={fileInputRef}
           type="file"
@@ -241,13 +241,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           htmlFor={`file-upload-${label.replace(/\s+/g, '-')}`}
           className="cursor-pointer"
         >
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">
-            <span className="font-medium text-blue-600 hover:text-blue-500">
+          <Upload className="mx-auto h-12 w-12 text-stone-400" />
+          <p className="mt-2 text-sm text-stone-600">
+            <span className="font-medium text-yellow-600 hover:text-yellow-500">
               Click to upload images
             </span>
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-stone-500">
             JPG, PNG up to 5MB ({files.length}/{maxFiles} files)
           </p>
         </label>
@@ -258,12 +258,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {files.map((file, index) => (
             <div key={index} className="relative group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+              <div className="aspect-square rounded-lg overflow-hidden bg-neutral-100">
                 {loadingPreviews[index] ? (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                  <div className="w-full h-full flex items-center justify-center bg-neutral-200">
                     <div className="text-center">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2 animate-pulse" />
-                      <p className="text-xs text-gray-500">Loading...</p>
+                      <Upload className="w-8 h-8 text-stone-400 mx-auto mb-2 animate-pulse" />
+                      <p className="text-xs text-stone-500">Loading...</p>
                     </div>
                   </div>
                 ) : previewUrls[index] ? (
@@ -279,10 +279,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                  <div className="w-full h-full flex items-center justify-center bg-neutral-200">
                     <div className="text-center">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-xs text-gray-500">Preview Error</p>
+                      <Upload className="w-8 h-8 text-stone-400 mx-auto mb-2" />
+                      <p className="text-xs text-stone-500">Preview Error</p>
                     </div>
                   </div>
                 )}
@@ -293,11 +293,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               >
                 <X className="w-4 h-4" />
               </button>
-              <p className="mt-1 text-xs text-gray-500 truncate" title={file.name}>
+              <p className="mt-1 text-xs text-stone-500 truncate" title={file.name}>
                 {file.name}
               </p>
               {isHeicFile(file) && (
-                <p className="text-xs text-blue-500 font-medium">HEIC</p>
+                <p className="text-xs text-yellow-500 font-medium">HEIC</p>
               )}
             </div>
           ))}

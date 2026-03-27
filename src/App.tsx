@@ -25,7 +25,7 @@ const AppContent: React.FC = () => {
   const { state } = useApp();
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-neutral-50 flex flex-col">
       <Header />
       <main className="flex-1">
         {state.currentStep === 0 ? <HomePage /> : <BookingWizard />}
@@ -44,7 +44,7 @@ const StandaloneSuccessPage: React.FC = () => {
   const { state } = useApp();
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-neutral-50 flex flex-col">
       <Header />
       <main className="flex-1">
         <SuccessPage />

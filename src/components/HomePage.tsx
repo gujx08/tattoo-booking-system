@@ -16,14 +16,14 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gray-900 text-white">
+      <section className="bg-neutral-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-stone-800 mb-6">
               Patch Tattoo Therapy
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Where artistry meets healing. Expert tattoo artists creating meaningful 
+            <p className="text-xl md:text-2xl text-stone-700 mb-8 max-w-3xl mx-auto">
+              Where artistry meets healing. Expert tattoo artists creating meaningful
               body art in the heart of Tarzana.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -36,7 +36,7 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button variant="outline" size="lg" className="text-lg px-8 text-white border-white hover:bg-white hover:text-gray-900">
+                <Button variant="outline" size="lg" className="text-lg px-8">
                   <Instagram className="w-5 h-5 mr-2" />
                   Follow Us
                 </Button>
@@ -47,13 +47,13 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Featured Artists */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">
               Meet Our Artists
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-stone-600 max-w-2xl mx-auto">
               Each artist brings their unique style and expertise to create 
               tattoos that tell your story.
             </p>
@@ -71,22 +71,22 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-900">
+                    <h3 className="text-xl font-semibold text-stone-900">
                       {artist.displayName}
                     </h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       artist.category === 'Lead Artist' ? 'bg-yellow-100 text-yellow-800' :
-                      artist.category === 'Senior Artist' ? 'bg-blue-100 text-blue-800' :
+                      artist.category === 'Senior Artist' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-green-100 text-green-800'
                     }`}>
                       {artist.category}
                     </span>
                   </div>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  <p className="text-stone-600 text-sm mb-4 line-clamp-3">
                     {artist.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-stone-500">
                       From ${artist.deposit} deposit
                     </span>
                     {artist.instagram && (
@@ -118,10 +118,10 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-6">
                 Your Tattoo Journey Starts Here
               </h2>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-stone-600 mb-8">
                 At Patch Tattoo Therapy, we believe that every tattoo should be a 
                 meaningful expression of your story. Our experienced artists work 
                 closely with you to bring your vision to life, ensuring every detail 
@@ -130,22 +130,22 @@ const HomePage: React.FC = () => {
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <span className="text-gray-700">18547 1/2 Ventura Blvd, Tarzana, CA 91356</span>
+                  <MapPin className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                  <span className="text-stone-700">18547 1/2 Ventura Blvd, Tarzana, CA 91356</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Clock className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <span className="text-gray-700">Monday - Sunday: 11AM - 7PM</span>
+                  <Clock className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                  <span className="text-stone-700">Monday - Sunday: 11AM - 7PM</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <span className="text-gray-700">818-857-7937</span>
+                  <Phone className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                  <span className="text-stone-700">818-857-7937</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gray-100 rounded-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-neutral-50 rounded-lg p-8">
+              <h3 className="text-2xl font-bold text-stone-900 mb-6">
                 Why Choose Us?
               </h3>
               
@@ -153,8 +153,8 @@ const HomePage: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <Star className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Expert Artists</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-stone-900">Expert Artists</h4>
+                    <p className="text-sm text-stone-600">
                       Highly skilled artists with diverse specialties and years of experience
                     </p>
                   </div>
@@ -163,8 +163,8 @@ const HomePage: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <Star className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Custom Designs</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-stone-900">Custom Designs</h4>
+                    <p className="text-sm text-stone-600">
                       Every tattoo is uniquely designed to match your vision and story
                     </p>
                   </div>
@@ -173,8 +173,8 @@ const HomePage: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <Star className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Clean & Safe</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-stone-900">Clean & Safe</h4>
+                    <p className="text-sm text-stone-600">
                       Sterile equipment and safe practices ensuring your health and safety
                     </p>
                   </div>
@@ -183,8 +183,8 @@ const HomePage: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <Star className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Personal Consultation</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-stone-900">Personal Consultation</h4>
+                    <p className="text-sm text-stone-600">
                       One-on-one consultations to ensure your tattoo is perfect
                     </p>
                   </div>
@@ -196,19 +196,19 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600 text-white">
+      <section className="py-20 bg-neutral-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-6">
             Ready to Start Your Tattoo Journey?
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Book your consultation today and let our artists help bring your vision to life. 
+          <p className="text-xl text-stone-700 mb-8 max-w-2xl mx-auto">
+            Book your consultation today and let our artists help bring your vision to life.
             Your story deserves to be told beautifully.
           </p>
-          <Button 
-            onClick={handleBookNow} 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8"
+          <Button
+            onClick={handleBookNow}
+            size="lg"
+            className="text-lg px-8"
           >
             <Calendar className="w-5 h-5 mr-2" />
             Book Your Appointment

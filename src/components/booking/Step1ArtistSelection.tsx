@@ -64,10 +64,10 @@ const Step1ArtistSelection: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-stone-900 mb-4">
           Choose your tattoo artist
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-stone-600 max-w-2xl mx-auto">
           Each of our talented artists has their own unique style and specialties. 
           Click on any artist card to view their profile, or select an artist to start booking.
         </p>
@@ -91,10 +91,10 @@ const Step1ArtistSelection: React.FC = () => {
       {/* Need Help Option */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-semibold text-stone-900 mb-2">
             Not sure which artist is right for you?
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-stone-600 mb-4">
             Let us help you choose the perfect artist based on your tattoo idea and style preferences.
           </p>
           <Button

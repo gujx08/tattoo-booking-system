@@ -29,7 +29,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, onCardClick }
         <div className="absolute top-3 left-3">
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
             artist.category === 'Lead Artist' ? 'bg-yellow-100 text-yellow-800' :
-            artist.category === 'Senior Artist' ? 'bg-blue-100 text-blue-800' :
+            artist.category === 'Senior Artist' ? 'bg-yellow-100 text-yellow-800' :
             artist.category === 'Junior Artist' ? 'bg-green-100 text-green-800' :
             'bg-purple-100 text-purple-800'
           }`}>
@@ -41,14 +41,14 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, onCardClick }
       {/* Artist Info */}
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold text-gray-900">{artist.name}</h3>
+          <h3 className="text-lg font-semibold text-stone-900">{artist.name}</h3>
           {artist.instagram && (
             <a
               href={`https://instagram.com/${artist.instagram.replace('@', '')}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-gray-400 hover:text-pink-500 transition-colors"
+              className="text-stone-400 hover:text-pink-500 transition-colors"
             >
               <Instagram className="w-4 h-4" />
             </a>
@@ -62,7 +62,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, onCardClick }
               {artist.specialties.map((specialty, index) => (
                 <span
                   key={index}
-                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                  className="text-xs bg-neutral-100 text-stone-700 px-2 py-1 rounded-full"
                 >
                   {specialty}
                 </span>
@@ -76,13 +76,13 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, onCardClick }
           <div className="text-sm">
             {artist.category === 'Apprentice' ? (
               <>
-                <span className="text-gray-600">Price Range: </span>
-                <span className="font-semibold text-gray-900">{artist.priceRange}</span>
+                <span className="text-stone-600">Price Range: </span>
+                <span className="font-semibold text-stone-900">{artist.priceRange}</span>
               </>
             ) : (
               <>
-                <span className="text-gray-600">Day Rate: </span>
-                <span className="font-semibold text-gray-900">
+                <span className="text-stone-600">Day Rate: </span>
+                <span className="font-semibold text-stone-900">
                   ${artist.pricing?.dayRate || 'Contact for pricing'}
                 </span>
               </>
@@ -90,7 +90,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onSelect, onCardClick }
           </div>
           <button
             onClick={handleSelectClick}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="bg-yellow-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-yellow-600 transition-colors"
           >
             Select Artist
           </button>

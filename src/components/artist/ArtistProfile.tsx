@@ -37,13 +37,13 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
   const pricingData = getPricingDisplay(artist);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <button
             onClick={onBack}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center text-stone-600 hover:text-stone-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Artists
@@ -56,7 +56,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Artist Name */}
-            <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            <h1 className="text-3xl font-bold text-stone-900 mb-6">
               {artist.name}
             </h1>
 
@@ -88,7 +88,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
 
             {/* Artist Description - Below video, no specialties */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-stone-700 leading-relaxed">
                 {artist.description}
               </p>
             </div>
@@ -96,7 +96,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
             {/* Pricing Section */}
             {artist.pricing && (
               <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Pricing</h2>
+                <h2 className="text-2xl font-semibold text-stone-900 mb-4">Pricing</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <p><strong>Day rate:</strong> ${pricingData.dayRate}</p>
@@ -123,7 +123,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
 
             {/* Portfolio */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Portfolio</h2>
+              <h2 className="text-2xl font-semibold text-stone-900 mb-4">Portfolio</h2>
               <div className="grid grid-cols-2 gap-4">
                 {artist.portfolio.map((image, index) => (
                   <div key={index} className="portfolio-item">
@@ -165,13 +165,13 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
             {/* Client Reviews - 修复后的版本，使用真实数据 */}
             {artist.reviews && artist.reviews.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Client Reviews</h2>
+                <h2 className="text-2xl font-semibold text-stone-900 mb-4">Client Reviews</h2>
                 
                 <div className="space-y-6">
                   {artist.reviews.map((review, index) => (
                     <div 
                       key={index} 
-                      className={`review ${index < artist.reviews.length - 1 ? 'border-b border-gray-200 pb-4' : ''}`}
+                      className={`review ${index < artist.reviews.length - 1 ? 'border-b border-neutral-200 pb-4' : ''}`}
                     >
                       <div className="flex items-center mb-2">
                         <div className="flex text-yellow-400">
@@ -179,9 +179,9 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
                             <Star key={star} className="w-5 h-5 fill-current" />
                           ))}
                         </div>
-                        <span className="ml-2 font-semibold text-gray-900">{review.name}</span>
+                        <span className="ml-2 font-semibold text-stone-900">{review.name}</span>
                       </div>
-                      <p className="text-gray-700">
+                      <p className="text-stone-700">
                         {review.text}
                       </p>
                     </div>
@@ -194,7 +194,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
             <div className="bg-white rounded-lg shadow-md p-6">
               <Button
                 onClick={onBookAppointment}
-                className="w-full bg-black text-white hover:bg-gray-800 text-lg py-4"
+                className="w-full bg-black text-white hover:bg-stone-800 text-lg py-4"
                 size="lg"
               >
                 Book a tattoo with {artist.displayName}
@@ -210,10 +210,10 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
               {artist.experience && (
                 <div className="info-item mb-4">
                   <div className="flex items-center">
-                    <Clock className="w-5 h-5 mr-3 text-gray-600" />
+                    <Clock className="w-5 h-5 mr-3 text-stone-600" />
                     <div>
-                      <p className="font-semibold text-gray-900">Experience</p>
-                      <p className="text-gray-600">{artist.experience}</p>
+                      <p className="font-semibold text-stone-900">Experience</p>
+                      <p className="text-stone-600">{artist.experience}</p>
                     </div>
                   </div>
                 </div>
@@ -222,10 +222,10 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
               {/* Location */}
               <div className="info-item mb-4">
                 <div className="flex items-center">
-                  <MapPin className="w-5 h-5 mr-3 text-gray-600" />
+                  <MapPin className="w-5 h-5 mr-3 text-stone-600" />
                   <div>
-                    <p className="font-semibold text-gray-900">Location</p>
-                    <p className="text-gray-600">18547 1/2 Ventura Blvd</p>
+                    <p className="font-semibold text-stone-900">Location</p>
+                    <p className="text-stone-600">18547 1/2 Ventura Blvd</p>
                   </div>
                 </div>
               </div>
@@ -233,9 +233,9 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
               {/* Instagram */}
               <div className="info-item mb-6">
                 <div className="flex items-center">
-                  <Instagram className="w-5 h-5 mr-3 text-gray-600" />
+                  <Instagram className="w-5 h-5 mr-3 text-stone-600" />
                   <div>
-                    <p className="font-semibold text-gray-900">Instagram</p>
+                    <p className="font-semibold text-stone-900">Instagram</p>
                     {artist.instagram && (
                       <a
                         href={`https://instagram.com/${artist.instagram.replace('@', '')}`}
@@ -253,7 +253,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
               {/* Book Button */}
               <Button
                 onClick={onBookAppointment}
-                className="w-full mb-6 bg-black text-white hover:bg-gray-800"
+                className="w-full mb-6 bg-black text-white hover:bg-stone-800"
                 size="lg"
               >
                 <Calendar className="w-4 h-4 mr-2" />
@@ -262,8 +262,8 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
 
               {/* Booking Process */}
               <div className="booking-process">
-                <h3 className="font-semibold text-gray-900 mb-4">Booking Process:</h3>
-                <ol className="text-sm space-y-2 text-gray-700">
+                <h3 className="font-semibold text-stone-900 mb-4">Booking Process:</h3>
+                <ol className="text-sm space-y-2 text-stone-700">
                   <li>1. Submit your tattoo request</li>
                   <li>2. Pay the deposit</li>
                   <li>3. Book 1-1 consultation with your artist (optional)</li>

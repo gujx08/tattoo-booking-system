@@ -64,7 +64,7 @@ const BookingWizard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       {/* Progress Bar - 只在表单步骤显示 */}
       {shouldShowProgressBar() && (
         <div className="bg-white shadow-sm py-4">

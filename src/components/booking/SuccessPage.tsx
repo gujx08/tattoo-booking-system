@@ -23,11 +23,11 @@ const SuccessPage: React.FC = () => {
           <CheckCircle className="w-12 h-12" />
         </div>
 
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-stone-900 mb-4">
           Booking Successful!
         </h1>
 
-        <p className="text-xl text-gray-600 mb-8">
+        <p className="text-xl text-stone-600 mb-8">
           Your tattoo appointment has been confirmed
         </p>
       </div>
@@ -35,18 +35,18 @@ const SuccessPage: React.FC = () => {
       {/* 预约摘要 */}
       {(state.formData?.name || selectedArtist) && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Summary</h3>
+          <h3 className="text-lg font-semibold text-stone-900 mb-4">Booking Summary</h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">Name:</span>
+              <span className="text-stone-600">Name:</span>
               <span className="font-medium">{state.formData?.name || 'Customer'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Artist:</span>
+              <span className="text-stone-600">Artist:</span>
               <span className="font-medium">{selectedArtist?.displayName || selectedArtist?.name || 'Jing'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Email:</span>
+              <span className="text-stone-600">Email:</span>
               <span className="font-medium">{state.formData?.email || 'Will be updated'}</span>
             </div>
           </div>
@@ -58,7 +58,7 @@ const SuccessPage: React.FC = () => {
           <div className="flex items-start space-x-3">
             <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
             <div>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-stone-600 mt-1">
                 <span className="text-green-600 font-medium">
                   Your tattoo request is sent to your artist. Please allow your artist 3-5 days to get back to you. Sometimes they're busy tattooing!
                 </span>
@@ -68,12 +68,12 @@ const SuccessPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-        <h3 className="text-lg font-semibold text-blue-900 mb-4">
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+        <h3 className="text-lg font-semibold text-yellow-900 mb-4">
           What's Next?
         </h3>
         
-        <div className="space-y-3 text-sm text-blue-800">
+        <div className="space-y-3 text-sm text-yellow-800">
           <p>• Your artist will review your tattoo request ASAP.</p>
           <p>• You'll receive an email from your artist with consultation invite or design feedback.</p>
           <p>• Confirm the design details with your artist via consultation or email.</p>

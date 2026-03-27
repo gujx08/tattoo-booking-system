@@ -68,17 +68,17 @@ const Step5ColorPreferences: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-stone-900 mb-4">
           Color Preferences
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-stone-600 max-w-2xl mx-auto">
           Let us know your color preferences to help us create the perfect tattoo for you.
         </p>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-4">
+          <label className="block text-sm font-medium text-stone-700 mb-4">
             Do you want this tattoo to have colors? *
           </label>
           
@@ -86,10 +86,10 @@ const Step5ColorPreferences: React.FC = () => {
             {colorOptions.map((option, index) => (
               <label 
                 key={index} 
-                className={`flex items-start space-x-3 p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`flex items-start space-x-3 p-4 border rounded-lg cursor-pointer transition-colors hover:bg-neutral-50 ${
                   state.formData.colorPreference === option 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200'
+                    ? 'border-yellow-500 bg-yellow-50' 
+                    : 'border-neutral-200'
                 }`}
               >
                 <input
@@ -98,9 +98,9 @@ const Step5ColorPreferences: React.FC = () => {
                   value={option}
                   checked={state.formData.colorPreference === option}
                   onChange={(e) => handleOptionSelect(e.target.value)}
-                  className="mt-1 focus:ring-blue-500 focus:ring-2 text-blue-600"
+                  className="mt-1 focus:ring-yellow-500 focus:ring-2 text-yellow-600"
                 />
-                <span className="text-sm text-gray-700">{option}</span>
+                <span className="text-sm text-stone-700">{option}</span>
               </label>
             ))}
           </div>
@@ -112,7 +112,7 @@ const Step5ColorPreferences: React.FC = () => {
 
         {/* Skin Tone Question - Moved from Step 6 */}
         <div className="mt-8">
-          <label className="block text-sm font-medium text-gray-700 mb-4">
+          <label className="block text-sm font-medium text-stone-700 mb-4">
             Certain color palettes look better on specific skin tones. What is yours in daylight? *
           </label>
           
@@ -120,10 +120,10 @@ const Step5ColorPreferences: React.FC = () => {
             {skinToneOptions.map((option, index) => (
               <label 
                 key={index} 
-                className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors hover:bg-neutral-50 ${
                   state.formData.skinTone === option 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200'
+                    ? 'border-yellow-500 bg-yellow-50' 
+                    : 'border-neutral-200'
                 }`}
               >
                 <input
@@ -132,9 +132,9 @@ const Step5ColorPreferences: React.FC = () => {
                   value={option}
                   checked={state.formData.skinTone === option}
                   onChange={(e) => handleInputChange('skinTone', e.target.value)}
-                  className="focus:ring-blue-500 focus:ring-2 text-blue-600"
+                  className="focus:ring-yellow-500 focus:ring-2 text-yellow-600"
                 />
-                <span className="text-sm text-gray-700">{option}</span>
+                <span className="text-sm text-stone-700">{option}</span>
               </label>
             ))}
           </div>

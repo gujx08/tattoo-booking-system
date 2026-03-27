@@ -3,7 +3,7 @@ import { MapPin, Phone, Clock, Instagram } from 'lucide-react';
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100">
+    <header className="bg-white shadow-sm border-b border-neutral-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo和网站链接 */}
@@ -27,7 +27,7 @@ const Header: React.FC = () => {
                 href="https://patchtattootherapy.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-black px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                className="text-stone-700 hover:text-black px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
               >
                 Home
               </a>
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
                 href="https://patchtattootherapy.com/tattoo-training" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-black px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                className="text-stone-700 hover:text-black px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
               >
                 Tattoo Training
               </a>
@@ -43,7 +43,7 @@ const Header: React.FC = () => {
                 href="https://patchtattootherapy.com/about" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-black px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                className="text-stone-700 hover:text-black px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
               >
                 About
               </a>

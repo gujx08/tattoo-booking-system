@@ -37,17 +37,17 @@ const PaymentCancelledPage: React.FC = () => {
         </div>
 
         {/* 标题和说明 */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+        <h1 className="text-2xl font-bold text-stone-900 mb-4">
           Payment Cancelled
         </h1>
         
-        <p className="text-gray-600 mb-6">
+        <p className="text-stone-600 mb-6">
           You cancelled the payment process. Please complete payment soon to secure your appointment.
         </p>
 
         {/* 重要提醒 */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-800">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-yellow-800">
             <span className="font-medium">💡 Keep this page open:</span> Your booking details are saved temporarily. Refreshing or leaving this page will lose your information.
           </p>
         </div>
@@ -57,7 +57,7 @@ const PaymentCancelledPage: React.FC = () => {
           {/* 完成支付 */}
           <Button 
             onClick={handleReturnToPayment}
-            className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700"
+            className="w-full flex items-center justify-center space-x-2 bg-yellow-500 hover:bg-yellow-600"
           >
             <CreditCard className="w-5 h-5" />
             <span>Complete Payment Now</span>
@@ -65,14 +65,14 @@ const PaymentCancelledPage: React.FC = () => {
         </div>
 
         {/* 联系信息 */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600">
+        <div className="mt-8 p-4 bg-neutral-50 rounded-lg">
+          <p className="text-sm text-stone-600">
             <span className="font-medium">Questions?</span> Call us at{' '}
-            <a href="tel:818-857-7937" className="text-blue-600 hover:underline">
+            <a href="tel:818-857-7937" className="text-yellow-600 hover:underline">
               (818) 857-7937
             </a>{' '}
             or email{' '}
-            <a href="mailto:info@patchtattootherapy.com" className="text-blue-600 hover:underline">
+            <a href="mailto:info@patchtattootherapy.com" className="text-yellow-600 hover:underline">
               info@patchtattootherapy.com
             </a>
           </p>

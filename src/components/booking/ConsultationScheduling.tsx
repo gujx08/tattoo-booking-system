@@ -185,29 +185,29 @@ const ConsultationScheduling: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-stone-900 mb-4">
           Pick a consultation date
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-stone-600 text-lg">
           {getSelectedArtistName()}'s consultation time is: Every Wednesday 8PM-8:30PM or 8:45PM-9:15PM
         </p>
-        <p className="text-gray-500 text-sm mt-2">
+        <p className="text-stone-500 text-sm mt-2">
           You can also change the consultation time later with the artist via email
         </p>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-stone-700 mb-3">
             Select consultation date *
           </label>
           <div className="relative">
             <select
               value={selectedDate}
               onChange={(e) => handleDateChange(e.target.value)}
-              className={`w-full px-4 py-4 border-2 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg ${
-                errors.date ? 'border-red-500' : 'border-gray-300'
-              } hover:border-gray-400 transition-colors`}
+              className={`w-full px-4 py-4 border-2 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 text-lg ${
+                errors.date ? 'border-red-500' : 'border-neutral-300'
+              } hover:border-neutral-400 transition-colors`}
             >
               <option value="">Choose a date...</option>
               {availableDates.map((date) => (
@@ -216,7 +216,7 @@ const ConsultationScheduling: React.FC = () => {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-600 pointer-events-none" />
+            <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-stone-600 pointer-events-none" />
           </div>
           {errors.date && (
             <p className="mt-2 text-sm text-red-600">{errors.date}</p>
@@ -225,17 +225,17 @@ const ConsultationScheduling: React.FC = () => {
 
         {selectedDate && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-stone-700 mb-3">
               Select consultation time *
             </label>
             <div className="grid gap-3">
               {timeSlots.map((slot) => (
                 <label 
                   key={slot.value}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
+                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-neutral-50 ${
                     selectedTime === slot.value 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200'
+                      ? 'border-yellow-500 bg-yellow-50' 
+                      : 'border-neutral-200'
                   }`}
                 >
                   <input
@@ -247,10 +247,10 @@ const ConsultationScheduling: React.FC = () => {
                     className="sr-only"
                   />
                   <Clock className={`w-5 h-5 mr-3 ${
-                    selectedTime === slot.value ? 'text-blue-600' : 'text-gray-400'
+                    selectedTime === slot.value ? 'text-yellow-600' : 'text-stone-400'
                   }`} />
                   <span className={`text-lg ${
-                    selectedTime === slot.value ? 'text-blue-900 font-medium' : 'text-gray-700'
+                    selectedTime === slot.value ? 'text-yellow-900 font-medium' : 'text-stone-700'
                   }`}>
                     {slot.label}
                   </span>

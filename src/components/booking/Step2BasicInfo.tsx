@@ -96,10 +96,10 @@ const Step2BasicInfo: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-stone-900 mb-4">
           How should we call you?
         </h1>
-        <p className="text-gray-600">
+        <p className="text-stone-600">
           We'll use this information to contact you about your appointment.
         </p>
       </div>
@@ -108,7 +108,7 @@ const Step2BasicInfo: React.FC = () => {
         <div className="space-y-6">
           {/* Name Field */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-stone-700 mb-2">
               Full Name *
             </label>
             <input
@@ -117,8 +117,8 @@ const Step2BasicInfo: React.FC = () => {
               name="name"
               value={state.formData.name || ''}
               onChange={handleNameChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
+                errors.name ? 'border-red-500' : 'border-neutral-300'
               }`}
               placeholder="Enter your full name"
             />
@@ -129,7 +129,7 @@ const Step2BasicInfo: React.FC = () => {
 
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2">
               Email Address *
             </label>
             <input
@@ -139,8 +139,8 @@ const Step2BasicInfo: React.FC = () => {
               value={state.formData.email || ''}
               onChange={handleEmailChange}
               onBlur={handleEmailBlur}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
+                errors.email ? 'border-red-500' : 'border-neutral-300'
               }`}
               placeholder="your.email@example.com"
             />
@@ -151,7 +151,7 @@ const Step2BasicInfo: React.FC = () => {
 
           {/* Phone Field */}
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium text-stone-700 mb-2">
               Phone Number *
             </label>
             <input
@@ -161,15 +161,15 @@ const Step2BasicInfo: React.FC = () => {
               value={state.formData.phone || ''}
               onChange={handlePhoneChange}
               onBlur={handlePhoneChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.phone ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
+                errors.phone ? 'border-red-500' : 'border-neutral-300'
               }`}
               placeholder="(555) 123-4567"
             />
             {errors.phone && (
               <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
             )}
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-stone-500">
               We collect your phone number to contact you only if you miss your scheduled appointment time.
             </p>
           </div>

@@ -109,10 +109,10 @@ const PaymentPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-stone-900 mb-4">
           Let's lock your spot!
         </h1>
-        <p className="text-gray-600">
+        <p className="text-stone-600">
           Almost there! Complete your deposit to secure your tattoo appointment.
         </p>
       </div>
@@ -120,32 +120,32 @@ const PaymentPage: React.FC = () => {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Booking Summary */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <h2 className="text-xl font-semibold text-stone-900 mb-4">
             Booking Summary
           </h2>
           
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 text-gray-400" />
+              <User className="w-5 h-5 text-stone-400" />
               <div>
-                <p className="font-medium text-gray-900">{artist.name}</p>
-                <p className="text-sm text-gray-600">Your selected artist</p>
+                <p className="font-medium text-stone-900">{artist.name}</p>
+                <p className="text-sm text-stone-600">Your selected artist</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 text-gray-400" />
+              <User className="w-5 h-5 text-stone-400" />
               <div>
-                <p className="font-medium text-gray-900">{state.formData.name}</p>
-                <p className="text-sm text-gray-600">{state.formData.email}</p>
+                <p className="font-medium text-stone-900">{state.formData.name}</p>
+                <p className="text-sm text-stone-600">{state.formData.email}</p>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
-              <MessageSquare className="w-5 h-5 text-gray-400 mt-1" />
+              <MessageSquare className="w-5 h-5 text-stone-400 mt-1" />
               <div>
-                <p className="font-medium text-gray-900">Tattoo Idea</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-medium text-stone-900">Tattoo Idea</p>
+                <p className="text-sm text-stone-600">
                   {state.formData.tattooIdea || 'Custom tattoo design'}
                 </p>
               </div>
@@ -153,13 +153,13 @@ const PaymentPage: React.FC = () => {
 
             {state.formData.needsConsultation && (
               <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-gray-400" />
+                <Calendar className="w-5 h-5 text-stone-400" />
                 <div>
-                  <p className="font-medium text-gray-900">Consultation</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-stone-900">Consultation</p>
+                  <p className="text-sm text-stone-600">
                     {state.formData.consultationDate}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-stone-600">
                     {state.formData.consultationTime}
                   </p>
                 </div>
@@ -168,10 +168,10 @@ const PaymentPage: React.FC = () => {
 
             {!state.formData.needsConsultation && (
               <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-gray-400" />
+                <Calendar className="w-5 h-5 text-stone-400" />
                 <div>
-                  <p className="font-medium text-gray-900">No Consultation</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-stone-900">No Consultation</p>
+                  <p className="text-sm text-stone-600">
                     Design details will be confirmed via email
                   </p>
                 </div>
@@ -181,8 +181,8 @@ const PaymentPage: React.FC = () => {
 
           <div className="border-t mt-6 pt-6">
             <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold text-gray-900">Deposit Required</span>
-              <span className="text-2xl font-bold text-gray-900">${getCurrentDepositAmount()}</span>
+              <span className="text-lg font-semibold text-stone-900">Deposit Required</span>
+              <span className="text-2xl font-bold text-stone-900">${getCurrentDepositAmount()}</span>
             </div>
           </div>
 
@@ -192,17 +192,17 @@ const PaymentPage: React.FC = () => {
               onClick={() => setShowDepositPolicy(!showDepositPolicy)}
               className="flex items-center justify-between w-full text-left"
             >
-              <span className="text-sm font-medium text-gray-700 underline">
+              <span className="text-sm font-medium text-stone-700 underline">
                 Deposit & Refund Policy
               </span>
             </button>
             
             {showDepositPolicy && (
-              <div className="mt-3 text-sm text-gray-600 space-y-2 bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium text-gray-700 mb-2">Why do we collect deposit before the artists see your request?</h4>
+              <div className="mt-3 text-sm text-stone-600 space-y-2 bg-neutral-50 p-4 rounded-lg">
+                <h4 className="font-medium text-stone-700 mb-2">Why do we collect deposit before the artists see your request?</h4>
                 <p>• It takes the artists some time to review & understand your tattoo idea. We collect the deposit to protect our artists' time, and also to make sure that you're a serious client.</p>
                 
-                <h4 className="font-medium text-gray-700 mb-2 mt-4">Refund policy</h4>
+                <h4 className="font-medium text-stone-700 mb-2 mt-4">Refund policy</h4>
                 <p>• Deposit can be fully deducted once the tattoo is completed.</p>
                 <p>• Deposit is fully refundable before the consultation starts, or before the design starts (for clients who doesn't need consultation).</p>
                 <p>• Once the consultation is completed, or the design has started, the deposit is not refundable.</p>
@@ -215,17 +215,17 @@ const PaymentPage: React.FC = () => {
 
         {/* Stripe Payment Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <h2 className="text-xl font-semibold text-stone-900 mb-4">
             Secure Payment
           </h2>
 
           {/* 支付提示 */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
             <div className="flex items-start space-x-3">
-              <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
+              <CreditCard className="w-5 h-5 text-yellow-600 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-900">Secure Payment by Stripe</p>
-                <p className="text-xs text-blue-700 mt-1">
+                <p className="text-sm font-medium text-yellow-900">Secure Payment by Stripe</p>
+                <p className="text-xs text-yellow-700 mt-1">
                   You'll be redirected to Stripe's secure payment page to complete your transaction.
                 </p>
               </div>
@@ -239,8 +239,8 @@ const PaymentPage: React.FC = () => {
               disabled={isProcessing || !state.formData.name || !state.formData.email}
               className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-lg transition-colors ${
                 isProcessing || !state.formData.name || !state.formData.email
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-black text-white hover:bg-gray-800'
+                  ? 'bg-neutral-300 text-stone-500 cursor-not-allowed'
+                  : 'bg-black text-white hover:bg-stone-800'
               }`}
             >
               <CreditCard className="w-5 h-5" />
@@ -261,10 +261,10 @@ const PaymentPage: React.FC = () => {
 
           {/* 支付信息提示 */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-stone-500">
               🔒 Your payment is secure and encrypted by Stripe
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-stone-400 mt-1">
               We accept all major credit cards
             </p>
           </div>

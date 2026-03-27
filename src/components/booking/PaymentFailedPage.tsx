@@ -24,11 +24,11 @@ const PaymentFailedPage: React.FC = () => {
         </div>
 
         {/* 标题和说明 */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+        <h1 className="text-2xl font-bold text-stone-900 mb-4">
           Payment Failed
         </h1>
         
-        <p className="text-gray-600 mb-6">
+        <p className="text-stone-600 mb-6">
           We were unable to process your payment. This could be due to insufficient funds, 
           card restrictions, or a temporary issue with your payment method.
         </p>
@@ -50,7 +50,7 @@ const PaymentFailedPage: React.FC = () => {
           {/* 重试支付 */}
           <Button 
             onClick={handleRetryPayment}
-            className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700"
+            className="w-full flex items-center justify-center space-x-2 bg-yellow-500 hover:bg-yellow-600"
           >
             <RefreshCw className="w-5 h-5" />
             <span>Try Again</span>
@@ -60,7 +60,7 @@ const PaymentFailedPage: React.FC = () => {
           <Button 
             onClick={handleContactSupport}
             variant="outline"
-            className="w-full flex items-center justify-center space-x-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="w-full flex items-center justify-center space-x-2 border-neutral-300 text-stone-700 hover:bg-neutral-50"
           >
             <MessageCircle className="w-5 h-5" />
             <span>Contact Support</span>
@@ -68,14 +68,14 @@ const PaymentFailedPage: React.FC = () => {
         </div>
 
         {/* 客服信息 */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600">
+        <div className="mt-8 p-4 bg-neutral-50 rounded-lg">
+          <p className="text-sm text-stone-600">
             <span className="font-medium">Need help?</span> Contact us at{' '}
-            <a href="mailto:info@patchtattootherapy.com" className="text-blue-600 hover:underline">
+            <a href="mailto:info@patchtattootherapy.com" className="text-yellow-600 hover:underline">
               info@patchtattootherapy.com
             </a>{' '}
             or call{' '}
-            <a href="tel:818-857-7937" className="text-blue-600 hover:underline">
+            <a href="tel:818-857-7937" className="text-yellow-600 hover:underline">
               (818) 857-7937
             </a>
           </p>

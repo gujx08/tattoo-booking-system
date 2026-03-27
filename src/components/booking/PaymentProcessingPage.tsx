@@ -27,37 +27,37 @@ const PaymentProcessingPage: React.FC = () => {
         {/* 动画图标 */}
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <CreditCard className="w-16 h-16 text-blue-500" />
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin absolute -top-2 -right-2" />
+            <CreditCard className="w-16 h-16 text-yellow-500" />
+            <Loader2 className="w-8 h-8 text-yellow-600 animate-spin absolute -top-2 -right-2" />
           </div>
         </div>
 
         {/* 标题和说明 */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+        <h1 className="text-2xl font-bold text-stone-900 mb-4">
           Processing Your Payment
         </h1>
         
-        <p className="text-gray-600 mb-6">
+        <p className="text-stone-600 mb-6">
           Please wait while we securely process your payment. This may take a few moments.
         </p>
 
         {/* 进度指示器 */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
-          <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '75%' }}></div>
+        <div className="w-full bg-neutral-200 rounded-full h-2 mb-6">
+          <div className="bg-yellow-500 h-2 rounded-full animate-pulse" style={{ width: '75%' }}></div>
         </div>
 
         {/* 安全提示 */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p className="text-sm text-yellow-800">
             <span className="font-medium">🔒 Secure Payment:</span> Your payment information is encrypted and secure. Please do not close this window or navigate away.
           </p>
         </div>
 
         {/* 加载动画点 */}
         <div className="flex justify-center mt-6 space-x-1">
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
         </div>
       </div>
     </div>

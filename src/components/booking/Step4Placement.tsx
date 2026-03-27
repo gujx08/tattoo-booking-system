@@ -72,10 +72,10 @@ const Step4Placement: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-stone-900 mb-4">
           Size, Shape & Placement
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-stone-600 max-w-2xl mx-auto">
           Help us understand where you want your tattoo and how you envision it fitting on your body.
         </p>
       </div>
@@ -83,7 +83,7 @@ const Step4Placement: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-6 space-y-8">
         {/* Size and Placement Description */}
         <div>
-          <label htmlFor="placement" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="placement" className="block text-sm font-medium text-stone-700 mb-2">
             What is the size, shape and placement you are picturing? *
           </label>
           <textarea
@@ -91,8 +91,8 @@ const Step4Placement: React.FC = () => {
             rows={4}
             value={state.formData.placement || ''}
             onChange={(e) => handleInputChange('placement', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.placement ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
+              errors.placement ? 'border-red-500' : 'border-neutral-300'
             }`}
             placeholder="E.g. 3 inches round shape on forearm / a long stripe going down in the central back"
           />
@@ -103,11 +103,11 @@ const Step4Placement: React.FC = () => {
 
         {/* Body Photos - Now a text reminder instead of upload */}
         <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-2">
+          <h3 className="text-sm font-medium text-stone-700 mb-2">
             Prepare photos of the area
           </h3>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-sm text-yellow-800">
               Prepare 1-3 photos of the placement, size and shape of your tattoo. It can be your own body photo, or a photo of somebody else's tattoo. Your body photos are kept strictly confidential and used only for design purposes.
             </p>
           </div>
@@ -127,7 +127,7 @@ const Step4Placement: React.FC = () => {
 
         {/* Placement Certainty */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-stone-700 mb-3">
             How certain are you about the placement? *
           </label>
           <div className="space-y-2">
@@ -139,9 +139,9 @@ const Step4Placement: React.FC = () => {
                   value={option}
                   checked={state.formData.placementCertainty === option}
                   onChange={(e) => handleInputChange('placementCertainty', e.target.value)}
-                  className="mt-1 focus:ring-blue-500 focus:ring-2 text-blue-600"
+                  className="mt-1 focus:ring-yellow-500 focus:ring-2 text-yellow-600"
                 />
-                <span className="text-sm text-gray-700">{option}</span>
+                <span className="text-sm text-stone-700">{option}</span>
               </label>
             ))}
           </div>
@@ -152,7 +152,7 @@ const Step4Placement: React.FC = () => {
 
         {/* Open to Suggestions */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-stone-700 mb-3">
             Are you open for the artist to assess your body on the tattoo day, and suggest other best fit placements? *
           </label>
           <div className="space-y-2">
@@ -164,9 +164,9 @@ const Step4Placement: React.FC = () => {
                   value={option}
                   checked={state.formData.openToSuggestions === option}
                   onChange={(e) => handleInputChange('openToSuggestions', e.target.value)}
-                  className="mt-1 focus:ring-blue-500 focus:ring-2 text-blue-600"
+                  className="mt-1 focus:ring-yellow-500 focus:ring-2 text-yellow-600"
                 />
-                <span className="text-sm text-gray-700">{option}</span>
+                <span className="text-sm text-stone-700">{option}</span>
               </label>
             ))}
           </div>
