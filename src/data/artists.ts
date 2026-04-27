@@ -12,7 +12,7 @@ export const ARTISTS_DATA: Artist[] = [
     description: 'Jing mainly does big cohesive tattoos in Asian Traditional style, such as full sleeves. She also does small colorful tattoos in semi realism or Chinese brush painting style. Jing specializes in making the tattoo perfectly fit with the body. She prefers to use subtle colors that fit with the skin tone instead of using vibrant colors. She also uses a lot of freehand techniques to allow the tattoo fit with the body the best.',
     instagram: '@tattooartist_jing',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/jing',
-    video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_jing.mp4',
+    video: 'https://vz-84d1a0c9-63f.b-cdn.net/0d08ef57-cbb7-4c96-878b-c417f6b9ff57/playlist.m3u8',
     portfolio: [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/jing/work_1.jpg',
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/jing/work_2.jpg',
@@ -52,7 +52,7 @@ export const ARTISTS_DATA: Artist[] = [
     description: "Rachel specializes in bold, colorful tattoos that are built to last. She often works with panel-style compositions and watercolor-inspired designs, blending structure with fluidity. Rachel's artistry shines through her use of vibrant palettes, with a strong focus on floral, nature, and Asian-inspired themes. Known for her excellent saturation and clean execution, her work maintains vibrancy and longevity over time.",
     instagram: '@rachel_tattooartist',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/rachel',
-    video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_rachel.mp4',
+    video: 'https://vz-84d1a0c9-63f.b-cdn.net/691abbec-16e0-4521-bef5-5991be0da16a/playlist.m3u8',
     portfolio: [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/rachel/work_1.jpg',
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/rachel/work_2.jpg',
@@ -91,7 +91,7 @@ export const ARTISTS_DATA: Artist[] = [
     description: 'Jasmine mainly does fine line tattoos, sometimes with a little bit color, or some shading. She works a lot with Asian topics such as koi fish and Yin Yang symbols. Jasmine is a great communicator and always satisfies her clients with good designs. She has very clean lines, and pays great attention to the details.',
     instagram: '@jascreates.tattoo',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/jasmine',
-    video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_jasmine.mp4',
+    video: 'https://vz-84d1a0c9-63f.b-cdn.net/636d8836-e579-4d8b-9a86-3a1af9bcab22/playlist.m3u8',
     portfolio: [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/jasmine/work_1.jpg',
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/jasmine/work_2.jpg',
@@ -130,7 +130,7 @@ export const ARTISTS_DATA: Artist[] = [
     description: 'Lauren mainly does tattoos in black and gray, sometimes with a hint of color. She works a lot with pet portraits and all types of bugs. Lauren is very caring for her clients, and she pays great attention to the details. Lauren also loves manga and would like to work more with manga or anime themes.',
     instagram: '@laurtattoos',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/lauren',
-    video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_lauren.mp4',
+    video: 'https://vz-84d1a0c9-63f.b-cdn.net/de1d0db8-3c3b-4354-91d4-e454a16ee891/playlist.m3u8',
     hidden: true, // 隐藏此艺术家卡片
     portfolio: [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/lauren/work_1.jpg',
@@ -170,7 +170,7 @@ export const ARTISTS_DATA: Artist[] = [
     description: 'Annika has unique designer background and her tattoos are one of a kind. Her designs have a blend of traditional antique look with a modern touch. She mainly does line work, sometimes with a little bit shading.',
     instagram: '@annikatattoos',
     avatar: 'https://res.cloudinary.com/dkzykupcc/image/upload/artists/annika',
-    video: 'https://res.cloudinary.com/dkzykupcc/video/upload/f_auto,q_auto/artists/videos/intro_annika.mp4',
+    video: 'https://vz-84d1a0c9-63f.b-cdn.net/3123f111-fca4-46de-b152-c8182ba102e7/playlist.m3u8',
     hidden: true, // 隐藏此艺术家卡片
     portfolio: [
       'https://res.cloudinary.com/dkzykupcc/image/upload/portfolio/annika/work_1.jpg',

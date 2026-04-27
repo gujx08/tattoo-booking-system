@@ -2,6 +2,7 @@ import React from 'react';
 import { Instagram, ArrowLeft, Calendar, Clock, MapPin, Star } from 'lucide-react';
 import { Artist } from '../../types';
 import Button from '../common/Button';
+import HlsVideo from "../HlsVideo";
 
 interface ArtistProfileProps {
   artist: Artist;
@@ -63,26 +64,15 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
             {/* Video Section - At the top */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="aspect-video rounded-lg overflow-hidden mb-4">
-                <video
+                <HlsVideo
+                  src={artist.video}
                   controls
                   autoPlay
                   muted
                   preload="metadata"
                   className="w-full h-full object-cover"
                   poster={artist.avatar}
-                  onError={(e) => {
-                    console.error('Video loading error:', e);
-                  }}
-                  onLoadStart={() => {
-                    console.log('Video loading started');
-                  }}
-                  onCanPlay={() => {
-                    console.log('Video can play');
-                  }}
-                >
-                  <source src={artist.video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                />
               </div>
             </div>
 
