@@ -65,14 +65,11 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="aspect-video rounded-lg overflow-hidden mb-4">
                 <HlsVideo
-                  src={artist.video}
-                  controls
-                  autoPlay
-                  muted
-                  preload="metadata"
-                  className="w-full h-full object-cover"
-                  poster={artist.avatar}
-                />
+ src={artist.video}
+ controls preload="metadata"
+ className="w-full h-full object-cover"
+ poster={artist.avatar}
+ />
               </div>
             </div>
 
