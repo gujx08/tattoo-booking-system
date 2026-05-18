@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { validateEmail, validatePhone, validateRequired, getEmailError, getPhoneError } from '../../utils/validation';
 import Button from '../common/Button';
 
 const Step2BasicInfo: React.FC = () => {
   const { state, dispatch } = useApp();
+  const navigate = useNavigate();
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const handleInputChange = (field: string, value: string) => {
@@ -90,7 +92,14 @@ const Step2BasicInfo: React.FC = () => {
   };
 
   const handleBack = () => {
-    dispatch({ type: 'SET_STEP', payload: 1 });
+    // If user deep-linked via /:artistId/book, send them back to the artist profile
+    // they came from, not to the wizard's artist-grid step.
+    const match = window.location.pathname.match(/^\/([^/]+)\/book$/);
+    if (match && match[1]) {
+      navigate(`/${match[1]}`);
+    } else {
+      dispatch({ type: 'SET_STEP', payload: 1 });
+    }
   };
 
   return (
