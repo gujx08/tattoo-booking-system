@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { ARTISTS_DATA } from '../../data/artists';
 import ArtistCard from '../artist/ArtistCard';
@@ -8,6 +9,7 @@ import { trackArtistSelection, trackBookingStep } from '../../utils/analytics';
 
 const Step1ArtistSelection: React.FC = () => {
   const { state, dispatch } = useApp();
+  const navigate = useNavigate();
   const [viewingArtist, setViewingArtist] = React.useState<string | null>(null);
 
   const handleArtistSelect = (artistId: string) => {
@@ -16,10 +18,8 @@ const Step1ArtistSelection: React.FC = () => {
       // 追踪艺术家选择
       trackArtistSelection(selectedArtist.displayName);
       trackBookingStep(1, 'Artist Selection');
-      
-      dispatch({ type: 'SET_SELECTED_ARTIST', payload: selectedArtist });
-      dispatch({ type: 'UPDATE_FORM_DATA', payload: { artistId, needsHelpChoosing: false } });
-      dispatch({ type: 'SET_STEP', payload: 2 });
+
+      navigate(`/${artistId}`);
     }
   };
 
@@ -28,7 +28,7 @@ const Step1ArtistSelection: React.FC = () => {
   };
 
   const handleCardClick = (artistId: string) => {
-    setViewingArtist(artistId);
+    navigate(`/${artistId}`);
   };
 
   const handleBackFromProfile = () => {
