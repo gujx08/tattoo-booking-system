@@ -7,6 +7,8 @@ import HomePage from './components/HomePage';
 import BookingWizard from './components/BookingWizard';
 import SuccessPage from './components/booking/SuccessPage';
 import NotificationModal from './components/common/NotificationModal';
+import ArtistPage from './pages/ArtistPage';
+import BookingEntry from './pages/BookingEntry';
 import { trackPageView } from './utils/analytics';
 
 // 路由追踪组件
@@ -72,7 +74,11 @@ function App() {
           
           {/* 静态成功页面 */}
           <Route path="/booking-success" element={<Navigate to="/success" replace />} />
-          
+
+          {/* 艺术家深链接 - 单独的个人主页和直接进入预约向导 */}
+          <Route path="/:artistId" element={<ArtistPage />} />
+          <Route path="/:artistId/book" element={<BookingEntry />} />
+
           {/* 默认重定向 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
