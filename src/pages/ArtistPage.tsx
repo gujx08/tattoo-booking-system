@@ -14,6 +14,7 @@ const RESERVED_PATHS = new Set(['success', 'booking-success', 'admin', 'api', 's
 const CHATWME_TOKENS: Record<string, string> = {
   jing: '4440cc13-d9fc-47c6-bf09-54e050ca888c',
   rachel: '140e1c0f-3124-4692-826c-1fa3290ef8d0',
+  jasmine: 'aee5aab1-fe4e-4a9d-87d4-1902037e18bd',
 };
 
 function isPubliclyVisible(artist: Artist): boolean {
