@@ -38,8 +38,6 @@ const artistEmails: { [key: string]: string } = {
   'Jing': 'jing@patchtattootherapy.com',
   'Rachel Hong': 'rachel@patchtattootherapy.com', 
   'Jasmine Hsueh': 'jasmine@patchtattootherapy.com',
-  'Lauren Hacaga': 'lauren@patchtattootherapy.com',
-  'Annika Riggins': 'annika@patchtattootherapy.com',
   'Maili Cohen': 'maili@patchtattootherapy.com',
   'Keani Chavez': 'keani@patchtattootherapy.com'
 };

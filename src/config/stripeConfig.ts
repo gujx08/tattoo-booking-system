@@ -14,8 +14,6 @@ export const STRIPE_PAYMENT_LINKS = {
   // $100 定金 - Senior & Junior Artists
   'rachel': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
   'jasmine': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
-  'lauren': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
-  'annika': 'https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401',
   
   // $50 定金 - Apprentices
   'maili': 'https://buy.stripe.com/00w5kD9jwerH9988lWfw402',
@@ -27,11 +25,9 @@ export const STRIPE_TEST_PAYMENT_LINKS = {
   // $300 定金 - Jing (Lead Artist)
   'jing': 'https://buy.stripe.com/test_cNi14ngLYcjz4SS31Cfw403',
   
-  // $100 定金 - Rachel, Jasmine, Lauren, Annika
+  // $100 定金 - Rachel, Jasmine
   'rachel': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
   'jasmine': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
-  'lauren': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
-  'annika': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404',
   
   // $50 定金 - Maili, Keani (Apprentices) - 需要创建新的$50测试链接
   'maili': 'https://buy.stripe.com/test_aFa9AT53g1EVadcau4fw404', // 临时使用$100链接
@@ -43,8 +39,6 @@ export const ARTIST_DEPOSITS = {
   'jing': 300,
   'rachel': 100,
   'jasmine': 100,
-  'lauren': 100,
-  'annika': 100,
   'maili': 50,
   'keani': 50,
 } as const;
@@ -55,8 +49,6 @@ export const getArtistName = (artistId: string): string => {
     'jing': 'Jing (Jingxi Gu)',
     'rachel': 'Rachel Hong',
     'jasmine': 'Jasmine Hsueh (Jas)',
-    'lauren': 'Lauren Hacaga',
-    'annika': 'Annika Riggins',
     'maili': 'Maili Cohen',
     'keani': 'Keani Chavez'
   };
