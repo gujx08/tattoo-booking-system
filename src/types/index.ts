@@ -5,6 +5,7 @@ export interface Artist {
   category: string;
   experience?: string;
   deposit: number;
+  bookingUrl?: string; // 外部预约链接 (ChatWme)，设置后替代站内预约流程
   priceRange?: string;
   specialties?: string[];
   description: string;
