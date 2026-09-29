@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
 import { ARTISTS_DATA } from '../data/artists';
 import { Artist } from '../types';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
-import NotificationModal from '../components/common/NotificationModal';
 import ArtistProfile from '../components/artist/ArtistProfile';
 
 const HIDDEN_ARTIST_IDS = new Set(['maili', 'keani']);
@@ -24,7 +22,6 @@ function isPubliclyVisible(artist: Artist): boolean {
 const ArtistPage: React.FC = () => {
   const { artistId } = useParams<{ artistId: string }>();
   const navigate = useNavigate();
-  const { state } = useApp();
 
   const artist =
     !artistId || RESERVED_PATHS.has(artistId)
@@ -70,14 +67,9 @@ const ArtistPage: React.FC = () => {
         <ArtistProfile
           artist={artist}
           onBack={() => navigate('/')}
-          onBookAppointment={() => navigate(`/${artist.id}/book`)}
         />
       </main>
       <Footer />
-      <NotificationModal
-        isOpen={state.showNotification}
-        message={state.notificationMessage}
-      />
     </div>
   );
 };
