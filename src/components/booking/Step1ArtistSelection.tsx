@@ -1,14 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context/AppContext';
 import { ARTISTS_DATA } from '../../data/artists';
 import ArtistCard from '../artist/ArtistCard';
 import ArtistProfile from '../artist/ArtistProfile';
-import Button from '../common/Button';
 import { trackArtistSelection, trackBookingStep } from '../../utils/analytics';
 
+const HELP_CHOOSING_URL = 'https://chatwme.co/jing';
+
 const Step1ArtistSelection: React.FC = () => {
-  const { state, dispatch } = useApp();
   const navigate = useNavigate();
   const [viewingArtist, setViewingArtist] = React.useState<string | null>(null);
 
@@ -23,10 +22,6 @@ const Step1ArtistSelection: React.FC = () => {
     }
   };
 
-  const handleNeedHelp = () => {
-    dispatch({ type: 'UPDATE_FORM_DATA', payload: { artistId: 'help', needsHelpChoosing: true } });
-  };
-
   const handleCardClick = (artistId: string) => {
     navigate(`/${artistId}`);
   };
@@ -37,14 +32,6 @@ const Step1ArtistSelection: React.FC = () => {
 
   const handleBookFromProfile = (artistId: string) => {
     handleArtistSelect(artistId);
-  };
-
-  const canProceed = state.formData.artistId && state.formData.artistId !== '';
-
-  const handleNext = () => {
-    if (canProceed) {
-      dispatch({ type: 'SET_STEP', payload: 2 });
-    }
   };
 
   // Show artist profile if viewing one
@@ -97,38 +84,14 @@ const Step1ArtistSelection: React.FC = () => {
           <p className="text-stone-600 mb-4">
             Let us help you choose the perfect artist based on your tattoo idea and style preferences.
           </p>
-          <Button
-            variant={state.formData.needsHelpChoosing ? 'primary' : 'outline'}
-            onClick={handleNeedHelp}
+          {/* ChatWme 上的 AI 助手可以根据纹身想法和风格推荐艺术家，默认进入 Jing 的页面（同一标签页） */}
+          <a
+            href={HELP_CHOOSING_URL}
+            className="inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 border-2 border-stone-700 text-stone-900 hover:bg-stone-700 hover:text-white px-4 py-2 text-base"
           >
             I need help choosing the right artist
-          </Button>
+          </a>
         </div>
-      </div>
-
-      {/* Selected Artist Display */}
-
-      {state.formData.needsHelpChoosing && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
-          <h4 className="font-medium text-green-900 mb-2">
-            Perfect! We'll help you choose.
-          </h4>
-          <p className="text-sm text-green-700">
-            After you complete the booking form, we'll match you with the best artist 
-            for your specific tattoo idea and style preferences.
-          </p>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <div className="flex justify-end">
-        <Button
-          onClick={handleNext}
-          disabled={!canProceed}
-          size="lg"
-        >
-          Next
-        </Button>
       </div>
     </div>
   );
