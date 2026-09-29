@@ -25,11 +25,19 @@ const BookingEntry: React.FC = () => {
       : ARTISTS_DATA.find((a) => a.id === artistId);
 
   const isValid = !!artist && isPubliclyVisible(artist);
+  // 已迁移到 ChatWme 的艺术家：旧的 /:artistId/book 链接直接跳转过去（replace，避免返回键回到这里）
+  const externalBookingUrl = isValid ? artist?.bookingUrl : undefined;
+
+  useEffect(() => {
+    if (externalBookingUrl) {
+      window.location.replace(externalBookingUrl);
+    }
+  }, [externalBookingUrl]);
 
   // useLayoutEffect so the wizard's first paint already reflects Step 2 + selected artist,
   // avoiding a one-frame flash of Step 1 (Artist Selection).
   useLayoutEffect(() => {
-    if (isValid && artist) {
+    if (isValid && artist && !externalBookingUrl) {
       dispatch({ type: 'SET_SELECTED_ARTIST', payload: artist });
       dispatch({
         type: 'UPDATE_FORM_DATA',
@@ -37,7 +45,7 @@ const BookingEntry: React.FC = () => {
       });
       dispatch({ type: 'SET_STEP', payload: 2 });
     }
-  }, [artist, isValid, dispatch]);
+  }, [artist, isValid, externalBookingUrl, dispatch]);
 
   useEffect(() => {
     if (isValid && artist) {
@@ -47,6 +55,10 @@ const BookingEntry: React.FC = () => {
 
   if (!isValid || !artist) {
     return <Navigate to="/" replace />;
+  }
+
+  if (externalBookingUrl) {
+    return null;
   }
 
   return (

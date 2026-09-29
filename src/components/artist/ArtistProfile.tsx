@@ -10,6 +10,22 @@ interface ArtistProfileProps {
   onBookAppointment: () => void;
 }
 
+const INTERNAL_BOOKING_STEPS = [
+  'Submit your tattoo request',
+  'Pay the deposit',
+  'Book 1-1 consultation with your artist (optional)',
+  'Discuss design details with your artist in consultation, or via email',
+  'Schedule the appointment',
+  'Complete your tattoo on the scheduled day',
+];
+
+const CHATWME_BOOKING_STEPS = [
+  'Pick a time',
+  'Fill in the booking form',
+  'Pay the deposit',
+  'Get your confirmation',
+];
+
 const ArtistProfile: React.FC<ArtistProfileProps> = ({ 
   artist, 
   onBack, 
@@ -36,6 +52,22 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
   };
 
   const pricingData = getPricingDisplay(artist);
+  const bookingSteps = artist.bookingUrl ? CHATWME_BOOKING_STEPS : INTERNAL_BOOKING_STEPS;
+
+  // 有 bookingUrl 的艺术家直接跳转到 ChatWme（同一标签页），否则走站内预约流程
+  const renderBookButton = (className: string, content: React.ReactNode) =>
+    artist.bookingUrl ? (
+      <a
+        href={artist.bookingUrl}
+        className={`inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${className}`}
+      >
+        {content}
+      </a>
+    ) : (
+      <Button onClick={onBookAppointment} className={className} size="lg">
+        {content}
+      </Button>
+    );
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -179,13 +211,10 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
 
             {/* Bottom Booking Button */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <Button
-                onClick={onBookAppointment}
-                className="w-full bg-black text-white hover:bg-stone-800 text-lg py-4"
-                size="lg"
-              >
-                Book a tattoo with {artist.displayName}
-              </Button>
+              {renderBookButton(
+                'w-full bg-black text-white hover:bg-stone-800 text-lg px-6 py-4',
+                <>Book a tattoo with {artist.displayName}</>
+              )}
             </div>
           </div>
 
@@ -238,25 +267,21 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
               </div>
 
               {/* Book Button */}
-              <Button
-                onClick={onBookAppointment}
-                className="w-full mb-6 bg-black text-white hover:bg-stone-800"
-                size="lg"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Book a tattoo with {artist.displayName}
-              </Button>
+              {renderBookButton(
+                'w-full mb-6 bg-black text-white hover:bg-stone-800 text-lg px-6 py-3',
+                <>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Book a tattoo with {artist.displayName}
+                </>
+              )}
 
               {/* Booking Process */}
               <div className="booking-process">
                 <h3 className="font-semibold text-stone-900 mb-4">Booking Process:</h3>
                 <ol className="text-sm space-y-2 text-stone-700">
-                  <li>1. Submit your tattoo request</li>
-                  <li>2. Pay the deposit</li>
-                  <li>3. Book 1-1 consultation with your artist (optional)</li>
-                  <li>4. Discuss design details with your artist in consultation, or via email</li>
-                  <li>5. Schedule the appointment</li>
-                  <li>6. Complete your tattoo on the scheduled day</li>
+                  {bookingSteps.map((step, index) => (
+                    <li key={step}>{index + 1}. {step}</li>
+                  ))}
                 </ol>
               </div>
             </div>
