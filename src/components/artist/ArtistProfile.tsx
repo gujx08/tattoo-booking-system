@@ -1,25 +1,14 @@
 import React from 'react';
 import { Instagram, ArrowLeft, Calendar, Clock, MapPin, Star } from 'lucide-react';
 import { Artist } from '../../types';
-import Button from '../common/Button';
 import HlsVideo from "../HlsVideo";
 
 interface ArtistProfileProps {
   artist: Artist;
   onBack: () => void;
-  onBookAppointment: () => void;
 }
 
-const INTERNAL_BOOKING_STEPS = [
-  'Submit your tattoo request',
-  'Pay the deposit',
-  'Book 1-1 consultation with your artist (optional)',
-  'Discuss design details with your artist in consultation, or via email',
-  'Schedule the appointment',
-  'Complete your tattoo on the scheduled day',
-];
-
-const CHATWME_BOOKING_STEPS = [
+const BOOKING_STEPS = [
   'Pick a time',
   'Fill in the booking form',
   'Pay the deposit',
@@ -28,8 +17,7 @@ const CHATWME_BOOKING_STEPS = [
 
 const ArtistProfile: React.FC<ArtistProfileProps> = ({ 
   artist, 
-  onBack, 
-  onBookAppointment 
+  onBack 
 }) => {
   const getPricingDisplay = (artist: Artist) => {
     if (artist.id === 'jing') {
@@ -52,9 +40,8 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
   };
 
   const pricingData = getPricingDisplay(artist);
-  const bookingSteps = artist.bookingUrl ? CHATWME_BOOKING_STEPS : INTERNAL_BOOKING_STEPS;
 
-  // 有 bookingUrl 的艺术家直接跳转到 ChatWme（同一标签页），否则走站内预约流程
+  // 预约在 ChatWme 完成（同一标签页）；没有 bookingUrl 的艺术家不显示预约按钮
   const renderBookButton = (className: string, content: React.ReactNode) =>
     artist.bookingUrl ? (
       <a
@@ -63,11 +50,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
       >
         {content}
       </a>
-    ) : (
-      <Button onClick={onBookAppointment} className={className} size="lg">
-        {content}
-      </Button>
-    );
+    ) : null;
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -279,7 +262,7 @@ const ArtistProfile: React.FC<ArtistProfileProps> = ({
               <div className="booking-process">
                 <h3 className="font-semibold text-stone-900 mb-4">Booking Process:</h3>
                 <ol className="text-sm space-y-2 text-stone-700">
-                  {bookingSteps.map((step, index) => (
+                  {BOOKING_STEPS.map((step, index) => (
                     <li key={step}>{index + 1}. {step}</li>
                   ))}
                 </ol>
