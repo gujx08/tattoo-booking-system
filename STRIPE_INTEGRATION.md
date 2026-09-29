@@ -14,7 +14,7 @@
 
 ### 💰 定金配置
 - **Jing (Lead Artist)**: $300 定金
-- **Rachel, Jasmine, Lauren, Annika**: $100 定金  
+- **Rachel, Jasmine**: $100 定金  
 - **Maili, Keani (Apprentices)**: $50 定金
 
 ## 🔗 Payment Links配置
@@ -24,7 +24,7 @@
 https://buy.stripe.com/00w6oHgLY6Zf5WW45Gfw400
 ```
 
-### $100 定金 (Rachel, Jasmine, Lauren, Annika)
+### $100 定金 (Rachel, Jasmine)
 ```
 https://buy.stripe.com/3cIeVd8fsabr0CC31Cfw401
 ```

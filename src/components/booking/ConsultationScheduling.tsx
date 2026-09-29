@@ -23,8 +23,6 @@ const ConsultationScheduling: React.FC = () => {
       'jing': 'Jing',
       'rachel': 'Rachel Hong', 
       'jas': 'Jasmine Hsueh (Jas)',
-      'lauren': 'Lauren Hacaga',
-      'annika': 'Annika Riggins',
       'maili': 'Maili Cohen',
       'keani': 'Keani Chavez'
     };
