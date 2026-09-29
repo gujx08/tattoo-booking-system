@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ArtistIndexPage from './pages/ArtistIndexPage';
 import ArtistPage from './pages/ArtistPage';
-import SuccessPage from './pages/SuccessPage';
 import { trackPageView } from './utils/analytics';
 
 // 路由追踪组件
@@ -24,10 +23,6 @@ function App() {
       <Routes>
         {/* 艺术家列表 */}
         <Route path="/" element={<ArtistIndexPage />} />
-
-        {/* 旧 Stripe Payment Links 的支付成功跳转页 */}
-        <Route path="/success" element={<SuccessPage />} />
-        <Route path="/booking-success" element={<Navigate to="/success" replace />} />
 
         {/* 艺术家个人主页（旧的 /:artistId/book 链接由 public/_redirects 跳转到 ChatWme） */}
         <Route path="/:artistId" element={<ArtistPage />} />
