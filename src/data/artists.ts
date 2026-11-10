@@ -7,7 +7,7 @@ export const ARTISTS_DATA: Artist[] = [
     displayName: 'Jing',
     category: 'Lead Artist',
     experience: '9 years',
-    deposit: 300,
+    deposit: 100,
     bookingUrl: 'https://chatwme.co/jing',
     specialties: ['Asian Traditional', 'Chinese brush painting style', 'Freehand tattoos'],
     description: 'Jing mainly does big cohesive tattoos in Asian Traditional style, such as full sleeves. She also does small colorful tattoos in semi realism or Chinese brush painting style. Jing specializes in making the tattoo perfectly fit with the body. She prefers to use subtle colors that fit with the skin tone instead of using vibrant colors. She also uses a lot of freehand techniques to allow the tattoo fit with the body the best.',
@@ -28,7 +28,7 @@ export const ARTISTS_DATA: Artist[] = [
       coverUpExtra: '500-1000',
       flashDiscount: '70% of full price'
     },
-    specialNote: 'Jing specializes in large, complex tattoos that require extensive design time. After confirming your design requirements, Jing will collect an additional $500-1000 design deposit (which will be deducted from the final price along with your $300 booking deposit).',
+    specialNote: 'Jing specializes in large, complex tattoos that require extensive design time. After confirming your design requirements, Jing will collect an additional $500-1000 design deposit (which will be deducted from the final price along with your $100 booking deposit).',
     reviews: [
       {
         name: 'Marcus L.',
